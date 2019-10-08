@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.itcast.core.dao.CaseDao">
+
+    <sql id="selectCaseListWhere">
+        <where>
+            <if test="case_no != null">
+                case_no like "%"#{case_no}"%"
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="selectCaseList" parameterType="case" resultType="case">
+        SELECT
+        case_id,
+        case_no,
+        case_judgepeople,
+        case_partypeople,
+        case_state,
+        case_startime,
+        case_endtime,
+        case_createtime
+        FROM
+        casedemo
+
+        <include refid="selectCaseListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+    <select id="selectCaseListCount" parameterType="case" resultType="int">
+        select count(*)
+        from casedemo
+        <include refid="selectCaseListWhere"/>
+    </select>
+
+    <select id="getCaseById" parameterType="long" resultType="case">
+		select * from casedemo where case_id = #{id}
+	</select>
+    <update id="updateCase" parameterType="case">
+        update casedemo
+        <set>
+            <if test="case_no!=null">
+                case_no=#{case_no},
+            </if>
+            <if test="case_judgepeople!=null">
+                case_judgepeople=#{case_judgepeople},
+            </if>
+            <if test="case_partypeople!=null">
+                case_partypeople=#{case_partypeople},
+            </if>
+            <if test="case_state!=null">
+                case_state=#{case_state},
+            </if>
+            <if test="case_startime!=null">
+                case_startime=#{case_startime},
+            </if>
+            <if test="case_endtime!=null">
+                case_endtime=#{case_endtime},
+            </if>
+            <if test="case_createtime!=null">
+                case_createtime=#{case_createtime},
+            </if>
+        </set>
+        where case_id=#{case_id}
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="case_no!=null">
+                case_no,
+            </if>
+            <if test="case_judgepeople!=null">
+              case_judgepeople,
+            </if>
+            <if test="case_partypeople">
+                case_partypeople,
+            </if>
+            <if test="case_state!=null">
+                case_state,
+            </if>
+            <if test="case_startime!=null">
+                case_startime,
+            </if>
+            <if test="case_endtime!=null">
+                case_endtime,
+            </if>
+            <if test="case_createtime!=null">
+                case_createtime,
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="case_no!=null">
+                #{case_no},
+            </if>
+            <if test="case_judgepeople!=null">
+                #{case_judgepeople},
+            </if>
+            <if test="case_partypeople">
+                #{case_partypeople},
+            </if>
+            <if test="case_state!=null">
+                #{case_state},
+            </if>
+            <if test="case_startime!=null">
+                #{case_startime},
+            </if>
+            <if test="case_endtime!=null">
+                #{case_endtime},
+            </if>
+            <if test="case_createtime!=null">
+                #{case_createtime},
+            </if>
+        </trim>
+    </sql>
+
+
+    <insert id="addCase" parameterType="case">
+        insert into casedemo(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteCase" parameterType="long">
+		delete from casedemo where case_id=#{id}
+	</delete>
+
+</mapper>
