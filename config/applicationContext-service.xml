@@ -19,7 +19,7 @@
 		
 		
 		<!-- 配置  扫描   @Service -->
-		<context:component-scan base-package="cn.itcast.core.service"/>
+		<context:component-scan base-package="cn.kfqjtdqb.core.service"/>
 		
 		
 		

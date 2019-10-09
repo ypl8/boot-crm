@@ -23,7 +23,7 @@
 		<!-- 加载属性文件 -->
 		<context:property-placeholder location="classpath:resource.properties"/>
 		<!-- 配置扫描 器 -->
-		<context:component-scan base-package="cn.itcast.core.web.controller"/>
+		<context:component-scan base-package="cn.kfqjtdqb.core.web.controller"/>
 		<!-- 配置处理器映射器  适配器 -->
 		<mvc:annotation-driven/>
 		

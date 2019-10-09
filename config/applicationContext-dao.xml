@@ -39,13 +39,13 @@
 		<!-- 配置Mybatis的核心 配置文件所在位置 -->
 		<property name="configLocation" value="classpath:SqlMapConfig.xml" />
 		<!-- 配置pojo别名 -->
-		<property name="typeAliasesPackage" value="cn.itcast.core.bean"></property>
+		<property name="typeAliasesPackage" value="cn.kfqjtdqb.core.bean"></property>
 	</bean>
 
 	<!-- 配置 1：原始Dao开发 接口实现类 Mapper.xml 三个 2：接口开发 接口 不写实现类 Mapper.xml 二个 （UserDao、ProductDao 
-		、BrandDao。。。。。。。） 3：接口开发、并支持扫描 cn.itcast.core.dao(UserDao。。。。。） 写在此包下即可被扫描到 -->
+		、BrandDao。。。。。。。） 3：接口开发、并支持扫描 cn.kfqjtdqbqb.core.dao(UserDao。。。。。） 写在此包下即可被扫描到 -->
 	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-		<property name="basePackage" value="cn.itcast.core.dao" />
+		<property name="basePackage" value="cn.kfqjtdqb.core.dao" />
 	</bean>
 
 </beans>

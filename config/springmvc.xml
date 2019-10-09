@@ -20,7 +20,7 @@
 		<!-- 加载属性文件 -->
 		<context:property-placeholder location="classpath:resource.properties"/>
 		<!-- 配置扫描 器 -->
-		<context:component-scan base-package="cn.itcast.core.web.controller"/>
+		<context:component-scan base-package="cn.kfqjtdqb.core.web.controller"/>
 		<!-- 配置处理器映射器  适配器 -->
 		<mvc:annotation-driven/>
 		
@@ -34,7 +34,7 @@
 	<mvc:interceptors>
 		<mvc:interceptor>
 			<mvc:mapping path="/**"/>
-			<bean class="cn.itcast.core.interceptor.LoginInterceptor"/>
+			<bean class="cn.kfqjtdqb.core.interceptor.LoginInterceptor"/>
 		</mvc:interceptor>
 	</mvc:interceptors>
 		
