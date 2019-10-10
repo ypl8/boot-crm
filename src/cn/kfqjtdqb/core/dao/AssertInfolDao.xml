@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.AssertInfolDao">
+
+    <sql id="selectAssertInfolListWhere">
+        <where>
+            <if test="assert_num != null">
+                assert_num like "%"#{assert_num}"%"
+            </if>
+            <if test="floor_state != null">
+                floor_state like "%"#{floor_state}"%"
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAssertInfolList" parameterType="assertInfol" resultType="assertInfol">
+        SELECT
+        id,
+        assert_num,
+        card_num,
+        community_name,
+        building_num,
+        room_number,
+        floorage,
+        floor_state,
+        watermeter_num,
+        electricmeter_num
+        FROM
+        t_assert_infol
+
+        <include refid="selectAssertInfolListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+
+    <select id="selectAssertInfolListCount" parameterType="assertInfol" resultType="int">
+        select count(*)
+        from t_assert_infol
+        <include refid="selectAssertInfolListWhere"/>
+    </select>
+
+
+    <select id="getAssertInfolById" parameterType="long" resultType="assertInfol">
+		select * from t_assert_infol where id= #{id}
+	</select>
+
+    <update id="updateAssertInfol" parameterType="assertInfol">
+        update t_assert_infol
+        <set>
+            <if test="assert_num!=null">
+                assert_num=#{assert_num},
+            </if>
+            <if test="card_num!=null">
+                card_num=#{card_num},
+            </if>
+            <if test="community_name!=null">
+                community_name=#{community_name},
+            </if>
+            <if test="building_num!=null">
+                building_num=#{building_num},
+            </if>
+            <if test="room_number!=null">
+                room_number=#{room_number},
+            </if>
+            <if test="floorage!=null">
+                floorage=#{floorage},
+            </if>
+            <if test="floor_state!=null">
+                floor_state=#{floor_state},
+            </if>
+            <if test="watermeter_num!=null">
+                watermeter_num=#{watermeter_num},
+            </if>
+            <if test="electricmeter_num!=null">
+                electricmeter_num=#{electricmeter_num},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="assert_num!=null">
+                assert_num,
+            </if>
+            <if test="card_num!=null">
+                card_num,
+            </if>
+            <if test="community_name!=null">
+                community_name,
+            </if>
+            <if test="building_num!=null">
+                building_num,
+            </if>
+            <if test="room_number!=null">
+                room_number,
+            </if>
+            <if test="floorage!=null">
+                floorage,
+            </if>
+            <if test="floor_state!=null">
+                floor_state,
+            </if>
+            <if test="watermeter_num!=null">
+                watermeter_num,
+            </if>
+            <if test="electricmeter_num!=null">
+                electricmeter_num,
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="assert_num!=null">
+                #{assert_num},
+            </if>
+            <if test="card_num!=null">
+                #{card_num},
+            </if>
+            <if test="community_name!=null">
+                #{community_name},
+            </if>
+            <if test="building_num!=null">
+                #{building_num},
+            </if>
+            <if test="room_number!=null">
+                #{room_number},
+            </if>
+            <if test="floorage!=null">
+                #{floorage},
+            </if>
+            <if test="floor_state!=null">
+                #{floor_state},
+            </if>
+            <if test="watermeter_num!=null">
+                #{watermeter_num},
+            </if>
+            <if test="electricmeter_num!=null">
+                #{electricmeter_num},
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="addAssertInfol" parameterType="assertInfol">
+        insert into t_assert_infol(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteAssertInfol" parameterType="long">
+		delete from t_assert_infol where id=#{id}
+	</delete>
+
+</mapper>

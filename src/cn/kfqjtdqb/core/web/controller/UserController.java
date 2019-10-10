@@ -30,7 +30,7 @@ public class UserController {
             //将用户对象添加到Session中
             session.setAttribute("USER_SESSION",user);
             //跳转到主页面
-            return "redirect:customer/list.action";
+            return "index";
         }
         model.addAttribute("msg","账号或密码错误，请重新输入");
         //返回登录页面
@@ -53,12 +53,27 @@ public class UserController {
         //重定向到登录页面的跳转方法
         return "redirect:login.action";
     }
+
     /**
      * 向用户登录页面跳转
      */
-    @RequestMapping(value = "/login,action",method = RequestMethod.GET)
+    @RequestMapping(value = "/login.action",method = RequestMethod.GET)
     public String toLogin(){
         return "login";
+    }
+
+
+    /**
+     * 向用户登录页面跳转
+     */
+    @RequestMapping(value = "/left.action",method = RequestMethod.GET)
+    public String toLeft(){
+        return "left";
+    }
+
+    @RequestMapping(value = "/top.action",method = RequestMethod.GET)
+    public String toTop(){
+        return "top";
     }
 
 }

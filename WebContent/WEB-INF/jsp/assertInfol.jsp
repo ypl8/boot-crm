@@ -1,3 +1,10 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: ypl
+  Date: 2019/10/9
+  Time: 12:40
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
 <%@ page trimDirectiveWhitespaces="true" %>
@@ -30,7 +37,7 @@
     <link href="<%=basePath%>css/dataTables.bootstrap.css" rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link href="<%=basePath%>css/sb-admin-2.css" rel="stylesheet">
+    <link href="<%=basePath%>css/sb-admin-2.css?id=1" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="<%=basePath%>css/font-awesome.min.css" rel="stylesheet"
@@ -52,7 +59,7 @@
 <div id="wrapper">
 
     <!-- Navigation -->
-    <nav class="navbar navbar-default navbar-static-top" role="navigation"
+ <%--   <nav class="navbar navbar-default navbar-static-top" role="navigation"
          style="margin-bottom: 0">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -191,62 +198,35 @@
 							</span>
                         </div> <!-- /input-group -->
                     </li>
-                    <li><a href="<%=basePath%>/case.action" class="active"><i
-                            class="fa fa-edit fa-fw"></i> 客户管理</a></li>
-                    <li><a href="salevisit.action"><i class="fa fa-dashboard fa-fw"></i> 案例管理</a></li>
+                    <li><a href="<%=basePath%>/customer.action" class="active">
+                        <i class="fa fa-edit fa-fw"></i> 客户管理</a></li>
+                    <li><a href="<%=basePath%>/case.action"><i class="fa fa-dashboard fa-fw"></i> 案例管理</a></li>
+                    <li><a href="<%=basePath%>assertInfol.action"><i class="fa fa-dashboard fa-fw"></i> 资产信息管理</a></li>
                 </ul>
             </div>
             <!-- /.sidebar-collapse -->
         </div>
-        <!-- /.navbar-static-side --> </nav>
+        <!-- /.navbar-static-side --> </nav>--%>
 
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h1 class="page-header">案例管理</h1>
+                <h1 class="page-header">资产信息管理</h1>
             </div>
             <!-- /.col-lg-12 -->
         </div>
         <!-- /.row -->
         <div class="panel panel-default">
             <div class="panel-body">
-                <form class="form-inline" action="${pageContext.request.contextPath }/customer/list.action"
+                <form class="form-inline" action="${pageContext.request.contextPath }/assertInfol/list.action"
                       method="get">
                     <div class="form-group">
-                        <label for="caseNo">案号</label>
-                        <input type="text" class="form-control" id="caseNo" value="${caseNo }" name="caseNo">
+                        <label for="assert_num">资产编号</label>
+                        <input type="text" class="form-control" id="assert_num" value="${assert_num }" name="assert_num">
                     </div>
-                    <%--<div class="form-group">
-                        <label for="customerFrom">客户来源</label>
-                        <select	class="form-control" id="customerFrom" placeholder="客户来源" name="custSource">
-                            <option value="">--请选择--</option>
-                            <c:forEach items="${fromType}" var="item">
-                                <option value="${item.dict_id}"<c:if test="${item.dict_id == custSource}"> selected</c:if>>${item.dict_item_name }</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="custIndustry">所属行业</label>
-                        <select	class="form-control" id="custIndustry"  name="custIndustry">
-                            <option value="">--请选择--</option>
-                            <c:forEach items="${industryType}" var="item">
-                                <option value="${item.dict_id}"<c:if test="${item.dict_id == custIndustry}"> selected</c:if>>${item.dict_item_name }</option>
-                            </c:forEach>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="custLevel">客户级别</label>
-                        <select	class="form-control" id="custLevel" name="custLevel">
-                            <option value="">--请选择--</option>
-                            <c:forEach items="${levelType}" var="item">
-                                <option value="${item.dict_id}"<c:if test="${item.dict_id == custLevel}"> selected</c:if>>${item.dict_item_name }</option>
-                            </c:forEach>
-                        </select>
-                    </div>--%>
                     <button type="submit" class="btn btn-primary">查询</button>
-
                     <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newCaseDialog" onclick="clearCase()">新建</a>
+                       data-target="#newAssertDialog" onclick="clearAssert()">新建</a>
                 </form>
             </div>
         </div>
@@ -260,31 +240,37 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>案号</th>
-                            <th>承办法官/法官助理</th>
-                            <th>当事人</th>
-                            <th>状态</th>
-                            <th>立案时间</th>
-                            <th>结案时间</th>
+                            <th>序号</th>
+                            <th>资产编号</th>
+                            <th>产证编号</th>
+                            <th>小区名称</th>
+                            <th>栋号</th>
+                            <th>房号或店面号</th>
+                            <th>建筑面积</th>
+                            <th>水表编号</th>
+                            <th>电表编号</th>
+                            <th>房屋状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
                         <c:forEach items="${page.rows}" var="row">
                             <tr>
-                                <td>${row.case_id}</td>
-                                <td>${row.case_no}</td>
-                                <td>${row.case_judgepeople}</td>
-                                <td>${row.case_partypeople}</td>
-                                <td>${row.case_state}</td>
-                                <td><fmt:formatDate value="${row.case_startime}" pattern="yyyyMMdd" /></td>
-                                <td><fmt:formatDate value="${row.case_endtime}" pattern="yyyyMMdd" /></td>
+                                <td>${row.id}</td>
+                                <td>${row.assert_num}</td>
+                                <td>${row.card_num}</td>
+                                <td>${row.community_name}</td>
+                                <td>${row.building_num}</td>
+                                <td>${row.room_number}</td>
+                                <td>${row.floorage}</td>
+                                <td>${row.watermeter_num}</td>
+                                <td>${row.electricmeter_num}</td>
+                                <td>${row.floor_state}</td>
                                 <td>
                                     <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#caseEditDialog" onclick="editCase(${row.case_id})">修改</a>
+                                       data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
                                     <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteCase(${row.case_id})">删除</a>
+                                       onclick="deleteAssert(${row.id})">删除</a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -303,6 +289,7 @@
     <!-- /#page-wrapper -->
 
 </div>
+
 <!-- 客户编辑对话框 -->
 <div class="modal fade" id="caseEditDialog" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel">
@@ -312,57 +299,88 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">更新案例信息</h4>
+                <h4 class="modal-title" id="myModalLabel">更新资产信息</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" id="edit_case_form">
-                    <input type="hidden" id="edit_case_id" name="case_id"/>
+                <form class="form-horizontal" id="edit_assert_form">
+                    <input type="hidden" id="edit_id" name="id"/>
                     <div class="form-group">
-                        <label for="edit_case_no" class="col-sm-2 control-label">案例编号</label>
+                        <label for="edit_assert_num" class="col-sm-2 control-label">资产编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_case_no" placeholder="案例编号" name="case_no">
+                            <input type="text" class="form-control" id="edit_assert_num" placeholder="资产编号" name="assert_num">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="edit_case_judgepeople" class="col-sm-2 control-label">承办法官/法官助理</label>
+                        <label for="edit_card_num" class="col-sm-2 control-label">产证编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_case_judgepeople" placeholder="承办法官/法官助理"
-                                   name="case_judgepeople">
+                            <input type="text" class="form-control" id="edit_card_num" placeholder="产证编号"
+                                   name="card_num">
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="edit_case_partypeople" class="col-sm-2 control-label">当事人</label>
+                        <label for="edit_community_name" class="col-sm-2 control-label">小区名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_case_partypeople" placeholder="当事人"
-                                   name="case_partypeople">
+                            <input type="text" class="form-control" id="edit_community_name" placeholder="小区名称"
+                                   name="community_name">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="edit_case_state" class="col-sm-2 control-label">状态</label>
+                        <label for="edit_building_num" class="col-sm-2 control-label">栋号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_case_state" placeholder="状态"
-                                   name="case_state">
+                            <input type="text" class="form-control" id="edit_building_num" placeholder="栋号"
+                                   name="building_num">
                         </div>
                     </div>
+
                     <div class="form-group">
-                        <label for="edit_case_startime" class="col-sm-2 control-label">立案时间</label>
+                        <label for="edit_room_number" class="col-sm-2 control-label">房号或店面号</label>
                         <div class="col-sm-10">
-                            <input type="datetime" class="form-control" id="edit_case_startime" placeholder="立案时间"
-                                   name="case_startime">
+                            <input type="text" class="form-control" id="edit_room_number" placeholder="房号或店面号"
+                                   name="room_number">
                         </div>
                     </div>
+
+
                     <div class="form-group">
-                        <label for="edit_case_endtime" class="col-sm-2 control-label">结案时间</label>
+                        <label for="edit_floorage" class="col-sm-2 control-label">建筑面积</label>
                         <div class="col-sm-10">
-                            <input type="datetime" class="form-control" id="edit_case_endtime" placeholder="结案时间"
-                                   name="case_endtime">
+                            <input type="text" class="form-control" id="edit_floorage" placeholder="建筑面积"
+                                   name="floorage">
                         </div>
                     </div>
+
+
+                    <div class="form-group">
+                        <label for="edit_watermeter_num" class="col-sm-2 control-label">水表编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_watermeter_num" placeholder="水表编号"
+                                   name="watermeter_num">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="edit_electricmeter_num" class="col-sm-2 control-label">电表编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_electricmeter_num" placeholder="电表编号"
+                                   name="electricmeter_num">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_floor_state" class="col-sm-2 control-label">房屋状态</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_floor_state" placeholder="房屋状态(1、已出租 ，2、空闲，3、非法占用)"
+                                   name="floor_state">
+                        </div>
+                    </div>
+
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" onclick="updateCase()">保存修改</button>
+                <button type="button" class="btn btn-primary" onclick="updateAssert()">保存修改</button>
             </div>
         </div>
     </div>
@@ -370,7 +388,7 @@
 
 
 <!-- 创建客户模态框 -->
-<div class="modal fade" id="newCaseDialog" tabindex="-1" role="dialog"
+<div class="modal fade" id="newAssertDialog" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -378,64 +396,91 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">新建案例</h4>
+                <h4 class="modal-title" id="myModalLabel">新建资产</h4>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" id="new_case_form">
+
+                <form class="form-horizontal" id="new_assert_form">
                     <div class="form-group">
-                        <label for="new_case_no" class="col-sm-2 control-label">
-                            案例编号
+                        <label for="new_assert_num" class="col-sm-2 control-label">
+                            资产编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_case_no" placeholder="案例编号" name="case_no"/>
+                            <input type="text" class="form-control" id="new_assert_num" placeholder="资产编号" name="assert_num"/>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="new_casejudgepeople" class="col-sm-2 control-label">承办法官/法官助理</label>
+                        <label for="new_card_num" class="col-sm-2 control-label">产证编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_casejudgepeople" placeholder="承办法官/法官助理"
-                                   name="case_judgepeople"/>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="new_case_partypeople" class="col-sm-2 control-label">当事人</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_case_partypeople" placeholder="当事人"
-                                   name="case_partypeople"/>
+                            <input type="text" class="form-control" id="new_card_num" placeholder="产证编号"
+                                   name="card_num"/>
                         </div>
                     </div>
 
-
                     <div class="form-group">
-                        <label for="new_case_state" class="col-sm-2 control-label">状态</label>
+                        <label for="new_community_name" class="col-sm-2 control-label">小区名称</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_case_state" placeholder="状态"
-                                   name="case_state"/>
+                            <input type="text" class="form-control" id="new_community_name" placeholder="小区名称"
+                                   name="community_name"/>
                         </div>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="new_case_startime" class="col-sm-2 control-label">开案时间</label>
+                        <label for="new_building_num" class="col-sm-2 control-label">栋号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_case_startime" placeholder="开案时间"
-                                   name="case_startime"/>
+                            <input type="text" class="form-control" id="new_building_num" placeholder="栋号"
+                                   name="building_num"/>
                         </div>
                     </div>
 
 
                     <div class="form-group">
-                        <label for="new_case_endtime" class="col-sm-2 control-label">结案时间</label>
+                        <label for="new_room_number" class="col-sm-2 control-label">房号或店面号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_case_endtime" placeholder="结案时间"
-                                   name="case_endtime"/>
+                            <input type="text" class="form-control" id="new_room_number" placeholder="房号或店面号"
+                                   name="room_number"/>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="new_floorage" class="col-sm-2 control-label">建筑面积</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="new_floorage" placeholder="建筑面积"
+                                   name="floorage"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_watermeter_num" class="col-sm-2 control-label">水表编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="new_watermeter_num" placeholder="水表编号"
+                                   name="watermeter_num"/>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="new_electricmeter_num" class="col-sm-2 control-label">电表编号</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="new_electricmeter_num" placeholder="电表编号"
+                                   name="electricmeter_num"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_floor_state" class="col-sm-2 control-label">房屋状态</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="new_floor_state" placeholder="房屋状态(1、已出租 ，2、空闲，3、非法占用)"
+                                   name="floor_state"/>
                         </div>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                <button type="button" class="btn btn-primary" onclick="createCase()">创建案例</button>
+                <button type="button" class="btn btn-primary" onclick="createAssert()">创建资产</button>
             </div>
         </div>
     </div>
@@ -459,59 +504,66 @@
 <script src="<%=basePath%>js/sb-admin-2.js"></script>
 
 <script type="text/javascript">
-    function editCase(id) {
+
+
+    function editAssert(id) {
         $.ajax({
             type: "get",
-            url: "<%=basePath%>case/edit.action",
+            url: "<%=basePath%>assertInfol/edit.action",
             data: {"id": id},
             success: function (data) {
-                $("#edit_case_id").val(data.case_id);
-                $("#edit_case_no").val(data.case_no);
-                $("#edit_case_judgepeople").val(data.case_judgepeople)
-                $("#edit_case_partypeople").val(data.case_partypeople)
-                $("#edit_case_state").val(data.case_state)
-                alert(data.case_startime);
-                $("#edit_case_startime").val(new Date(data.case_startime).Format('yyyyMMdd'));
-                $("#edit_case_endtime").val(new Date(data.case_endtime).Format('yyyyMMdd'));
+                $("#edit_id").val(data.id);
+                $("#edit_assert_num").val(data.assert_num);
+                $("#edit_card_num").val(data.card_num);
+                $("#edit_community_name").val(data.community_name);
+                $("#edit_building_num").val(data.building_num);
+                $("#edit_room_number").val(data.room_number);
+                $("#edit_floorage").val(data.floorage);
+                $("#edit_watermeter_num").val(data.watermeter_num);
+                $("#edit_electricmeter_num").val(data.electricmeter_num);
+                $("#edit_floor_state").val(data.floor_state);
             }
         });
     }
 
-    function updateCase() {
-        $.post("<%=basePath%>case/update.action", $("#edit_case_form").serialize(), function (data) {
-            alert("案例信息更新成功！");
+    function updateAssert() {
+        $.post("<%=basePath%>assertInfol/update.action", $("#edit_assert_form").serialize(), function (data) {
+            alert("资产信息更新成功！");
             window.location.reload();
         });
     }
 
-    function deleteCase(id) {
-        if (confirm('确实要删除该案例吗?')) {
-            $.post("<%=basePath%>case/delete.action", {"id": id}, function (data) {
-                alert("案例删除更新成功！");
+    function deleteAssert(id) {
+        if (confirm('确实要删除该资产吗?')) {
+            $.post("<%=basePath%>assertInfol/delete.action", {"id": id}, function (data) {
+                alert("资产删除更新成功！");
                 window.location.reload();
             });
         }
     }
 
-    function clearCase() {
-        $("#new_case_no").val("");
-        $("#new_casejudgepeople").val("");
-        $("#new_edit_case_partypeople").val("")
-        $("#new_case_state").val("")
-        $("#new_case_startime").val("");
-        $("#new_case_endtime").val("");
+    function clearAssert() {
+        $("#new_assert_num").val("");
+        $("#new_card_num").val("");
+        $("#new_community_name").val("");
+        $("#new_building_num").val("");
+        $("#new_room_number").val("");
+        $("#new_floorage").val("");
+        $("#new_watermeter_num").val("");
+        $("#new_electricmeter_num").val("");
+        $("#new_floor_state").val("");
     }
 
 
     // 创建客户
-    function createCase() {
-        $.post("<%=basePath%>case/create.action",
-            $("#new_case_form").serialize(), function (data) {
+    function createAssert() {
+        $.post("<%=basePath%>assertInfol/create.action",
+            $("#new_assert_form").serialize(), function (data) {
                 if (data == "OK") {
-                    alert("案例创建成功！");
+                    alert("资产信息创建成功！");
                     window.location.reload();
                 } else {
-                    alert("案例创建失败！");
+                    alert("资产信息创建失败！");
                     window.location.reload();
                 }
             });

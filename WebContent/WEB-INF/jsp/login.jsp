@@ -1,71 +1,45 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
-<!DOCTYPE HTML>
+         pageEncoding="UTF-8"%>
+<!DOCTYPE html>
 <html>
 <head>
-<title>登录页面</title>
-<meta http-equiv=Content-Type content="text/html; charset=utf-8">
-<link href="${pageContext.request.contextPath}/css/style.css"
-	   type=text/css rel=stylesheet>
-<link href="${pageContext.request.contextPath}/css/boot-crm.css"
-	   type=text/css rel=stylesheet>
-<script src=
-       "${pageContext.request.contextPath}/js/jquery-1.11.3.min.js">
-</script>
-<meta content="MSHTML 6.00.2600.0" name=GENERATOR>
-<script>
-// 判断是登录账号和密码是否为空
-function check(){
-    var usercode = $("#usercode").val();
-    var password = $("#password").val();
-    if(usercode=="" || password==""){
-    	$("#message").text("账号或密码不能为空！");
-        return false;
-    }  
-    return true;
-}
-</script>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+<meta http-equiv="Pragma" content="no-cache"> 
+<meta http-equiv="Cache-Control" content="no-cache"> 
+<meta http-equiv="Expires" content="0"> 
+<title>后台管理</title>
+<link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css" />
+    <script>
+        // 判断是登录账号和密码是否为空
+        function check(){
+            var usercode = $("#usercode").val();
+            var password = $("#password").val();
+            if(usercode=="" || password==""){
+                $("#message").text("账号或密码不能为空！");
+                return false;
+            }
+            return true;
+        }
+    </script>
+
 </head>
-<body leftMargin=0 topMargin=0 marginwidth="0" marginheight="0"
-	background="${pageContext.request.contextPath}/images/bg.jpeg">
-<div ALIGN="center">
-<table border="0" width="1140px" cellspacing="0" cellpadding="0"
-                                                           id="table1">
-	<tr>
-		<td height="93"></td>
-		<td></td>
-	</tr>
-	<tr>
-   <td
-		width="740" height="412">
-   </td>
-   <td class="login_msg" width="400" align="center">
-	 <!-- margin:0px auto; 控制当前标签居中 -->
-	 <fieldset style="width: auto; margin: 0px auto;">
-		  <legend>
-		     <font style="font-size:15px" face="宋体">
-		          欢迎使用BOOT客户管理系统
-		     </font>
-		  </legend> 
-		<font color="red">
-			 <%-- 提示信息--%>
-			 <span id="message">${msg}</span>
-		</font>
-		<%-- 提交后的位置：/WEB-INF/jsp/customer.jsp--%>
-		<form action="${pageContext.request.contextPath }/login.action" 
-			                       method="post" onsubmit="return check()">
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br /><br />
-          账&nbsp;号：<input id="usercode" type="text" name="usercode" />
-          <br /><br />
-          密&nbsp;码：<input id="password" type="password" name="password" />
-          <br /><br />
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-          <center><input type="submit" value="登录" /></center>
-		 </form>
-	 </fieldset>
-	</td>
-	</tr>
-</table>
+
+<body>
+<div class="login_box">
+      <div class="login_l_img"><img src="${pageContext.request.contextPath}/images/login-img.png" /></div>
+      <div class="login">
+          <div class="login_logo"><a href="#"><img src="${pageContext.request.contextPath}/images/login_logo.png" /></a></div>
+          <div class="login_name">
+               <p>后台管理系统</p>
+          </div>
+          <form method="post" action="${pageContext.request.contextPath}/login.action"  onsubmit="return check()">
+              <input name="usercode" id="usercode"  type="text"  value="用户名" onfocus="this.value=''" onblur="if(this.value==''){this.value='用户名'}">
+              <span id="password_text" onclick="this.style.display='none';document.getElementById('password').style.display='block';document.getElementById('password').focus().select();" >密码</span>
+              <input name="password" type="password" id="password" style="display:none;" onblur="if(this.value==''){document.getElementById('password_text').style.display='block';this.style.display='none'};"/>
+              <input value="登录" style="width:100%;" type="submit">
+          </form>
+      </div>
+      <div class="copyright"  style="margin-bottom: 100px">赣州开发区建设投资(集团)有限公司 版权所有©2019-2021 技术支持电话：000-00000000</div>
 </div>
 </body>
 </html>
