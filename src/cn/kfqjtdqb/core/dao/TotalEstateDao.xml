@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.TotalEstateDao">
+
+    <sql id="selectTotalEstateListWhere">
+        <where>
+            <if test="property_leasing_num != null">
+                property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+
+            <if test="community_name != null">
+                and community_name like "%" #{community_name}"%"
+            </if>
+
+            <if test="year_months != null">
+                and year_months = #{year_months}
+            </if>
+
+        </where>
+    </sql>
+
+
+    <select id="selectTotalEstateList" parameterType="totalEstate" resultType="totalEstate">
+        SELECT
+        id,
+        property_leasing_num,
+        reality_estate,
+        estate,
+        year_months,
+        deadline,
+        community_name,
+        tenant,
+        building_num,
+        rentalLocation
+        FROM
+        t_total_estate
+        <include refid="selectTotalEstateListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+
+    <sql id="selectTotalEstateCommunityListHaving">
+
+        <if test="community_name != null">
+            having community_name like "%" #{community_name}"%"
+        </if>
+
+        <if test="year_months != null and community_name != null">
+            and year_months = #{year_months}
+        </if>
+
+        <if test="year_months != null and community_name == null">
+            having year_months = #{year_months}
+        </if>
+    </sql>
+
+
+    <sql id="selectTotalEstateCommunityListByYearHaving">
+
+        <if test="community_name != null">
+            having community_name like "%" #{community_name}"%"
+        </if>
+
+        <if test="year_months != null and community_name != null">
+            and year_months like "%" #{year_months} "%"
+        </if>
+
+        <if test="year_months != null and community_name == null">
+            having year_months like "%" #{year_months} "%"
+        </if>
+    </sql>
+
+    <select id="selectTotalEstateCommunityList" parameterType="totalEstate" resultType="totalEstate">
+        SELECT sum(reality_estate) as reality_estate , sum(estate) as estate , year_months,community_name
+        FROM
+        t_total_estate
+        group by community_name ,year_months
+        <include refid="selectTotalEstateCommunityListHaving"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectTotalEstateCommunityByYearList" parameterType="totalEstate" resultType="totalEstate">
+        SELECT sum(reality_estate) as reality_estate , sum(estate) as estate , LEFT(year_months,4) as
+        year_months,community_name
+        FROM
+        t_total_estate
+        group by community_name ,LEFT(year_months,4)
+        <include refid="selectTotalEstateCommunityListByYearHaving"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectTotalEstateCommunityListByYearCount" parameterType="totalEstate" resultType="int">
+        select count(*)
+        from (SELECT sum(reality_estate) as reality_estate , sum(estate) as estate , LEFT(year_months,4) as
+        year_months,community_name
+        FROM
+        t_total_estate
+        group by community_name ,LEFT(year_months,4)
+        <include refid="selectTotalEstateCommunityListByYearHaving"/>) bb;
+    </select>
+
+
+    <select id="selectTotalEstateCommunityListCount" parameterType="totalEstate" resultType="int">
+        select count(*)
+        from (SELECT sum(reality_estate) as reality_estate , sum(estate) as estate , year_months,community_name
+        FROM
+        t_total_estate
+        group by community_name ,year_months
+        <include refid="selectTotalEstateCommunityListHaving"/>) aa;
+    </select>
+
+
+    <select id="selectTotalEstateListCount" parameterType="totalEstate" resultType="int">
+        select count(*)
+        from t_total_estate
+        <include refid="selectTotalEstateListWhere"/>
+    </select>
+
+    <select id="getTotalEstateById" parameterType="long" resultType="totalEstate">
+		select * from t_total_estate where id= #{id}
+	</select>
+
+    <select id="getTotalEstateByLeasingNum" parameterType="String" resultType="totalEstate">
+		select * from t_total_estate where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <sql id="updateTotalEstateWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateTotalEstate" parameterType="totalEstate">
+        update t_total_estate
+        <set>
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+
+            <if test="reality_estate!=null">
+                reality_estate=#{reality_estate},
+            </if>
+
+            <if test="estate!=null">
+                estate=#{estate},
+            </if>
+
+            <if test="year_months!=null">
+                year_months=#{year_months},
+            </if>
+            <if test="deadline!=null">
+                deadline=#{deadline},
+            </if>
+            <if test="community_name!=null">
+                community_name=#{community_name},
+            </if>
+            <if test="tenant!=null">
+                tenant=#{tenant},
+            </if>
+            <if test="building_num!=null">
+                building_num=#{building_num},
+            </if>
+            <if test="rentalLocation!=null">
+                rentalLocation=#{rentalLocation},
+            </if>
+
+        </set>
+
+
+        <include refid="updateTotalEstateWhere"/>
+    </update>
+
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="reality_estate!=null">
+                reality_estate,
+            </if>
+            <if test="estate!=null">
+                estate,
+            </if>
+            <if test="year_months!=null">
+                year_months,
+            </if>
+            <if test="deadline!=null">
+                deadline,
+            </if>
+            <if test="community_name!=null">
+                community_name,
+            </if>
+
+            <if test="tenant!=null">
+                tenant,
+            </if>
+            <if test="building_num!=null">
+                building_num,
+            </if>
+            <if test="rentalLocation!=null">
+                rentalLocation,
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="reality_estate!=null">
+                #{reality_estate},
+            </if>
+            <if test="estate!=null">
+                #{estate},
+            </if>
+            <if test="year_months!=null">
+                #{year_months},
+            </if>
+            <if test="deadline!=null">
+                #{deadline},
+            </if>
+            <if test="community_name!=null">
+                #{community_name},
+            </if>
+            <if test="tenant!=null">
+              #{tenant},
+            </if>
+            <if test="building_num!=null">
+             #{building_num},
+            </if>
+            <if test="rentalLocation!=null">
+               #{rentalLocation},
+            </if>
+
+        </trim>
+    </sql>
+
+    <insert id="addTotalEstate" parameterType="totalEstate">
+        insert into t_total_estate(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteTotalEstate" parameterType="long">
+		delete from t_total_estate where id=#{id}
+	</delete>
+
+
+    <delete id="deleteTotalEstateByPropertyLeasingNum" parameterType="String">
+		delete from t_total_estate where property_leasing_num=#{property_leasing_num}
+	</delete>
+
+</mapper>

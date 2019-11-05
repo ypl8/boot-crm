@@ -1,0 +1,171 @@
+@charset "utf-8";
+/* CSS Document */
+/*閲嶇疆CSS*/
+body,nav,dl,dt,dd,ul,li,ol,p,h1,h2,h3,h4,h5,h6,input,button,textarea{margin:0;padding:0;-webkit-margin-start:0}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block; margin:0; padding:0} 
+h1,h2,h3,h4,h5,h6,address,cite,dfn,var,i,em,del,caption,th,td{font-size:100%; font-weight:normal; font-style:normal;}
+ul,li{ list-style:none;}
+:focus{outline:0;}
+button,input,select,textarea{font-size:inherit; font-weight:inherit; margin:0; vertical-align:middle;outline:0;}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance: none !important;margin: 0; }
+input[type="number"]{-moz-appearance:textfield;}
+button,input,select,textarea{font-size:inherit; font-family:inherit; font-weight:inherit; margin:0; vertical-align:middle;outline:0;}
+textarea{resize:none}
+button,input[type="button"],input[type="reset"],input[type="submit"]{cursor:pointer;-webkit-appearance:button;-moz-appearance:button}
+input:focus:-moz-placeholder,input:focus::-webkit-input-placeholder{color:transparent;}
+button::-moz-focus-inner,input::-moz-focus-inner{padding:0;border:0}
+table{border-collapse:collapse;border-spacing:0;}
+a img,fieldset{border:0;}
+img{vertical-align:middle;border:0;-ms-interpolation-mode:bicubic;-webkit-tap-highlight-color:rgba(0,0,0,0)}
+body{color:#676767;position:relative;font:14px/24px "寰蒋闆呴粦",helvetica,arial,Tahoma; position:relative;}
+a{ text-decoration:none; color:#676767; -webkit-transition:.3s ease all; transition:.3s ease all;}
+a:hover,.org{ color:#ed5f3a;}
+.clearfix:after{display:block;clear:both;content:"";visibility:hidden;height:0}
+.clearfix{zoom:1}
+.clear{ display:block; clear:left; overflow:hidden; height:0; content:"";}
+.fr{ float:right;}
+/*end 閲嶇疆CSS*/
+
+/*澶撮儴*/
+.Wrap{ min-width:1000px;   margin:0 auto; background:#ecf0f5;   width:100%;}
+.Content{ width:100%;  height:100%}
+#ContentLeft{ float:left; width:210px; background:#2f384f; height:100%}
+#ContentRight{ padding:0px 0px 0px 210px; height:100% }
+.logo{ height:50px; text-align:center;}
+.logo img{ display:inline-block; margin:1px 0 0;}
+.logo_t{ font-size:15px; line-height:48px; font-style:italic; color:#7f98b6; letter-spacing:3px;}
+.icon{ display:inline-block; width:25px; height:25px; background:url(../images/sprite.png); background-repeat:no-repeat; content:' '; background-position:-0px -133px; left:34px; top:50%; margin-top:-12px;}
+.menu li{ line-height:60px; border-top:1px solid #333e59;}
+.menu li a{ color:#7f98b6; display:block; padding-left:43px; position:relative;}
+.menu li a:hover,.menu li.cur a{ background:#2a3146; color:#fff;}
+.menu li li{ height:48px; line-height:48px;}
+.menu li li a{ color:#fff;}
+.menu li li a:hover,.menu li li.cur a{ background:#2f384f; color:#ed5f3a;}
+.menu li ul{ display:none;}
+.menu>ul>li.m1>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -2px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m2>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -28px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m3>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -58px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m4>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -86px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m5>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -111px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m6>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -137px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m7>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -164px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m8>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -205px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li.m9>a:before{ width:25px; height:25px; background:url(../images/sprite.png) no-repeat 0 -235px; content:' '; position:absolute; left:34px; top:50%; margin-top:-12px;}
+.menu>ul>li>a:hover:before,.menu>ul>li.cur>a:before{ background-position-x:-25px !important;}
+.menu>ul>li>a:after{ width:25px; height:15px; background:url(../images/sprite.png) no-repeat 0 -188px; content:' '; position:absolute; right:7px; top:50%; margin-top:-7px;}
+.menu>ul>li>a:hover:after,.menu>ul>li.cur>a:after{ background-position:-25px -188px !important;}
+
+.combtn{ display:inline-block; width:100px; height:30px; line-height:30px; background:#2a3146; color:#fff; text-align:center;}
+.combtn:hover{ color:#fff; font-weight:bold; text-decoration:underline;}
+.orgbtn{ background:#ed5f3a}
+.pt{ display:inline-block;}
+.pt input{ width:162px; padding:0 5px; height:26px; line-height:26px; background:#fff; border:1px solid #dfdfdf;}
+
+.UserTop{ color:#fff; height:50px; background:#2a3146; border-bottom:1px solid #6b707e; text-align:right; margin:0 0px; font-size:12px;}
+.UserTop .UserCon{ float:right; padding:8px 20px 0 0; line-height:40px;}
+.UserTop .UserCon .icon_admin{ height:26px;  top:6px; margin-right:5px;}
+.UserTop .UserCon .out{ display:inline-block; margin-left:10px;}
+.UserTop .UserCon .out a{ color:#fff;}.UserTop .UserCon .out a:hover{ color:#ed5f3a;}
+.SiderNav{ line-height:49px; background:#fff; border-bottom:1px solid #f05228; overflow:auto; margin:0 -30px;}
+.SiderNav li{ float:left; min-width:110px; padding:0 20px; text-align:center}
+.SiderNav li a{ color:#a8aebf; display:block; line-height:45px; border-bottom:4px solid #fff;}
+.SiderNav li a:hover,.SiderNav li.cur a{ color:#2a3146; border-bottom:4px solid #f05228;}
+.box{ float:left; width:100%; margin-left:20px;}
+.SearchList{ width:100%; padding:20px 0 10px;}
+.SearchList ul{ overflow:visible;}
+.SearchList li.vote{ clear:left; float:right;}
+.SearchList>ul>li{ float:left; padding-left:12px; height:28px; margin-bottom:12px;}
+.SearchList li span{ float:left;}
+.SearchList li .name{ color:#2f384f; height:26px; line-height:26px; padding:0 5px 0 0; position:relative; top:2px;}
+.SearchList li .fg{ margin:0 6px;}
+.SearchList li .date input{ width:87px; text-align:center;}
+.SearchList li.sbtn { position:relative; top:0;}
+.SearchList li .selectul { width:174px;}
+
+.com_table td,.com_table th{ line-height:20px; padding:8px 3px 8px 14px; text-align:center;}
+.com_table th{ color:#fff !important; background:#ed5f3a; font-weight:normal;}
+.com_table td{ font-size:12px; color:#676767; border-bottom:1px solid #ecf0f5; background:#f8fafe;}
+.com_table td a{ display:inline-block; margin:0 10px;}
+.blue{ color:#48526e;}
+.com_table tr:nth-child(2n) td{ background:#dce2ea;}
+.tab_bot{ margin-top:20px; position:relative; height:30px;}
+.tab_bot a.combtn{ margin-right:10px;}
+/* .tab_bot .page{ position:absolute; right:0; top:2px;}
+.page .show_e{ margin-right:12px; display:inline-block;}
+.page span,.page a{ background:#dce2ea; color:#48526e; display:inline-block; height:27px; line-height:27px; padding:0 8px; border-right:1px solid #d6d6d9; text-align:center;}
+.page a{ color:#48526e; min-width:16px;}
+.page a:hover,.page a.cur{ background:#ed5f3a; color:#fff;}
+.page a.no,.page a.no:hover{ color:#909092; cursor:default; background:#dce2ea;} */
+.tab_bot .page_and_btn{ position:absolute; right:0; top:2px;}
+.page_and_btn ul { margin:0px;list-style:none;float:right;width:auto;height:100%;overflow:hidden;padding:0px;}
+.page_and_btn ul li { float:left; border:1px solid #CCCCCC; height:20px; line-height:20px; margin:0px 2px;}
+.page_and_btn ul li a{color:#333; text-decoration:none;}
+.page_and_btn ul li a, .pageinfo { display:block; padding:0px 6px; background:#FAFBFD;}
+.page_and_btn  { color:#555;}
+.curent { background:#ccced4; display:block; padding:0px 6px; font-weight:bold;}
+.page_and_btn div{float:left;}
+
+#HBox{ width:440px; height:400px; background:#fff; position:fixed; left:50%; top:50%; margin:-200px 0 0 -220px; border:1px solid #dbdbdb; display:none; z-index:9999999}
+.user_addTit{ text-align:center; font-size:18px; height:61px; line-height:61px; color:#2a3146; border-bottom:1px solid #dbdbdb;}
+.close{ width:20px; height:20px; position:absolute; top:20px; right:26px; background:url(../images/close.png) no-repeat; cursor:pointer; -webkit-transition:.3s all ease; -moz-transition:.3s all ease; transition:.3s all ease;}
+.close:hover{ -webkit-transform:rotate(180deg); -moz-transform:rotate(180deg); transform:rotate(180deg);}
+.formlist{ padding:30px 0; width:320px; margin:0 auto;}
+.formlist dl{ color:#2a3146; line-height:28px; padding:0 0 9px 104px; position:relative;}
+.formlist dt{ width:100px; text-align:right; position:absolute; left:0}
+.formlist dd .selectul{width:174px;}
+.formlist .btn a{ display:block; width:100%; padding:0; margin:30px 0;}
+
+/*鐧诲綍*/
+.Login_Wrap{ background:#fff; margin:0 auto;}
+.login_banner{ height:247px; min-height:100px; width:100%; position:relative; background:url(../images/login_pic.jpg) no-repeat center top;}
+.login_text{ position:absolute; text-align:center; width:100%; height:100%; z-index:10; color:#fff; font-style:italic; }
+.login_text .welcome{ font-size:66px; line-height:72px; margin:40px 0 26px;}
+.login_text .title{ border:1px solid #fff; display:inline-block; padding:10px 30px; opacity:0.9; -khtml-opacity:0.9; -moz-opacity:0.9; filter:alpha(opacity=90);}
+.login_text .title .p1{ font-size:22px; line-height:22px; margin-bottom:10px;}
+.login_text .title .p2{ font:6px/14px normal 'arial' !important;}
+.loginBox{ width:320px; margin:0 auto; color:#999;}
+.loginBox .logo{ height:auto;}
+.loginBox .logo img{ margin:40px 0 10px;}
+.login_nav{ text-align:center;}
+.login_nav p.cur{ background:#fff; color:#ed5f3a}
+.login_nav p{ cursor:pointer; display:inline-block; line-height:48px; height:48px; width:134px; text-align:center;}
+.loginCon{ height:282px; background:#fff;}
+.login_formlist{ padding:15px 10px 0;}
+.login_formlist li{ margin:0 0 11px; position:relative;}
+.login_formlist li .con input{ background:#fff; border:1px solid #dfdfdf; height:24px; width:100%;}
+.login_formlist li .con input:focus{ border-color:#ed5f3a; box-shadow:0 0 4px #ed5f3a; -webkit-box-shadow:0 0 4px #ed5f3a; -moz-box-shadow:0 0 4px #ed5f3a;}
+.login_formlist li .i_1{ margin:0 31px 0 48px; position:relative;}
+.login_formlist li .i_1 input{ padding:7px 30px 7px 47px; margin:0 -48px;}
+.login_formlist li .i_2{ margin:0 175px 0 0;}
+.login_formlist li .captcha{ position:absolute; top:0; right:45px}
+.login_formlist li .i_2 input{ padding:7px 15px;}
+.icon_login{ display:inline-block; width:32px; height:25px; background:url(../images/login_icon.png) no-repeat;}
+.login_formlist .icon_login{ position:absolute; top:50%; margin-top:-13px;}
+.login_formlist .icon_inputclose{ background-position:0 -50px; right:0px; cursor:pointer;}
+.login_formlist .icon_user{ background-position:0 0;}
+.login_formlist .icon_password{ background-position:0 -25px;}
+.login_formlist .icon_phone{ background-position:8px -100px;}
+.login_formlist .icon_captcha{ background-position:0 -75px; right:12px; cursor:pointer;}
+.login_formlist .icon_user,.login_formlist .icon_password{ left:8px}
+.login_btn a.combtn{ display:block; width:auto; margin:20px 0 8px;}
+.login_btn p{ text-align:right;}.login_btn p a{ display:inline-block; color:#ed5f3a; font-size:11px;}
+.erweima_login{ text-align:center; color:#2a3146; width:280px; margin:0 auto; padding:30px 0;}
+.erweima_login p{ margin-top:13px;}
+
+.details_table { margin:10px -20px 0;}
+.details_table td{ padding:6px 8px 6px 14px; line-height:12px;}
+.details_table td:first-child{ color:#2a3146; text-align:right; border-right:1px solid #e9e9e9; min-width:60px;}
+.details_table td fieldset{ text-align:left; border:#06c dashed 0px; }
+.details_table td fieldset legend{ background-color:#ed5f3a; height:22px; width:450px; padding-top:7px; padding-left:5px; border-radius: 5px; }
+.details_table td fieldset table{ text-align:top;}
+.label.error{color:#FF0000}
+.btn1{
+	height: 34px;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0px 30px;
+    border-width: initial;	
+    border-style: none;
+    border-color: initial;
+    border-image: initial;
+}

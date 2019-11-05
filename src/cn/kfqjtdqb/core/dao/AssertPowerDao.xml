@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.AssertPowerDao">
+
+    <sql id="selectAssertPowerListWhere">
+        <where>
+            <if test="property_leasing_num != null">
+                property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+            <if test="assert_num != null">
+              and  assert_num like "%" #{assert_num}"%"
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAssertPowerList" parameterType="assertPower" resultType="assertPower">
+        SELECT
+        id,
+        property_leasing_num,
+        assert_num,
+        power_num,
+        powermeter_num,
+        deadline
+        FROM
+        t_assert_power
+        <include refid="selectAssertPowerListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectAssertPowerListCount" parameterType="assertPower" resultType="int">
+        select count(*)
+        from t_assert_Power
+        <include refid="selectAssertPowerListWhere"/>
+    </select>
+
+    <select id="getAssertPowerById" parameterType="long" resultType="assertPower">
+		select * from t_assert_Power where id= #{id}
+	</select>
+
+
+    <!--<select id="getAssertPowerByLeasingNum" parameterType="String" resultType="AssertPower">
+		select * from t_assert_estate where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <select id="getAssertPowerCountByLeasingNum" parameterType="String" resultType="Double" >
+		select sum(reality_estate) from t_assert_estate   where property_leasing_num= #{property_leasing_num}
+	</select>-->
+
+    <sql id="updateAssertPowerWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateAssertPower" parameterType="AssertPower">
+        update t_assert_power
+        <set>
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+
+            <if test="assert_num!=null">
+                assert_num=#{assert_num},
+            </if>
+
+            <if test="power_num!=null">
+                power_num=#{power_num},
+            </if>
+
+            <if test="powermeter_num!=null">
+                powermeter_num=#{powermeter_num},
+            </if>
+            <if test="deadline!=null">
+                deadline=#{deadline},
+            </if>
+
+
+        </set>
+        where id=#{id};
+
+    </update>
+
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="assert_num!=null">
+                assert_num,
+            </if>
+            <if test="power_num!=null">
+                power_num,
+            </if>
+            <if test="powermeter_num!=null">
+                powermeter_num,
+            </if>
+            <if test="deadline!=null">
+                deadline,
+            </if>
+
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="assert_num!=null">
+                #{assert_num},
+            </if>
+            <if test="power_num!=null">
+                #{power_num},
+            </if>
+            <if test="powermeter_num!=null">
+                #{powermeter_num},
+            </if>
+            <if test="deadline!=null">
+                #{deadline},
+            </if>
+
+        </trim>
+    </sql>
+
+    <insert id="addAssertPower" parameterType="AssertPower">
+        insert into t_assert_power(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteAssertPower" parameterType="long">
+		delete from t_assert_power where id=#{id}
+	</delete>
+
+
+</mapper>

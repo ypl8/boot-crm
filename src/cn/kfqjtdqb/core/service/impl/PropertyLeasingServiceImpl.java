@@ -2,33 +2,62 @@ package cn.kfqjtdqb.core.service.impl;
 
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.AssertInfol;
+import cn.kfqjtdqb.core.bean.AssertLeasing;
 import cn.kfqjtdqb.core.bean.PropertyLeasing;
-import cn.kfqjtdqb.core.dao.AssertInfolDao;
-import cn.kfqjtdqb.core.dao.PropertyLeasingDao;
+import cn.kfqjtdqb.core.bean.TotalRental;
+import cn.kfqjtdqb.core.dao.*;
+import cn.kfqjtdqb.core.service.AssertEstateService;
 import cn.kfqjtdqb.core.service.PropertyLeasingService;
+import cn.kfqjtdqb.core.utils.DateUtils;
+import cn.kfqjtdqb.core.utils.RentUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-@Service("propertyLeasingServiceImpl")
+@Service("propertyLeasingService")
 @Transactional
-public class PropertyLeasingServiceImpl  implements PropertyLeasingService {
+public class PropertyLeasingServiceImpl implements PropertyLeasingService {
 
     @Autowired
     private PropertyLeasingDao propertyLeasingDao;
 
     @Override
-    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num) {
+    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num) {
         PropertyLeasing propertyLeasing = new PropertyLeasing();
-        //判断客户名称(公司名称)
-        if(StringUtils.isNotBlank(property_leasing_num)){
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
             propertyLeasing.setProperty_leasing_num(property_leasing_num);
         }
+
+        if (StringUtils.isNotBlank(collect_rent_way)) {
+            propertyLeasing.setCollect_rent_way(collect_rent_way);
+        }
+
+        if (StringUtils.isNotBlank(collect_rate_way)) {
+            propertyLeasing.setCollect_rate_way(collect_rate_way);
+        }
+
+        if (StringUtils.isNotBlank(collect_rate_way)) {
+            propertyLeasing.setCollect_rate_way(collect_rate_way);
+        }
+
+        if (StringUtils.isNotBlank(property_leasing_state)) {
+            propertyLeasing.setProperty_leasing_state(property_leasing_state);
+        }
+
+        if (StringUtils.isNotBlank(community_name)) {
+            propertyLeasing.setCommunity_name(community_name);
+        }
+        if (StringUtils.isNotBlank(assert_num)) {
+            propertyLeasing.setAssert_num(assert_num);
+        }
         //当前页
-        propertyLeasing.setStart((page-1) * rows) ;
+        propertyLeasing.setStart((page - 1) * rows);
         //每页数
         propertyLeasing.setRows(rows);
         //查询客户列表
@@ -56,14 +85,101 @@ public class PropertyLeasingServiceImpl  implements PropertyLeasingService {
 
     @Override
     public void deletePropertyLeasing(Long id) {
+
         propertyLeasingDao.deletePropertyLeasing(id);
     }
 
     @Override
     public int addPropertyLeasing(PropertyLeasing propertyLeasing) {
-        return propertyLeasingDao.addPropertyLeasing(propertyLeasing);
+        int row = propertyLeasingDao.addPropertyLeasing(propertyLeasing);
+        //创建合同之前进行操作
+        return row;
     }
 
+    @Override
+    public int addAssertLeasing(AssertLeasing assertLeasing) {
+        return propertyLeasingDao.addAssertLeasing(assertLeasing);
+    }
+
+    @Override
+    public PropertyLeasing findPropertyLeasingWithAssert(Long id) {
+        return propertyLeasingDao.findPropertyLeasingWithAssert(id);
+    }
+
+    @Override
+    public Integer selectAssertLeasingListCount(AssertLeasing assertLeasing) {
+        return propertyLeasingDao.selectAssertLeasingListCount(assertLeasing);
+    }
+
+    @Override
+    public int updateAssertLeasing(AssertLeasing assertLeasing) {
+        return propertyLeasingDao.updateAssertLeasing(assertLeasing);
+    }
+
+    @Override
+    public AssertLeasing selectAssertLeasingByAssertNum(AssertLeasing assertLeasing) {
+        return propertyLeasingDao.selectAssertLeasingByAssertNum(assertLeasing);
+    }
+
+    @Override
+    public List<AssertLeasing> selectAssertLeasingByPropertyLeasingNum(String property_leasing_num) {
+        return propertyLeasingDao.selectAssertLeasingByPropertyLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public PropertyLeasing findPropertyLeasingByNum(String property_leasing_num) {
+        return propertyLeasingDao.findPropertyLeasingByLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public Page<PropertyLeasing> findPropertyLeasingByStateList(Integer page, Integer rows, String depositState, String rentalState, String estateState, String waterState, String powerState, String community_name) {
+        PropertyLeasing propertyLeasing = new PropertyLeasing();
+
+        if (StringUtils.isNotBlank(community_name)) {
+            propertyLeasing.setCommunity_name(community_name);
+        }
+
+        if (StringUtils.isNotBlank(depositState)) {
+            propertyLeasing.setDepositState(depositState);
+        }
+
+        if (StringUtils.isNotBlank(rentalState)) {
+            propertyLeasing.setRentalState(rentalState);
+        }
+
+        if (StringUtils.isNotBlank(estateState)) {
+            propertyLeasing.setEstateState(estateState);
+        }
+
+        if (StringUtils.isNotBlank(waterState)) {
+            propertyLeasing.setWaterState(waterState);
+        }
+
+        if (StringUtils.isNotBlank(powerState)) {
+            propertyLeasing.setPowerState(powerState);
+        }
+
+        if (StringUtils.isNotBlank(community_name)) {
+            propertyLeasing.setCommunity_name(community_name);
+        }
+
+        //当前页
+        propertyLeasing.setStart((page - 1) * rows);
+        //每页数
+        propertyLeasing.setRows(rows);
+        //查询客户列表
+        List<PropertyLeasing> propertyLeasings = propertyLeasingDao.selectPropertyLeasingList(propertyLeasing);
+        //查询客户列表总记录数
+        Integer count = propertyLeasingDao.selectPropertyLeasingListCount(propertyLeasing);
+        //创建Page返回对象
+        Page<PropertyLeasing> result = new Page<>();
+        result.setPage(page);
+        result.setRows(propertyLeasings);
+        result.setSize(rows);
+        result.setTotal(count);
+        return result;
+
+    }
 
 
 }

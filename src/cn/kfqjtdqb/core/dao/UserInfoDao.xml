@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.UserInfoDao">
+
+    <sql id="selectUserInfoListWhere">
+        <where>
+            <if test="userName != null">
+                userName like "%"#{userName}"%"
+            </if>
+
+            <if test="status != null">
+                and status=#{status}
+            </if>
+
+            <if test="password != null">
+                and password=#{password}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectUserInfoList" parameterType="userInfo" resultType="userInfo">
+        SELECT
+        id,
+        email,
+        userName,
+        password,
+        phoneNum,
+        status
+        FROM
+        users
+
+        <include refid="selectUserInfoListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectUserInfoListCount" parameterType="userInfo" resultType="int">
+        select count(*)
+        from users
+        <include refid="selectUserInfoListWhere"/>
+    </select>
+
+    <select id="getUserInfoById" parameterType="long" resultType="userInfo">
+		select * from users  where id = #{id}
+	</select>
+
+
+    <resultMap type="userInfo" id="UserInfoByRoleResult">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="userName" column="userName"/>
+        <result property="password" column="password"/>
+        <result property="phoneNum" column="phoneNum"/>
+        <result property="status" column="status"/>
+        <collection property="roles" column="id" ofType="Role"
+                    select="cn.kfqjtdqb.core.dao.PropertyLeasingDao.findPropertyLeasingByNum">
+        </collection>
+    </resultMap>
+
+    <select id="findUserByUserName" parameterType="userInfo" resultType="userInfo">
+		select * from users  <include refid="selectUserInfoListWhere"/>
+	</select>
+
+    <update id="updateUserInfo" parameterType="userInfo">
+        update users
+        <set>
+            <if test="email!=null">
+                email=#{email},
+            </if>
+            <if test="userName!=null">
+                userName=#{userName},
+            </if>
+            <if test="password!=null">
+                password=#{password},
+            </if>
+            <if test="phoneNum!=null">
+                phoneNum=#{phoneNum},
+            </if>
+
+            <if test="status!=null">
+                status=#{status},
+            </if>
+
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="email!=null">
+                email,
+            </if>
+            <if test="userName!=null">
+                userName,
+            </if>
+            <if test="password">
+                password,
+            </if>
+            <if test="phoneNum!=null">
+                phoneNum,
+            </if>
+            <if test="status!=null">
+                status,
+            </if>
+
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="email!=null">
+                #{email},
+            </if>
+            <if test="userName!=null">
+                #{userName},
+            </if>
+            <if test="password">
+                #{password},
+            </if>
+            <if test="phoneNum!=null">
+                #{phoneNum},
+            </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+
+        </trim>
+    </sql>
+
+
+    <insert id="addUserInfo" parameterType="userInfo">
+        insert into users(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteUserInfo" parameterType="long">
+		delete from users where id=#{id}
+	</delete>
+
+</mapper>

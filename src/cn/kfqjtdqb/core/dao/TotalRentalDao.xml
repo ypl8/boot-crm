@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.TotalRentalDao">
+
+    <sql id="selectTotalRentalListWhere">
+        <where>
+
+            <if test="property_leasing_num != null">
+                 property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+
+            <if test="community_name != null">
+                and community_name like "%" #{community_name}"%"
+            </if>
+
+            <if test="year_months != null">
+                and  year_months = #{year_months}
+            </if>
+        </where>
+    </sql>
+
+
+    <select id="selectTotalRentalList" parameterType="totalRental"  resultType="totalRental" >
+        SELECT
+             *
+        FROM
+        t_total_rental
+
+        <include refid="selectTotalRentalListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+
+    <sql id="selectTotalRentalCommunityListHaving">
+
+        <if test="community_name != null">
+            having community_name like "%" #{community_name}"%"
+        </if>
+
+        <if test="year_months != null and community_name != null">
+            and year_months = #{year_months}
+        </if>
+
+        <if test="year_months != null and community_name == null">
+            having year_months = #{year_months}
+        </if>
+
+    </sql>
+
+    <sql id="selectTotalRentalCommunityListByYearHaving">
+
+        <if test="community_name != null">
+            having community_name like "%" #{community_name}"%"
+        </if>
+
+        <if test="year_months != null and community_name != null">
+            and year_months like "%" #{year_months} "%"
+        </if>
+
+        <if test="year_months != null and community_name == null">
+            having year_months like "%" #{year_months} "%"
+        </if>
+    </sql>
+
+    <select id="selectTotalRentalCommunityList" parameterType="totalRental" resultType="totalRental">
+        SELECT sum(reality_rental) as reality_rental , sum(rental) as rental , year_months,community_name
+        FROM
+        t_total_rental
+        group by community_name ,year_months
+        <include refid="selectTotalRentalCommunityListHaving"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectTotalRentalCommunityByYearList" parameterType="totalRental" resultType="totalRental">
+        SELECT sum(reality_rental) as reality_rental , sum(rental) as rental , LEFT(year_months,4) as year_months,community_name
+        FROM
+        t_total_rental
+        group by community_name ,LEFT(year_months,4)
+        <include refid="selectTotalRentalCommunityListByYearHaving"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+
+    <select id="selectTotalRentalListCount" parameterType="totalRental" resultType="int">
+        select count(*)
+        from t_total_rental
+
+        <include refid="selectTotalRentalListWhere"/>
+    </select>
+
+
+    <select id="selectTotalRentalListCommunityCount" parameterType="totalRental" resultType="int">
+        select count(*) from (
+        SELECT sum(reality_rental) as reality_rental , sum(rental) as rental , year_months,community_name
+        FROM
+        t_total_rental
+        group by community_name ,year_months
+        <include refid="selectTotalRentalCommunityListHaving"/>
+        ) gg;
+    </select>
+
+
+    <select id="selectTotalRentalListCommunityByYearCount" parameterType="totalRental" resultType="int">
+        select count(*) from (
+        SELECT sum(reality_rental) as reality_rental , sum(rental) as rental ,LEFT(year_months,4) as
+        year_months,community_name
+        FROM
+        t_total_rental
+        group by community_name ,LEFT(year_months,4)
+        <include refid="selectTotalRentalCommunityListByYearHaving"/>
+        ) gg;
+    </select>
+
+
+    <select id="getTotalRentalById" parameterType="long" resultType="totalRental">
+		select * from t_total_rental where id= #{id}
+	</select>
+
+    <select id="getTotalRentalByLeasingNum" parameterType="String" resultType="totalRental">
+		select * from t_total_rental where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <sql id="updateTotalRentalWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateTotalRental" parameterType="totalRental">
+        update t_total_rental
+        <set>
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+
+            <if test="reality_rental!=null">
+                reality_rental=#{reality_rental},
+            </if>
+
+            <if test="rental!=null">
+                rental=#{rental},
+            </if>
+
+            <if test="year_months!=null">
+                year_months=#{year_months},
+            </if>
+            <if test="deadline!=null">
+                deadline=#{deadline},
+            </if>
+            <if test="community_name!=null">
+                community_name=#{community_name},
+            </if>
+            <if test="tenant!=null">
+                tenant=#{tenant},
+            </if>
+            <if test="building_num!=null">
+                building_num=#{building_num},
+            </if>
+            <if test="rentalLocation!=null">
+                rentalLocation=#{rentalLocation},
+            </if>
+
+        </set>
+
+
+        <include refid="updateTotalRentalWhere"/>
+    </update>
+
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="reality_rental!=null">
+                reality_rental,
+            </if>
+            <if test="rental!=null">
+                rental,
+            </if>
+            <if test="year_months!=null">
+                year_months,
+            </if>
+            <if test="deadline!=null">
+                deadline,
+            </if>
+            <if test="community_name!=null">
+                community_name,
+            </if>
+            <if test="tenant!=null">
+                tenant,
+            </if>
+            <if test="building_num!=null">
+                building_num,
+            </if>
+            <if test="rentalLocation!=null">
+                rentalLocation,
+            </if>
+
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="reality_rental!=null">
+                #{reality_rental},
+            </if>
+            <if test="rental!=null">
+                #{rental},
+            </if>
+            <if test="year_months!=null">
+                #{year_months},
+            </if>
+            <if test="deadline!=null">
+                #{deadline},
+            </if>
+            <if test="community_name!=null">
+                #{community_name},
+            </if>
+            <if test="tenant!=null">
+                #{tenant},
+            </if>
+            <if test="building_num!=null">
+                #{building_num},
+            </if>
+            <if test="rentalLocation!=null">
+                #{rentalLocation},
+            </if>
+
+        </trim>
+    </sql>
+
+    <insert id="addTotalRental" parameterType="totalRental">
+        insert into t_total_rental(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteTotalRental" parameterType="long">
+		delete from t_total_rental where id=#{id}
+	</delete>
+
+    <delete id="deleteTotalRentalByPropertyLeasingNum" parameterType="String">
+		delete from t_total_rental where property_leasing_num=#{property_leasing_num}
+	</delete>
+
+
+</mapper>

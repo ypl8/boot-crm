@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.AssertWaterRentDao">
+
+    <sql id="selectAssertWaterRentListWhere">
+        <where>
+            <if test="property_leasing_num != null">
+                property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+            <if test="assert_num != null">
+               and  assert_num like "%" #{assert_num}"%"
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAssertWaterRentList" parameterType="assertWaterRent" resultType="assertWaterRent">
+        SELECT
+        id,
+        assert_num,
+        property_leasing_num,
+        rent_start_time,
+        rent_end_time,
+        water_num,
+        water_rent,
+        reality_water_rent,
+        state,
+        watermeter_num,
+        water_rent_recivied,
+        deadline
+        FROM
+        t_assert_water_rent
+        <include refid="selectAssertWaterRentListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectAssertWaterRentListCount" parameterType="assertWaterRent" resultType="int">
+        select count(*)
+        from t_assert_water_rent
+        <include refid="selectAssertWaterRentListWhere"/>
+    </select>
+
+    <select id="getAssertWaterRentById" parameterType="long" resultType="assertWaterRent">
+		select * from t_assert_water_rent where id= #{id}
+	</select>
+
+
+
+    <select id="getAssertWaterRentByLeasingNum" parameterType="String" resultType="assertWaterRent">
+		select * from t_assert_water_rent where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <select id="getAssertWaterRentCountByLeasingNum" parameterType="assertWaterRent" resultType="java.math.BigDecimal" >
+		select sum(reality_water_rent) from t_assert_water_rent  <include refid="selectAssertWaterRentListWhere"/>
+	</select>
+
+    <sql id="updateAssertWaterRentWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateAssertWaterRent" parameterType="assertWaterRent">
+        update t_assert_water_rent
+        <set>
+
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+
+            <if test="assert_num!=null">
+                assert_num=#{assert_num},
+            </if>
+
+            <if test="rent_start_time!=null">
+                rent_start_time=#{rent_start_time},
+            </if>
+
+            <if test="rent_end_time!=null">
+                rent_end_time=#{rent_end_time},
+            </if>
+
+            <if test="water_num!=null">
+                water_num=#{water_num},
+            </if>
+
+            <if test="water_rent!=null">
+                water_rent=#{water_rent},
+            </if>
+
+            <if test="reality_water_rent!=null">
+                reality_water_rent=#{reality_water_rent},
+            </if>
+
+            <if test="state!=null">
+                state=#{state},
+            </if>
+
+            <if test="watermeter_num!=null">
+                watermeter_num=#{watermeter_num},
+            </if>
+
+            <if test="water_rent_recivied!=null">
+                water_rent_recivied=#{water_rent_recivied},
+            </if>
+            <if test="deadline!=null">
+                deadline=#{deadline},
+            </if>
+
+
+        </set>
+
+        where id=#{id};
+        <!--        <include refid="updateAssertDepositWhere"/>-->
+    </update>
+
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="assert_num!=null">
+                assert_num,
+            </if>
+            <if test="rent_start_time!=null">
+                rent_start_time,
+            </if>
+            <if test="rent_end_time!=null">
+                rent_end_time,
+            </if>
+            <if test="water_num!=null">
+                water_num,
+            </if>
+
+            <if test="water_rent!=null">
+                water_rent,
+            </if>
+
+            <if test="reality_water_rent!=null">
+                reality_water_rent,
+            </if>
+
+            <if test="state!=null">
+                state,
+            </if>
+
+            <if test="water_rent_recivied!=null">
+                water_rent_recivied,
+            </if>
+            <if test="watermeter_num!=null">
+                watermeter_num,
+            </if>
+            <if test="deadline!=null">
+                deadline,
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="assert_num!=null">
+                #{assert_num},
+            </if>
+
+            <if test="rent_start_time!=null">
+                #{rent_start_time},
+            </if>
+            <if test="rent_end_time!=null">
+                #{rent_end_time},
+            </if>
+            <if test="water_num!=null">
+              #{water_num},
+            </if>
+
+            <if test="water_rent!=null">
+                #{water_rent},
+            </if>
+
+            <if test="reality_water_rent!=null">
+                #{reality_water_rent},
+            </if>
+
+            <if test="state!=null">
+                #{state},
+            </if>
+
+            <if test="water_rent_recivied!=null">
+              #{water_rent_recivied},
+            </if>
+            <if test="watermeter_num!=null">
+                #{watermeter_num},
+            </if>
+
+            <if test="deadline!=null">
+                #{deadline},
+            </if>
+
+        </trim>
+    </sql>
+
+    <insert id="addAssertWaterRent" parameterType="assertWaterRent">
+        insert into t_assert_water_rent(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteAssertWaterRent" parameterType="long">
+		delete from t_assert_water_rent where id=#{id}
+	</delete>
+
+
+</mapper>

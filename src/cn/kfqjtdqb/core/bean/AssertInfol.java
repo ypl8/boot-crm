@@ -1,26 +1,54 @@
 package cn.kfqjtdqb.core.bean;
 
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 资产信息表
  */
-public class AssertInfol  implements Serializable {
+public class AssertInfol implements Serializable {
 
     private Long id;
+    @NotNull
+    @Size(min = 0, max = 64)
     private String assert_num;
+    @NotNull
     private String card_num;
+    @NotNull
     private String community_name;
+    @NotNull
     private String building_num;
+    @NotNull
     private String room_number;
+    @NotNull
+    @Min(0)
     private Double floorage;
-    private char floor_state;
+    @NotNull
+    private String floor_state;
+    @NotNull
     private String watermeter_num;
+    @NotNull
     private String electricmeter_num;
+
+    private String  property_leasing_num;
+
+    private String remark;
     private Integer start;
     private Integer rows;
+    private List<PropertyLeasing> propertyLeasings;
 
+
+    public String getProperty_leasing_num() {
+        return property_leasing_num;
+    }
+
+    public void setProperty_leasing_num(String property_leasing_num) {
+        this.property_leasing_num = property_leasing_num;
+    }
 
     public Integer getStart() {
         return start;
@@ -94,11 +122,11 @@ public class AssertInfol  implements Serializable {
         this.floorage = floorage;
     }
 
-    public char getFloor_state() {
+    public String getFloor_state() {
         return floor_state;
     }
 
-    public void setFloor_state(char floor_state) {
+    public void setFloor_state(String floor_state) {
         this.floor_state = floor_state;
     }
 
@@ -116,6 +144,43 @@ public class AssertInfol  implements Serializable {
 
     public void setElectricmeter_num(String electricmeter_num) {
         this.electricmeter_num = electricmeter_num;
+    }
+
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
+    }
+
+    public List<PropertyLeasing> getPropertyLeasings() {
+        return propertyLeasings;
+    }
+
+    public void setPropertyLeasings(List<PropertyLeasing> propertyLeasings) {
+        this.propertyLeasings = propertyLeasings;
+    }
+
+
+    @Override
+    public String toString() {
+        return "AssertInfol{" +
+                "id=" + id +
+                ", assert_num='" + assert_num + '\'' +
+                ", card_num='" + card_num + '\'' +
+                ", community_name='" + community_name + '\'' +
+                ", building_num='" + building_num + '\'' +
+                ", room_number='" + room_number + '\'' +
+                ", floorage=" + floorage +
+                ", floor_state='" + floor_state + '\'' +
+                ", watermeter_num='" + watermeter_num + '\'' +
+                ", electricmeter_num='" + electricmeter_num + '\'' +
+                ", start=" + start +
+                ", rows=" + rows +
+                ", propertyLeasings=" + propertyLeasings +
+                '}';
     }
 }
 

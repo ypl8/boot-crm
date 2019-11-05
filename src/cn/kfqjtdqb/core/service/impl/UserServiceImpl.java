@@ -1,9 +1,13 @@
 package cn.kfqjtdqb.core.service.impl;
 
 import cn.kfqjtdqb.core.bean.User;
+import cn.kfqjtdqb.core.bean.UserInfo;
 import cn.kfqjtdqb.core.dao.UserDao;
 import cn.kfqjtdqb.core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service("userService")
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService  {
 //    注入UserDao
     @Autowired
     private UserDao userDao;

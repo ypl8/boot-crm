@@ -2,43 +2,120 @@ package cn.kfqjtdqb.core.bean;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 资产合同信息表
  */
-public class PropertyLeasing   implements Serializable {
+public class PropertyLeasing implements Serializable {
 
     private Long id;
+    @NotNull
     private String property_leasing_num;
+    @NotNull
     private String tenant;
-    private Double rental_area;
-    @JsonFormat(pattern = "yyyyMMdd", timezone="GMT+8")
+
+    @NotNull
+    private String building_num;
+    @NotNull
+    private String rentalLocation;
+    @NotNull
+    private String community_name;
+    @NotNull
+    @Min(0)
+    private BigDecimal rental_area;
+    @NotNull
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date sign_in_time;
-    private Double rent_charge_standard;
-    private Double monthly_rental;
-    private Double rent_free_period;
-    private Double rent_period;
-    private char collect_rent_way;
-    private String  collect_rent_time;
-    private Double estate_charge_standard;
-    private Double estate_charge_month;
-    private Double deposit;
-    @JsonFormat(pattern = "yyyyMMdd", timezone="GMT+8")
+    @NotNull
+    private String rent_charge_standard;
+    @NotNull
+    private String monthly_rental;
+    @NotNull
+    private Integer rent_free_period;
+    @NotNull
+    private Integer rent_period;
+    @NotNull
+    private String collect_rent_way;
+    @NotNull
+    private String collect_rent_time;
+    @NotNull
+    @Min(0)
+    private BigDecimal estate_charge_standard;
+    @NotNull
+    @Min(0)
+    private BigDecimal estate_charge_month;
+    @NotNull
+    @Min(0)
+    private BigDecimal deposit;
+
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date deposit_time;
-    private Double water_rate;
-    private Double power_rate;
-    private  char collect_rate_way;
-    @JsonFormat(pattern = "yyyyMMdd", timezone="GMT+8")
-    private  Date rent_start_time;
-    @JsonFormat(pattern = "yyyyMMdd", timezone="GMT+8")
-    private  Date rent_end_time;
-    private  char property_leasing_state; // 合同的状态
-    private  String  remark;
+    @NotNull
+    @Min(0)
+    private BigDecimal water_rate;
+    @NotNull
+    @Min(0)
+    private BigDecimal power_rate;
+    @NotNull
+    private String collect_rate_way;
+    @NotNull
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
+    private Date rent_start_time;
+    @NotNull
+    @DateTimeFormat(pattern = "yyyyMMdd")
+    @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
+    private Date rent_end_time;
+    @NotNull
+    private String property_leasing_state; // 合同的状态
+    @NotNull
+    private String remark;
+    private String depositState;
+    private String rentalState;
+    private String estateState;
+    private String waterState;
+    private String powerState;
+    @Min(0)
+    private Double total_rent;  //总共租金
+    private List<AssertInfol> assertInfols;  //对应的资源列表
     private Integer start;
     private Integer rows;
+
+    private String assert_num;
+
+    public String getAssert_num() {
+        return assert_num;
+    }
+
+    public void setAssert_num(String assert_num) {
+        this.assert_num = assert_num;
+    }
+
+    public String getBuilding_num() {
+        return building_num;
+    }
+
+    public void setBuilding_num(String building_num) {
+        this.building_num = building_num;
+    }
+
+    public List<AssertInfol> getAssertInfols() {
+        return assertInfols;
+    }
+
+    public void setAssertInfols(List<AssertInfol> assertInfols) {
+        this.assertInfols = assertInfols;
+    }
 
     public Integer getStart() {
         return start;
@@ -73,6 +150,8 @@ public class PropertyLeasing   implements Serializable {
         this.property_leasing_num = property_leasing_num;
     }
 
+
+
     public String getTenant() {
         return tenant;
     }
@@ -81,13 +160,7 @@ public class PropertyLeasing   implements Serializable {
         this.tenant = tenant;
     }
 
-    public Double getRental_area() {
-        return rental_area;
-    }
 
-    public void setRental_area(Double rental_area) {
-        this.rental_area = rental_area;
-    }
 
     public Date getSign_in_time() {
         return sign_in_time;
@@ -97,69 +170,48 @@ public class PropertyLeasing   implements Serializable {
         this.sign_in_time = sign_in_time;
     }
 
-    public Double getRent_charge_standard() {
+
+    public String getRent_charge_standard() {
         return rent_charge_standard;
     }
 
-    public void setRent_charge_standard(Double rent_charge_standard) {
+    public void setRent_charge_standard(String rent_charge_standard) {
         this.rent_charge_standard = rent_charge_standard;
     }
 
-    public Double getMonthly_rental() {
+    public String getMonthly_rental() {
         return monthly_rental;
     }
 
-    public void setMonthly_rental(Double monthly_rental) {
+    public void setMonthly_rental(String monthly_rental) {
         this.monthly_rental = monthly_rental;
     }
 
-    public Double getRent_free_period() {
+    public Integer getRent_free_period() {
         return rent_free_period;
     }
 
-    public void setRent_free_period(Double rent_free_period) {
+    public void setRent_free_period(Integer rent_free_period) {
         this.rent_free_period = rent_free_period;
     }
 
-    public Double getRent_period() {
+    public Integer getRent_period() {
         return rent_period;
     }
 
-    public void setRent_period(Double rent_period) {
+    public void setRent_period(Integer rent_period) {
         this.rent_period = rent_period;
     }
 
-    public char getCollect_rent_way() {
+    public String getCollect_rent_way() {
         return collect_rent_way;
     }
 
-    public void setCollect_rent_way(char collect_rent_way) {
+    public void setCollect_rent_way(String collect_rent_way) {
         this.collect_rent_way = collect_rent_way;
     }
 
-    public Double getEstate_charge_standard() {
-        return estate_charge_standard;
-    }
 
-    public void setEstate_charge_standard(Double estate_charge_standard) {
-        this.estate_charge_standard = estate_charge_standard;
-    }
-
-    public Double getEstate_charge_month() {
-        return estate_charge_month;
-    }
-
-    public void setEstate_charge_month(Double estate_charge_month) {
-        this.estate_charge_month = estate_charge_month;
-    }
-
-    public Double getDeposit() {
-        return deposit;
-    }
-
-    public void setDeposit(Double deposit) {
-        this.deposit = deposit;
-    }
 
     public Date getDeposit_time() {
         return deposit_time;
@@ -169,27 +221,13 @@ public class PropertyLeasing   implements Serializable {
         this.deposit_time = deposit_time;
     }
 
-    public Double getWater_rate() {
-        return water_rate;
-    }
 
-    public void setWater_rate(Double water_rate) {
-        this.water_rate = water_rate;
-    }
 
-    public Double getPower_rate() {
-        return power_rate;
-    }
-
-    public void setPower_rate(Double power_rate) {
-        this.power_rate = power_rate;
-    }
-
-    public char getCollect_rate_way() {
+    public String getCollect_rate_way() {
         return collect_rate_way;
     }
 
-    public void setCollect_rate_way(char collect_rate_way) {
+    public void setCollect_rate_way(String collect_rate_way) {
         this.collect_rate_way = collect_rate_way;
     }
 
@@ -209,11 +247,11 @@ public class PropertyLeasing   implements Serializable {
         this.rent_end_time = rent_end_time;
     }
 
-    public char getProperty_leasing_state() {
+    public String getProperty_leasing_state() {
         return property_leasing_state;
     }
 
-    public void setProperty_leasing_state(char property_leasing_state) {
+    public void setProperty_leasing_state(String property_leasing_state) {
         this.property_leasing_state = property_leasing_state;
     }
 
@@ -226,11 +264,155 @@ public class PropertyLeasing   implements Serializable {
     }
 
 
+    public String getCommunity_name() {
+        return community_name;
+    }
+
+    public void setCommunity_name(String community_name) {
+        this.community_name = community_name;
+    }
+
+    public String getRentalLocation() {
+        return rentalLocation;
+    }
+
+    public void setRentalLocation(String rentalLocation) {
+        this.rentalLocation = rentalLocation;
+    }
+
     public String getCollect_rent_time() {
         return collect_rent_time;
     }
 
     public void setCollect_rent_time(String collect_rent_time) {
         this.collect_rent_time = collect_rent_time;
+    }
+
+    public Double getTotal_rent() {
+        return total_rent;
+    }
+
+    public void setTotal_rent(Double total_rent) {
+        this.total_rent = total_rent;
+    }
+
+
+    public String getDepositState() {
+        return depositState;
+    }
+
+    public void setDepositState(String depositState) {
+        this.depositState = depositState;
+    }
+
+    public String getRentalState() {
+        return rentalState;
+    }
+
+    public void setRentalState(String rentalState) {
+        this.rentalState = rentalState;
+    }
+
+    public String getEstateState() {
+        return estateState;
+    }
+
+    public void setEstateState(String estateState) {
+        this.estateState = estateState;
+    }
+
+    public String getWaterState() {
+        return waterState;
+    }
+
+    public void setWaterState(String waterState) {
+        this.waterState = waterState;
+    }
+
+    public String getPowerState() {
+        return powerState;
+    }
+
+    public void setPowerState(String powerState) {
+        this.powerState = powerState;
+    }
+
+    public BigDecimal getRental_area() {
+        return rental_area;
+    }
+
+    public void setRental_area(BigDecimal rental_area) {
+        this.rental_area = rental_area;
+    }
+
+    public BigDecimal getEstate_charge_standard() {
+        return estate_charge_standard;
+    }
+
+    public void setEstate_charge_standard(BigDecimal estate_charge_standard) {
+        this.estate_charge_standard = estate_charge_standard;
+    }
+
+    public BigDecimal getEstate_charge_month() {
+        return estate_charge_month;
+    }
+
+    public void setEstate_charge_month(BigDecimal estate_charge_month) {
+        this.estate_charge_month = estate_charge_month;
+    }
+
+    public BigDecimal getDeposit() {
+        return deposit;
+    }
+
+    public void setDeposit(BigDecimal deposit) {
+        this.deposit = deposit;
+    }
+
+    public BigDecimal getWater_rate() {
+        return water_rate;
+    }
+
+    public void setWater_rate(BigDecimal water_rate) {
+        this.water_rate = water_rate;
+    }
+
+    public BigDecimal getPower_rate() {
+        return power_rate;
+    }
+
+    public void setPower_rate(BigDecimal power_rate) {
+        this.power_rate = power_rate;
+    }
+
+    @Override
+    public String toString() {
+        return "PropertyLeasing{" +
+                "id=" + id +
+                ", property_leasing_num='" + property_leasing_num + '\'' +
+                ", tenant='" + tenant + '\'' +
+                ", rental_area=" + rental_area +
+                ", sign_in_time=" + sign_in_time +
+                ", rent_charge_standard=" + rent_charge_standard +
+                ", monthly_rental=" + monthly_rental +
+                ", rent_free_period=" + rent_free_period +
+                ", rent_period=" + rent_period +
+                ", collect_rent_way=" + collect_rent_way +
+                ", collect_rent_time='" + collect_rent_time + '\'' +
+                ", estate_charge_standard=" + estate_charge_standard +
+                ", estate_charge_month=" + estate_charge_month +
+                ", deposit=" + deposit +
+                ", deposit_time=" + deposit_time +
+                ", water_rate=" + water_rate +
+                ", power_rate=" + power_rate +
+                ", collect_rate_way=" + collect_rate_way +
+                ", rent_start_time=" + rent_start_time +
+                ", rent_end_time=" + rent_end_time +
+                ", property_leasing_state=" + property_leasing_state +
+                ", remark='" + remark + '\'' +
+                ", assertInfols=" + assertInfols +
+                ", start=" + start +
+                ", rows=" + rows +
+                '}';
     }
 }

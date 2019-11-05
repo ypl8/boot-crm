@@ -8,7 +8,13 @@
                 assert_num like "%"#{assert_num}"%"
             </if>
             <if test="floor_state != null">
-                floor_state like "%"#{floor_state}"%"
+                and floor_state = #{floor_state}
+            </if>
+            <if test="community_name != null">
+                and community_name like "%" #{community_name}"%"
+            </if>
+            <if test="property_leasing_num != null and assert_num == null">
+                and  assert_num  in (select  assert_num  from  t_assert_leasing where property_leasing_num=#{property_leasing_num})
             </if>
         </where>
     </sql>
@@ -24,7 +30,8 @@
         floorage,
         floor_state,
         watermeter_num,
-        electricmeter_num
+        electricmeter_num,
+        remark
         FROM
         t_assert_infol
 
@@ -32,6 +39,28 @@
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>
+    </select>
+
+
+    <sql id="selectAssertInfolTotalListHaving">
+        <if test="community_name != null">
+            having community_name like "%" #{community_name}"%"
+        </if>
+    </sql>
+    <select id="selectAssertInfolTotalList" parameterType="assertInfol" resultType="assertInfolTotal">
+        select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
+        count(floor_state='2' or null) as countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol
+        group by community_name
+        <include refid="selectAssertInfolTotalListHaving"/>
+    </select>
+
+
+    <select id="selectAssertInfolTotalListCount" parameterType="assertInfol" resultType="int">
+        select count(*)
+        from ( select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
+        count(floor_state='2' or null) as
+        countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol group by community_name
+        <include refid="selectAssertInfolTotalListHaving"/>) bb;
     </select>
 
 
@@ -45,6 +74,92 @@
     <select id="getAssertInfolById" parameterType="long" resultType="assertInfol">
 		select * from t_assert_infol where id= #{id}
 	</select>
+    <select id="getAssertInfolByAssertNum" parameterType="String" resultType="assertInfol">
+		select * from t_assert_infol where assert_num= #{assert_num}
+	</select>
+
+
+    <select id="findAssertInfolByNum" parameterType="String" resultType="assertInfol">
+	    SELECT * from t_assert_infol where assert_num IN(
+            SELECT assert_num FROM t_assert_leasing  WHERE property_leasing_num = #{property_leasing_num}
+        )
+	</select>
+
+
+    <select id="findAllCommunityName" resultType="String">
+          select   community_name   from  t_assert_infol    group by     community_name;
+    </select>
+
+
+    <select id="findAllBuildNum" resultType="String" parameterType="assertInfol">
+        select  building_num   from    t_assert_infol <include refid="selectAssertInfolListWhereByState"/> group by  building_num;
+    </select>
+
+
+    <sql id="selectAssertInfolListWhereByState">
+        <where>
+            <if test="community_name != null">
+               community_name = #{community_name}
+            </if>
+            <if test="building_num != null">
+                and  building_num = #{building_num}
+            </if>
+
+            <if test="floor_state != null">
+                and floor_state = #{floor_state}
+            </if>
+
+            <if test=" room_number != null">
+                and  room_number = #{ room_number}
+            </if>
+        </where>
+    </sql>
+
+    <select id="findAllRoomNum" resultType="String" parameterType="assertInfol">
+          select  room_number  from  t_assert_infol  <include refid="selectAssertInfolListWhereByState"/> group by  room_number;
+    </select>
+
+
+    <select id="findAssertInfolListByCommunityName" resultType="assertInfol" parameterType="assertInfol">
+          select  *  from  t_assert_infol  <include refid="selectAssertInfolListWhereByState"/>  group by  room_number;
+    </select>
+
+    <select id="findAssertWithPropertyLeasing" parameterType="Long"
+            resultMap="AssertWithPropertyLeasingResult">
+        select * from t_assert_infol WHERE id=#{id}
+    </select>
+
+    <resultMap type="AssertInfol" id="AssertWithPropertyLeasingResult">
+        <id property="id" column="id"/>
+        <result property="assert_num" column="assert_num"/>
+        <result property="card_num" column="card_num"/>
+        <result property="community_name" column="community_name"/>
+        <result property="building_num" column="building_num"/>
+        <result property="room_number" column="room_number"/>
+        <result property="floorage" column="floorage"/>
+
+        <result property="floor_state" column="floor_state"/>
+        <result property="watermeter_num" column="watermeter_num"/>
+        <result property="electricmeter_num" column="electricmeter_num"/>
+        <result property="remark" column="remark"/>
+
+        <collection property="propertyLeasings" column="assert_num" ofType="PropertyLeasing"
+                    select="cn.kfqjtdqb.core.dao.PropertyLeasingDao.findPropertyLeasingByNum">
+        </collection>
+
+    </resultMap>
+
+    <sql id="updateAssertInfolWhere">
+        <where>
+
+            <if test="id != null">
+                id = #{id}
+            </if>
+            <if test="assert_num != null">
+                or assert_num = #{assert_num}
+            </if>
+        </where>
+    </sql>
 
     <update id="updateAssertInfol" parameterType="assertInfol">
         update t_assert_infol
@@ -76,8 +191,11 @@
             <if test="electricmeter_num!=null">
                 electricmeter_num=#{electricmeter_num},
             </if>
+            <if test="remark!=null">
+                remark=#{remark},
+            </if>
         </set>
-        where id=#{id}
+        <include refid="updateAssertInfolWhere"/>
     </update>
 
     <sql id="key">
@@ -110,6 +228,10 @@
             <if test="electricmeter_num!=null">
                 electricmeter_num,
             </if>
+            <if test="remark!=null">
+                remark,
+            </if>
+
         </trim>
     </sql>
 
@@ -143,6 +265,10 @@
             <if test="electricmeter_num!=null">
                 #{electricmeter_num},
             </if>
+
+            <if test="remark!=null">
+                #{remark},
+            </if>
         </trim>
     </sql>
 
@@ -153,5 +279,6 @@
     <delete id="deleteAssertInfol" parameterType="long">
 		delete from t_assert_infol where id=#{id}
 	</delete>
+
 
 </mapper>

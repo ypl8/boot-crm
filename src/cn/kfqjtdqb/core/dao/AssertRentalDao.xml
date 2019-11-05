@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.AssertRentalDao">
+
+    <sql id="selectAssertRentalListWhere">
+        <where>
+            <if test="property_leasing_num != null">
+                property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+            <if test="state != null">
+                and state = #{state}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAssertRentalList" parameterType="assertRental" resultType="assertRental">
+        SELECT
+        id,
+        property_leasing_num,
+        rent_start_time,
+        rent_end_time,
+        rental,
+        reality_rental,
+        state,
+        rent_recivied,
+        deadline
+        FROM
+        t_assert_rental
+        <include refid="selectAssertRentalListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectAssertRentalListCount" parameterType="assertRental" resultType="int">
+        select count(*)
+        from t_assert_rental
+        <include refid="selectAssertRentalListWhere"/>
+    </select>
+
+    <select id="getAssertRentalById" parameterType="long" resultType="assertRental">
+		select * from t_assert_rental where id= #{id}
+	</select>
+
+
+
+    <select id="getAssertRentalByLeasingNum" parameterType="String" resultType="assertRental">
+		select * from t_assert_rental where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <select id="getAssertRentalCountByLeasingNum" parameterType="String" resultType="java.math.BigDecimal" >
+		select sum(reality_rental) from t_assert_rental   where property_leasing_num= #{property_leasing_num}
+	</select>
+
+    <sql id="updateAssertRentalWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateAssertRental" parameterType="assertRental">
+        update t_assert_rental
+        <set>
+
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+
+            <if test="rent_start_time!=null">
+                rent_start_time=#{rent_start_time},
+            </if>
+
+            <if test="rent_end_time!=null">
+                rent_end_time=#{rent_end_time},
+            </if>
+
+            <if test="rental!=null">
+                rental=#{rental},
+            </if>
+            <if test="reality_rental!=null">
+                reality_rental=#{reality_rental},
+            </if>
+            <if test="state!=null">
+                state=#{state},
+            </if>
+
+            <if test="rent_recivied!=null">
+                rent_recivied=#{rent_recivied},
+            </if>
+
+            <if test="deadline!=null">
+                deadline=#{deadline},
+            </if>
+
+
+        </set>
+
+        where id=#{id};
+        <!--        <include refid="updateAssertDepositWhere"/>-->
+    </update>
+
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="rent_start_time!=null">
+                rent_start_time,
+            </if>
+            <if test="rent_end_time!=null">
+                rent_end_time,
+            </if>
+            <if test="rental!=null">
+                rental,
+            </if>
+            <if test="reality_rental!=null">
+                reality_rental,
+            </if>
+            <if test="state!=null">
+                state,
+            </if>
+            <if test="rent_recivied!=null">
+                rent_recivied,
+            </if>
+            <if test="deadline!=null">
+                deadline,
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="rent_start_time!=null">
+                #{rent_start_time},
+            </if>
+            <if test="rent_end_time!=null">
+                #{rent_end_time},
+            </if>
+            <if test="rental!=null">
+                #{rental},
+            </if>
+            <if test="reality_rental!=null">
+                #{reality_rental},
+            </if>
+            <if test="state!=null">
+                #{state},
+            </if>
+
+            <if test="rent_recivied!=null">
+                #{rent_recivied},
+            </if>
+            <if test="deadline!=null">
+               #{deadline},
+            </if>
+        </trim>
+    </sql>
+
+    <insert id="addAssertRental" parameterType="assertRental">
+        insert into t_assert_rental(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteAssertRental" parameterType="long">
+		delete from t_assert_rental where id=#{id}
+	</delete>
+
+    <delete id="deleteAssertRentalByPropertyLeasingNum" parameterType="String">
+		delete from t_assert_rental where property_leasing_num=#{property_leasing_num}
+	</delete>
+</mapper>

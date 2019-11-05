@@ -1,0 +1,49 @@
+body,p,ul,input,button,table,tr,td{
+	margin: 0;
+	padding: 0;
+}
+body{
+	font-family:"Microsoft YaHei",Arial,Helvetica,sans-serif,"宋体";
+}
+.response{
+	margin: 0;
+	padding: 0;
+	font-size: 22px;
+	line-height: 24px;
+	padding-top: 270px;
+
+}
+.response img{
+	width: 84px;
+	height: 84px;
+	margin-left: 345px;
+}
+.response .desc{
+	display: inline-block;
+	margin-left: 18px;
+	vertical-align: top;
+	color: #45484a;
+}
+.response .desc .ok{
+	color: #00c700;
+	font-size: 28px;
+	line-height: 30px;
+	margin-bottom: 15px;
+}
+.response .desc .err{
+	color: #d85c65;
+	font-size: 28px;
+	line-height: 30px;
+	margin-bottom: 15px;
+}
+.response .desc button{
+	width: 80px;
+	height: 30px;
+	background-color: #e9ecee;
+	color: #3791c6;
+	font-size: 16px;
+	border: 1px solid #3791c6;
+	box-shadow: 0 0 2px #3791c6 inset;
+	margin-top: 44px;
+	cursor: pointer;
+}

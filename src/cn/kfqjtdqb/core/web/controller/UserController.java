@@ -17,12 +17,12 @@ import javax.servlet.http.HttpSession;
 public class UserController {
     @Autowired
     private UserService userService;
-    @RequestMapping("/login.action")
+    @RequestMapping("/login")
     public String login(){
         return "login";
     }
 
-    @RequestMapping(value = "/login.action",method = RequestMethod.POST)
+    @RequestMapping(value = "/login",method = RequestMethod.POST)
     public String login(String usercode, String password, Model model ,HttpSession session){
         //通过账号和密码查询客户
         User user = userService.findUser(usercode, password);
@@ -30,7 +30,7 @@ public class UserController {
             //将用户对象添加到Session中
             session.setAttribute("USER_SESSION",user);
             //跳转到主页面
-            return "index";
+            return "redirect:index.action";
         }
         model.addAttribute("msg","账号或密码错误，请重新输入");
         //返回登录页面
@@ -46,7 +46,7 @@ public class UserController {
     /**
      * 退出登录
      */
-    @RequestMapping(value = "/logout.action")
+    @RequestMapping(value = "/logout")
     public String logout(HttpSession session){
         //清除Session
         session.invalidate();
@@ -57,7 +57,7 @@ public class UserController {
     /**
      * 向用户登录页面跳转
      */
-    @RequestMapping(value = "/login.action",method = RequestMethod.GET)
+    @RequestMapping(value = "/login",method = RequestMethod.GET)
     public String toLogin(){
         return "login";
     }
@@ -74,6 +74,11 @@ public class UserController {
     @RequestMapping(value = "/top.action",method = RequestMethod.GET)
     public String toTop(){
         return "top";
+    }
+
+    @RequestMapping(value = "/index.action",method = RequestMethod.GET)
+    public String  index(){
+        return "index";
     }
 
 }

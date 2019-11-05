@@ -58,155 +58,6 @@
 
 <div id="wrapper">
 
-    <!-- Navigation -->
- <%--   <nav class="navbar navbar-default navbar-static-top" role="navigation"
-         style="margin-bottom: 0">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse"
-                    data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span> <span
-                    class="icon-bar"></span> <span class="icon-bar"></span> <span
-                    class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="login.jsp">BOOT案例管理系统 v2.0</a>
-        </div>
-        <!-- /.navbar-header -->
-
-        <ul class="nav navbar-top-links navbar-right">
-            <li class="dropdown"><a class="dropdown-toggle"
-                                    data-toggle="dropdown" href="#"> <i class="fa fa-envelope fa-fw"></i>
-                <i class="fa fa-caret-down"></i>
-            </a>
-                <ul class="dropdown-menu dropdown-messages">
-                    <li><a href="#">
-                        <div>
-                            <strong>令狐冲</strong> <span class="pull-right text-muted">
-									<em>昨天</em>
-								</span>
-                        </div>
-                        <div>今天晚上向大哥找我吃饭，讨论一下去梅庄的事...</div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a class="text-center" href="#"> <strong>查看全部消息</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </a></li>
-                </ul> <!-- /.dropdown-messages --></li>
-            <!-- /.dropdown -->
-            <li class="dropdown"><a class="dropdown-toggle"
-                                    data-toggle="dropdown" href="#"> <i class="fa fa-tasks fa-fw"></i>
-                <i class="fa fa-caret-down"></i>
-            </a>
-                <ul class="dropdown-menu dropdown-tasks">
-                    <li><a href="#">
-                        <div>
-                            <p>
-                                <strong>任务 1</strong> <span class="pull-right text-muted">完成40%</span>
-                            </p>
-                            <div class="progress progress-striped active">
-                                <div class="progress-bar progress-bar-success"
-                                     role="progressbar" aria-valuenow="40" aria-valuemin="0"
-                                     aria-valuemax="100" style="width: 40%">
-                                    <span class="sr-only">完成40%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                        <div>
-                            <p>
-                                <strong>任务 2</strong> <span class="pull-right text-muted">完成20%</span>
-                            </p>
-                            <div class="progress progress-striped active">
-                                <div class="progress-bar progress-bar-info" role="progressbar"
-                                     aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"
-                                     style="width: 20%">
-                                    <span class="sr-only">完成20%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a class="text-center" href="#"> <strong>查看所有任务</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </a></li>
-                </ul> <!-- /.dropdown-tasks --></li>
-            <!-- /.dropdown -->
-            <li class="dropdown"><a class="dropdown-toggle"
-                                    data-toggle="dropdown" href="#"> <i class="fa fa-bell fa-fw"></i>
-                <i class="fa fa-caret-down"></i>
-            </a>
-                <ul class="dropdown-menu dropdown-alerts">
-                    <li><a href="#">
-                        <div>
-                            <i class="fa fa-comment fa-fw"></i> 新回复 <span
-                                class="pull-right text-muted small">4分钟之前</span>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                        <div>
-                            <i class="fa fa-envelope fa-fw"></i> 新消息 <span
-                                class="pull-right text-muted small">4分钟之前</span>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                        <div>
-                            <i class="fa fa-tasks fa-fw"></i> 新任务 <span
-                                class="pull-right text-muted small">4分钟之前</span>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">
-                        <div>
-                            <i class="fa fa-upload fa-fw"></i> 服务器重启 <span
-                                class="pull-right text-muted small">4分钟之前</span>
-                        </div>
-                    </a></li>
-                    <li class="divider"></li>
-                    <li><a class="text-center" href="#"> <strong>查看所有提醒</strong>
-                        <i class="fa fa-angle-right"></i>
-                    </a></li>
-                </ul> <!-- /.dropdown-alerts --></li>
-            <!-- /.dropdown -->
-            <li class="dropdown"><a class="dropdown-toggle"
-                                    data-toggle="dropdown" href="#"> <i class="fa fa-user fa-fw"></i>
-                <i class="fa fa-caret-down"></i>
-            </a>
-                <ul class="dropdown-menu dropdown-user">
-                    <li><a href="#"><i class="fa fa-user fa-fw"></i> 用户：${USER_SESSION.user_name}</a></li>
-                    <li><a href="#"><i class="fa fa-gear fa-fw"></i> 系统设置</a></li>
-                    <li class="divider"></li>
-                    <li><a href="${pageContext.request.contextPath }/logout.action"><i class="fa fa-sign-out fa-fw"></i>
-                        退出登录</a></li>
-                </ul> <!-- /.dropdown-user --></li>
-            <!-- /.dropdown -->
-        </ul>
-        <!-- /.navbar-top-links -->
-
-        <div class="navbar-default sidebar" role="navigation">
-            <div class="sidebar-nav navbar-collapse">
-                <ul class="nav" id="side-menu">
-                    <li class="sidebar-search">
-                        <div class="input-group custom-search-form">
-                            <input type="text" class="form-control" placeholder="查询内容...">
-                            <span class="input-group-btn">
-								<button class="btn btn-default" type="button">
-									<i class="fa fa-search" style="padding: 3px 0 3px 0;"></i>
-								</button>
-							</span>
-                        </div> <!-- /input-group -->
-                    </li>
-                    <li><a href="<%=basePath%>/customer.action" class="active">
-                        <i class="fa fa-edit fa-fw"></i> 客户管理</a></li>
-                    <li><a href="<%=basePath%>/case.action"><i class="fa fa-dashboard fa-fw"></i> 案例管理</a></li>
-                    <li><a href="<%=basePath%>assertInfol.action"><i class="fa fa-dashboard fa-fw"></i> 资产信息管理</a></li>
-                </ul>
-            </div>
-            <!-- /.sidebar-collapse -->
-        </div>
-        <!-- /.navbar-static-side --> </nav>--%>
 
     <div id="page-wrapper">
         <div class="row">
@@ -218,15 +69,47 @@
         <!-- /.row -->
         <div class="panel panel-default">
             <div class="panel-body">
-                <form class="form-inline" action="${pageContext.request.contextPath }/assertInfol/list.action"
+                <form class="form-inline" id="mainForm"
+                      action="${pageContext.request.contextPath }/assertInfol/list.action"
                       method="get">
                     <div class="form-group">
                         <label for="assert_num">资产编号</label>
-                        <input type="text" class="form-control" id="assert_num" value="${assert_num }" name="assert_num">
+                        <input type="text" class="form-control" id="assert_num" value="${assert_num }"
+                               name="assert_num">
                     </div>
+
+                    <div class="form-group">
+                        <label for="community_name">小区名称</label>
+                        <input type="text" class="form-control" id="community_name" value="${community_name}"
+                               name="community_name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="property_leasing_num">合同编号</label>
+                        <input type="text" class="form-control" id="property_leasing_num"
+                               value="${property_leasing_num }" name="property_leasing_num">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="floor_state">房屋状态</label>
+                        <select class="form-control" id="floor_state" placeholder="房屋状态" name="floor_state">
+                            <option value="">--请选择--</option>
+                            <c:forEach items="${stateType}" var="item">
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == floor_state}"> selected</c:if>>${item.dict_item_name }</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
+                    <a href="#" class="btn btn-warning" data-toggle="modal"
                        data-target="#newAssertDialog" onclick="clearAssert()">新建</a>
+                    <a href="#" class="btn btn-info "
+                       onclick="uploadAssertInfol()">导入</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadAssertInfol()">导出本页</a>
+                    <a href="#" class="btn btn-success  "
+                       onclick="downloadAssertInfolAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -249,11 +132,12 @@
                             <th>建筑面积</th>
                             <th>水表编号</th>
                             <th>电表编号</th>
+                            <th>备注</th>
                             <th>房屋状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody align="center">
                         <c:forEach items="${page.rows}" var="row">
                             <tr>
                                 <td>${row.id}</td>
@@ -265,19 +149,34 @@
                                 <td>${row.floorage}</td>
                                 <td>${row.watermeter_num}</td>
                                 <td>${row.electricmeter_num}</td>
-                                <td>${row.floor_state}</td>
+                                <td>${row.remark}</td>
+                                <c:if test="${'1' eq row.floor_state}">
+                                    <td>已出租</td>
+                                </c:if>
+                                <c:if test="${'2' eq row.floor_state}">
+                                    <td> 空闲</td>
+                                </c:if>
+                                <c:if test="${'3' eq row.floor_state}">
+                                    <td> 非法占用</td>
+                                </c:if>
+
                                 <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
                                        data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
                                     <a href="#" class="btn btn-danger btn-xs"
                                        onclick="deleteAssert(${row.id})">删除</a>
+                                        <%-- <a href="#" class="btn btn-primary btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
+                                            onclick="showAssert(${row.id})">查看</a>--%>
+                                    <a onclick="return showAssert(${row.id})"
+                                       href="${pageContext.request.contextPath}/propertyLeasing/list.action?assert_num=${row.assert_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
                                 </td>
                             </tr>
                         </c:forEach>
                         </tbody>
                     </table>
                     <div class="col-md-12 text-right">
-                        <itcast:page url="${pageContext.request.contextPath }/case/list.action"/>
+                        <itcast:page url="${pageContext.request.contextPath }/assertInfol/list.action"/>
                     </div>
                     <!-- /.panel-body -->
                 </div>
@@ -287,6 +186,7 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
+
 
 </div>
 
@@ -299,7 +199,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel">更新资产信息</h4>
+                <h4 class="modal-title" id="myModalLabel2">更新资产信息</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" id="edit_assert_form">
@@ -307,7 +207,8 @@
                     <div class="form-group">
                         <label for="edit_assert_num" class="col-sm-2 control-label">资产编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_assert_num" placeholder="资产编号" name="assert_num">
+                            <input type="text" class="form-control" id="edit_assert_num" placeholder="资产编号"
+                                   name="assert_num">
                         </div>
                     </div>
                     <div class="form-group">
@@ -369,10 +270,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="edit_floor_state" class="col-sm-2 control-label">房屋状态</label>
+                        <label for="edit_remark" class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_floor_state" placeholder="房屋状态(1、已出租 ，2、空闲，3、非法占用)"
-                                   name="floor_state">
+                            <input type="text" class="form-control" id="edit_remark" placeholder="备注"
+                                   name="remark">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_floor_state" style="float:left;padding:7px 15px 0 27px;">房屋状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_floor_state" placeholder="房屋状态" name="floor_state">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${stateType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
                         </div>
                     </div>
 
@@ -406,7 +320,8 @@
                             资产编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_assert_num" placeholder="资产编号" name="assert_num"/>
+                            <input type="text" class="form-control" id="new_assert_num" placeholder="资产编号"
+                                   name="assert_num"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -470,10 +385,23 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="new_floor_state" class="col-sm-2 control-label">房屋状态</label>
+                        <label for="new_remark" class="col-sm-2 control-label">备注</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_floor_state" placeholder="房屋状态(1、已出租 ，2、空闲，3、非法占用)"
-                                   name="floor_state"/>
+                            <input type="text" class="form-control" id="new_remark" placeholder="备注"
+                                   name="remark">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_floor_state" style="float:left;padding:7px 15px 0 27px;">房屋状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="new_floor_state" placeholder="房屋状态" name="floor_state">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${stateType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
                         </div>
                     </div>
                 </form>
@@ -487,6 +415,61 @@
 </div>
 <!-- /#wrapper -->
 
+<!-- 显示对应资产的对话框  -->
+<div class="modal fade" id="showLeasingDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel3">合同和资产绑定</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">客户信息列表</div>
+                            <!-- /.panel-heading -->
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>租凭合同编号</th>
+                                    <th>承租人</th>
+                                    <th>月租</th>
+                                    <th>合同期(年)</th>
+                                    <th>月物业费</th>
+                                    <th>保证金（元）</th>
+                                    <th>水费</th>
+                                    <th>电费</th>
+                                    <%--<th>租期开始时间</th>
+                                    <th>租期结束时间</th>--%>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody" align="center">
+
+                                </tbody>
+                            </table>
+                            <%--<div class="col-md-12 text-right">
+                                <itcast:page url="${pageContext.request.contextPath }/case/list.action"/>
+                            </div>--%>
+                            <!-- /.panel-body -->
+                        </div>
+                        <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+            </div>
+
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            <%--  <button type="button" class="btn btn-primary" onclick="addPropertyLeasing()">创建关系</button>--%>
+        </div>
+    </div>
+</div>
 <!-- jQuery -->
 <script src="<%=basePath%>js/jquery.min.js"></script>
 
@@ -521,23 +504,92 @@
                 $("#edit_floorage").val(data.floorage);
                 $("#edit_watermeter_num").val(data.watermeter_num);
                 $("#edit_electricmeter_num").val(data.electricmeter_num);
+                $("#edit_remark").val(data.remark);
                 $("#edit_floor_state").val(data.floor_state);
             }
         });
     }
 
+    //导入
+    function uploadAssertInfol() {
+        window.location.href = "<%=basePath%>assertInfol/showUpload.action";
+    }
+
+    //导出
+    function downloadAssertInfol() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertInfol/downloadAssertInfol.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertInfol/list.action");
+    }
+
+    //导出
+    function downloadAssertInfolAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertInfol/downloadAssertInfolAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertInfol/list.action");
+    }
+
+    function showAssert(id) {
+        var  flag=true;
+        $.ajax({
+            type: "get",
+            async:false,
+            url: "<%=basePath%>assertInfol/show.action",
+            data: {"id": id},
+            success: function (data) {
+                if (data.propertyLeasings.length == 0) {
+                    alert("该资产没有任何合同");
+                    flag=false;
+                } else {
+                    flag=true;
+                }
+                /*var $table = $("#tbody");
+                $table.empty();
+                var $tr;
+                for (var  i=0;i<data.propertyLeasings.length;i++){
+                    $tr = $("<tr>"+
+                        "<td>"+data.propertyLeasings[i].id+"</td>"+
+                        "<td>"+data.propertyLeasings[i].property_leasing_num+"</td>"+
+                        "<td>"+data.propertyLeasings[i].tenant+"</td>"+
+                        "<td>"+data.propertyLeasings[i].monthly_rental+"</td>"+
+                        "<td>"+data.propertyLeasings[i].rent_period+"</td>"+
+                        "<td>"+data.propertyLeasings[i].estate_charge_month+"</td>"+
+                        "<td>"+data.propertyLeasings[i].deposit+"</td>"+
+                        "<td>"+data.propertyLeasings[i].water_rate+"</td>"+
+                        "<td>"+data.propertyLeasings[i].power_rate+"</td>"+
+                      /!*  "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
+                        "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*!/
+                        "</tr>");
+                    $table.append($tr);
+                }*/
+
+            }
+
+        });
+        return flag;
+    }
+
     function updateAssert() {
         $.post("<%=basePath%>assertInfol/update.action", $("#edit_assert_form").serialize(), function (data) {
-            alert("资产信息更新成功！");
-            window.location.reload();
+            if (data.code == 0) {
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                alert(data.msg);
+                window.location.reload();
+
+            }
         });
     }
 
     function deleteAssert(id) {
         if (confirm('确实要删除该资产吗?')) {
             $.post("<%=basePath%>assertInfol/delete.action", {"id": id}, function (data) {
-                alert("资产删除更新成功！");
-                window.location.reload();
+                if (data == "OK") {
+                    alert("资产信息删除成功！");
+                    window.location.reload();
+                } else {
+                    alert("资产信息删除失败！存在合同信息关联");
+                    window.location.reload();
+                }
             });
         }
     }
@@ -551,20 +603,21 @@
         $("#new_floorage").val("");
         $("#new_watermeter_num").val("");
         $("#new_electricmeter_num").val("");
+        $("#new_remark").val("");
         $("#new_floor_state").val("");
     }
 
 
-    // 创建客户
+    // 创建资产
     function createAssert() {
         $.post("<%=basePath%>assertInfol/create.action",
             $("#new_assert_form").serialize(), function (data) {
-                if (data == "OK") {
+                if (data.code == 0) {
                     alert("资产信息创建成功！");
                     window.location.reload();
                 } else {
-                    alert("资产信息创建失败！");
-                    window.location.reload();
+                    alert(data.msg);
+                    // window.location.reload();
                 }
             });
     }
