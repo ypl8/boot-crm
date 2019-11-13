@@ -27,4 +27,6 @@ public interface AssertPowerRentDao {
     List<AssertPowerRent> getAssertPowerRentByLeasingNum(String property_leasing_num);
 
     BigDecimal getAssertPowerRentCountByLeasingNum(AssertPowerRent assertPowerRent);   //统计实际已收取的费用
+
+    void deleteAssertPowerRentByPropertyLeasingNum(String property_leasing_num)throws Exception;
 }

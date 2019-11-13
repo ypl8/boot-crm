@@ -16,11 +16,19 @@
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
 
+
+    <listener>
+        <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
+    </listener>
+
    <!-- <listener>
         <listener-class>cn.kfqjtdqb.core.service.impl.SendWsListener</listener-class>
     </listener>-->
 
-
+    <error-page>
+        <error-code>403</error-code>
+        <location>/403.html</location>
+    </error-page>
     <!-- POST提交过滤器 UTF-8 -->
     <filter>
         <filter-name>encoding</filter-name>

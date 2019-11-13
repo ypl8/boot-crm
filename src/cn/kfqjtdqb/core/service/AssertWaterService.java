@@ -13,4 +13,5 @@ public interface AssertWaterService {
     void deleteAssertWater(Long id);
     List <AssertWater> selectAssertWaterListByAssertNum(String property_leasing_num, String assert_num);
     int createAssertWater(AssertWater AssertWater) throws DataAccessException;
+    void deleteAssertWaterByPropertyLeasingNum(String property_leasing_num)throws Exception ;
 }

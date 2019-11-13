@@ -41,7 +41,7 @@
         <include refid="selectUserInfoListWhere"/>
     </select>
 
-    <select id="getUserInfoById" parameterType="long" resultType="userInfo">
+    <select id="getUserInfoById" parameterType="long" resultMap="UserInfoByRoleResult">
 		select * from users  where id = #{id}
 	</select>
 
@@ -54,9 +54,11 @@
         <result property="phoneNum" column="phoneNum"/>
         <result property="status" column="status"/>
         <collection property="roles" column="id" ofType="Role"
-                    select="cn.kfqjtdqb.core.dao.PropertyLeasingDao.findPropertyLeasingByNum">
+                    select="cn.kfqjtdqb.core.dao.RoleDao.findRoleByUserId">
         </collection>
     </resultMap>
+
+
 
     <select id="findUserByUserName" parameterType="userInfo" resultType="userInfo">
 		select * from users  <include refid="selectUserInfoListWhere"/>

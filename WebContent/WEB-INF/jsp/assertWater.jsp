@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -59,7 +60,6 @@
 <div id="wrapper">
 
 
-
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -71,19 +71,27 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/assertWater/list.action"
-                      method="get">
+                      method="get" id="mainForm">
                     <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
-                        <input type="text" class="form-control" id="property_leasing_num" value="${property_leasing_num }" name="property_leasing_num">
+                        <input type="text" class="form-control" id="property_leasing_num"
+                               value="${property_leasing_num }" name="property_leasing_num">
                     </div>
                     <div class="form-group">
                         <label for="assert_num">资产编号</label>
-                        <input type="text" class="form-control" id="assert_num" value="${assert_num }" name="assert_num">
+                        <input type="text" class="form-control" id="assert_num" value="${assert_num }"
+                               name="assert_num">
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newWaterDialog" onclick="clearWater()">新建</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newWaterDialog" onclick="clearWater()">新建</a>
+                    </security:authorize>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadWater()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadWaterAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -103,7 +111,9 @@
                             <th>水表编号</th>
                             <th>水表度数</th>
                             <th>截止抄表时间</th>
-                            <th>操作</th>
+                            <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                <th>操作</th>
+                            </security:authorize>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -115,14 +125,18 @@
                                 <td>${row.watermeter_num}</td>
                                 <td>${row.water_num}</td>
                                 <td><fmt:formatDate value="${row.deadline}" pattern="yyyy-MM-dd"/></td>
-                                <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#EditWaterDialog" onclick="editWater(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteWater(${row.id})">删除</a>
-                                    <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                       onclick="showDeposit(${row.id})">查看</a>--%>
-                                </td>
+                                <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#EditWaterDialog" onclick="editWater(${row.id})">修改</a>
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deleteWater(${row.id})">删除</a>
+                                        </security:authorize>
+                                            <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
+                                               onclick="showDeposit(${row.id})">查看</a>--%>
+                                    </td>
+                                </security:authorize>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -138,9 +152,6 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
-
-
-
 
 
 </div>
@@ -163,7 +174,8 @@
                     <div class="form-group">
                         <label for="edit_property_leasing_num" class="col-sm-2 control-label">租凭合同编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num">
+                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num">
                         </div>
                     </div>
 
@@ -228,7 +240,8 @@
                             租凭合同编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num"/>
+                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num"/>
                         </div>
                     </div>
 
@@ -313,13 +326,12 @@
     }
 
 
-
     function updateWater() {
         $.post("<%=basePath%>assertWater/update.action", $("#edit_water_form").serialize(), function (data) {
-            if(data.code==0){
+            if (data.code == 0) {
                 alert(data.msg);
                 window.location.reload();
-            }else{
+            } else {
                 alert(data.msg);
                 window.location.reload();
             }
@@ -329,8 +341,8 @@
     function deleteWater(id) {
         if (confirm('确实要删除水表度数信息吗?')) {
             $.post("<%=basePath%>assertWater/delete.action", {"id": id}, function (data) {
-                    alert("水表度数信息删除成功！");
-                    window.location.reload();
+                alert("水表度数信息删除成功！");
+                window.location.reload();
 
             });
         }
@@ -345,18 +357,30 @@
     }
 
 
-
     function createWater() {
         $.post("<%=basePath%>assertWater/create.action",
             $("#new_water_form").serialize(), function (data) {
-                if(data.code==0){
+                if (data.code == 0) {
                     alert(data.msg);
                     window.location.reload();
-                }else{
+                } else {
                     alert(data.msg);
                     window.location.reload();
                 }
             });
+    }
+
+
+    //导出
+    function downloadWater() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertWater/downloadWater.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertWater/list.action");
+    }
+
+    //导出
+    function downloadWaterAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertWater/downloadWaterAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertWater/list.action");
     }
 </script>
 

@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -72,7 +73,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/totalRental/list.action"
-                      method="get">
+                     id="mainForm" method="get">
 
                     <div class="form-group">
                         <label for="community_name">小区名称</label>
@@ -93,8 +94,15 @@
                         <%-- <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-calendar"></span></span>--%>
                     </div>
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newTotalRentalDialog" onclick="clearTotalRental()">新建</a>
+                    <security:authorize access="hasRole('ROLE_ADMIN')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newTotalRentalDialog" onclick="clearTotalRental()">新建</a>
+                    </security:authorize>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadTotalRental()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadTotalRentalAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -117,7 +125,9 @@
                             <th>实收租金</th>
                             <th>对应月份</th>
                             <th>到帐时间</th>
-                            <th>操作</th>
+                  <security:authorize access="hasRole('ROLE_ADMIN')">
+                                <th>操作</th>
+                  </security:authorize>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -133,12 +143,15 @@
                                 <td>${row.reality_rental}</td>
                                 <td>${row.year_months}</td>
                                 <td><fmt:formatDate value="${row.deadline}" pattern="yyyy-MM-dd"/></td>
+                                <security:authorize access="hasRole('ROLE_ADMIN')">
                                 <td>
                                     <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
                                        data-target="#EditTotalRentalDialog" onclick="editTotalRental(${row.id})">修改</a>
                                     <a href="#" class="btn btn-danger btn-xs"
                                        onclick="deleteTotalRental(${row.id})">删除</a>
                                 </td>
+                                </security:authorize>
+
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -442,6 +455,19 @@
                     window.location.reload();
                 }
             });
+    }
+
+
+    //导出
+    function downloadTotalRental() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalRental/downloadTotalRental.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalRental/list.action");
+    }
+
+    //导出
+    function downloadTotalRentalAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalRental/downloadTotalRentalAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalRental/list.action");
     }
 </script>
 

@@ -15,4 +15,6 @@ public interface AssertWaterRentService {
     int createAssertWaterRent(AssertWaterRent assertWaterRent)throws DataAccessException;;
     List<AssertWaterRent>  getAssertWaterRentByLeasingNum(String property_leasing_num);
     BigDecimal getAssertWaterRentCountByLeasingNum(AssertWaterRent assertWaterRent);   //统计已经提交的钱
+    void deleteAssertWaterRentByPropertyLeasingNum(String property_leasing_num)throws Exception ;
+    List<AssertWaterRent> selectAssertWaterRentList(String property_leasing_num, String assert_num, String state);
 }

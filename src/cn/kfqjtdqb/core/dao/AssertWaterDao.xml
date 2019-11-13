@@ -140,5 +140,7 @@
 		delete from t_assert_water where id=#{id}
 	</delete>
 
-
+    <delete id="deleteAssertWaterByPropertyLeasingNum" parameterType="String">
+		delete from t_assert_water where property_leasing_num=#{property_leasing_num}
+	</delete>
 </mapper>

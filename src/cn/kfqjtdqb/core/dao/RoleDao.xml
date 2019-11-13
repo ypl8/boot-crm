@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.RoleDao">
+
+    <sql id="selectRoleListWhere">
+        <where>
+            <if test="id != null">
+               id=#{id}
+            </if>
+            <if  test="id==null and  userId!=null">
+                id  in  (select  roleId  from  users_role where userId=#{userId})
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectRoleList" parameterType="role" resultType="role">
+        SELECT
+        id,
+        roleName,
+        roleDesc
+        FROM
+        role
+        <include refid="selectRoleListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectRoleListCount" parameterType="role" resultType="int">
+        select count(*)
+        from role
+        <include refid="selectRoleListWhere"/>
+    </select>
+
+    <select id="getRoleById" parameterType="long" resultType="role">
+		select * from role  where id = #{id}
+	</select>
+
+
+
+
+    <update id="updateRole" parameterType="role">
+        update role
+        <set>
+            <if test="roleName!=null">
+                roleName=#{roleName},
+            </if>
+            <if test="roleDesc!=null">
+                roleDesc=#{roleDesc}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="roleName!=null">
+                roleName,
+            </if>
+            <if test="roleDesc!=null">
+                roleDesc
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="roleName!=null">
+                #{roleName},
+            </if>
+            <if test="roleDesc!=null">
+                #{roleDesc},
+            </if>
+        </trim>
+    </sql>
+
+
+    <insert id="addRole" parameterType="role">
+        insert into role(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteRole" parameterType="long">
+		delete from role where id=#{id}
+	</delete>
+
+</mapper>

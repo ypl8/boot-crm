@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service("AssertWaterService")
+@Service("assertWaterService")
 @Transactional
 public class AssertWaterServiceImpl implements AssertWaterService {
 
@@ -80,6 +80,11 @@ public class AssertWaterServiceImpl implements AssertWaterService {
     @Override
     public int createAssertWater(AssertWater AssertWater)  {
         return assertWaterDao.addAssertWater(AssertWater);
+    }
+
+    @Override
+    public void deleteAssertWaterByPropertyLeasingNum(String property_leasing_num) throws Exception {
+        assertWaterDao.deleteAssertWaterByPropertyLeasingNum(property_leasing_num);
     }
 
 

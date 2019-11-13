@@ -80,6 +80,7 @@ public class PropertyLeasing implements Serializable {
     private String property_leasing_state; // 合同的状态
     @NotNull
     private String remark;
+    private String property_leasing_type;
     private String depositState;
     private String rentalState;
     private String estateState;
@@ -123,6 +124,14 @@ public class PropertyLeasing implements Serializable {
 
     public void setStart(Integer start) {
         this.start = start;
+    }
+
+    public String getProperty_leasing_type() {
+        return property_leasing_type;
+    }
+
+    public void setProperty_leasing_type(String property_leasing_type) {
+        this.property_leasing_type = property_leasing_type;
     }
 
     public Integer getRows() {

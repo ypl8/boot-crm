@@ -73,7 +73,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/totalEstate/listCommunity.action"
-                      method="get">
+                      method="get"  id="mainForm">
 
                     <div class="form-group">
                         <label for="community_name">小区名称</label>
@@ -93,6 +93,12 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadCommunityEstate()">导出本页</a>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadCommunityEstateAll()">导出全部</a>
                     <%--<a href="#" class="btn btn-primary" data-toggle="modal"
                        data-target="#newTotalRentalDialog" onclick="clearTotalRental()">新建</a>--%>
                 </form>
@@ -389,6 +395,20 @@
                 }
             });
     }
+
+    //导出
+    function downloadCommunityEstate() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/downloadCommunityEstate.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/listCommunity.action");
+    }
+
+    //导出
+    function downloadCommunityEstateAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/downloadCommunityEstateAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/listCommunity.action");
+    }
+
+
 </script>
 
 

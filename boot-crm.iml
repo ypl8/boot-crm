@@ -16,10 +16,11 @@
         <fileset id="fileset" name="Spring Application Context" removed="false">
           <file>file://$MODULE_DIR$/build/classes/applicationContext-dao.xml</file>
           <file>file://$MODULE_DIR$/config/applicationContext-dao.xml</file>
+          <file>file://$MODULE_DIR$/config/applicationContext-security.xml</file>
           <file>file://$MODULE_DIR$/config/applicationContext-service.xml</file>
           <file>file://$MODULE_DIR$/build/classes/applicationContext-service.xml</file>
-          <file>file://$MODULE_DIR$/build/classes/applicationContext-trans.xml</file>
           <file>file://$MODULE_DIR$/config/applicationContext-trans.xml</file>
+          <file>file://$MODULE_DIR$/build/classes/applicationContext-trans.xml</file>
           <file>file://$MODULE_DIR$/config/springmvc.xml</file>
           <file>file://$MODULE_DIR$/build/classes/springmvc.xml</file>
         </fileset>
@@ -35,6 +36,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="PROVIDED" name="Tomcat 7.0.81" level="application_server_libraries" />
-    <orderEntry type="library" scope="PROVIDED" name="lib" level="project" />
+    <orderEntry type="library" name="aopalliance-1.0" level="project" />
   </component>
 </module>

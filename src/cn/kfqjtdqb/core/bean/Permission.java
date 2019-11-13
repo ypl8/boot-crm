@@ -1,12 +1,40 @@
 package cn.kfqjtdqb.core.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Permission {
+public class Permission  implements Serializable {
     private Long id;
     private String permissionName;
     private String url;
     private List<Role> roles;
+    private Integer start;
+    private Integer rows;
+    private Long roleId;
+
+    public Long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(Long roleId) {
+        this.roleId = roleId;
+    }
+
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
 
     public Long getId() {
         return id;

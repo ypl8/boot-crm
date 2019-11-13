@@ -11,6 +11,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
+
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -102,13 +104,15 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-warning" data-toggle="modal"
-                       data-target="#newAssertDialog" onclick="clearAssert()">新建</a>
-                    <a href="#" class="btn btn-info "
-                       onclick="uploadAssertInfol()">导入</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ASSERT')">
+                        <a href="#" class="btn btn-warning" data-toggle="modal"
+                           data-target="#newAssertDialog" onclick="clearAssert()">新建</a>
+                        <a href="#" class="btn btn-info "
+                           onclick="uploadAssertInfol()">导入</a>
+                    </security:authorize>
                     <a href="#" class="btn btn-success "
                        onclick="downloadAssertInfol()">导出本页</a>
-                    <a href="#" class="btn btn-success  "
+                    <a href="#" class="btn btn-success "
                        onclick="downloadAssertInfolAll()">导出全部</a>
                 </form>
             </div>
@@ -161,10 +165,14 @@
                                 </c:if>
 
                                 <td>
-                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
-                                       data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteAssert(${row.id})">删除</a>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ASSERT')">
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deleteAssert(${row.id})">删除</a>
+                                        </security:authorize>
+                                    </security:authorize>
                                         <%-- <a href="#" class="btn btn-primary btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
                                             onclick="showAssert(${row.id})">查看</a>--%>
                                     <a onclick="return showAssert(${row.id})"
@@ -415,7 +423,7 @@
 </div>
 <!-- /#wrapper -->
 
-<!-- 显示对应资产的对话框  -->
+<!-- 显示对应资产的对话框 -->
 <div class="modal fade" id="showLeasingDialog" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -528,37 +536,37 @@
     }
 
     function showAssert(id) {
-        var  flag=true;
+        var flag = true;
         $.ajax({
             type: "get",
-            async:false,
+            async: false,
             url: "<%=basePath%>assertInfol/show.action",
             data: {"id": id},
             success: function (data) {
                 if (data.propertyLeasings.length == 0) {
                     alert("该资产没有任何合同");
-                    flag=false;
+                    flag = false;
                 } else {
-                    flag=true;
+                    flag = true;
                 }
                 /*var $table = $("#tbody");
                 $table.empty();
                 var $tr;
-                for (var  i=0;i<data.propertyLeasings.length;i++){
-                    $tr = $("<tr>"+
-                        "<td>"+data.propertyLeasings[i].id+"</td>"+
-                        "<td>"+data.propertyLeasings[i].property_leasing_num+"</td>"+
-                        "<td>"+data.propertyLeasings[i].tenant+"</td>"+
-                        "<td>"+data.propertyLeasings[i].monthly_rental+"</td>"+
-                        "<td>"+data.propertyLeasings[i].rent_period+"</td>"+
-                        "<td>"+data.propertyLeasings[i].estate_charge_month+"</td>"+
-                        "<td>"+data.propertyLeasings[i].deposit+"</td>"+
-                        "<td>"+data.propertyLeasings[i].water_rate+"</td>"+
-                        "<td>"+data.propertyLeasings[i].power_rate+"</td>"+
-                      /!*  "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
-                        "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*!/
-                        "</tr>");
-                    $table.append($tr);
+                for (var i=0;i<data.propertyLeasings.length;i++){
+                $tr = $("<tr>"+
+                "<td>"+data.propertyLeasings[i].id+"</td>"+
+                "<td>"+data.propertyLeasings[i].property_leasing_num+"</td>"+
+                "<td>"+data.propertyLeasings[i].tenant+"</td>"+
+                "<td>"+data.propertyLeasings[i].monthly_rental+"</td>"+
+                "<td>"+data.propertyLeasings[i].rent_period+"</td>"+
+                "<td>"+data.propertyLeasings[i].estate_charge_month+"</td>"+
+                "<td>"+data.propertyLeasings[i].deposit+"</td>"+
+                "<td>"+data.propertyLeasings[i].water_rate+"</td>"+
+                "<td>"+data.propertyLeasings[i].power_rate+"</td>"+
+                /!* "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
+                "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*!/
+                "</tr>");
+                $table.append($tr);
                 }*/
 
             }

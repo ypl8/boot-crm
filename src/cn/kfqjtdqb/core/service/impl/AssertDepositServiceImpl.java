@@ -80,5 +80,19 @@ public class AssertDepositServiceImpl implements AssertDepositService {
         assertDepositDao.deleteAssertDepositByLeasingNum(property_leasing_num);
     }
 
+    @Override
+    public List<AssertDeposit> selectAssertDepositList(String property_leasing_num, String state) {
+        AssertDeposit assertDeposit = new AssertDeposit();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            assertDeposit.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(state)) {
+            assertDeposit.setState(state);
+        }
+        return assertDepositDao.selectAssertDepositList(assertDeposit);
+    }
+
 
 }

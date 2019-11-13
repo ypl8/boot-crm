@@ -80,4 +80,27 @@ public class AssertPowerRentServiceImpl implements AssertPowerRentService {
     public BigDecimal getAssertPowerRentCountByLeasingNum(AssertPowerRent assertPowerRent) {
         return assertPowerRentDao.getAssertPowerRentCountByLeasingNum(assertPowerRent);
     }
+
+    @Override
+    public void deleteAssertPowerRentByPropertyLeasingNum(String property_leasing_num) throws Exception {
+        assertPowerRentDao.deleteAssertPowerRentByPropertyLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public List<AssertPowerRent> selectAssertPowerRentList(String property_leasing_num, String assert_num, String state) {
+        AssertPowerRent AssertPowerRent = new AssertPowerRent();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            AssertPowerRent.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(state)) {
+            AssertPowerRent.setState(state);
+        }
+        if (StringUtils.isNotBlank(assert_num)) {
+            AssertPowerRent.setAssert_num(assert_num);
+        }
+        List<AssertPowerRent> AssertPowerRents = assertPowerRentDao.selectAssertPowerRentList(AssertPowerRent);
+        return AssertPowerRents;
+    }
 }

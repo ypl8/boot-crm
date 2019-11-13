@@ -46,13 +46,13 @@ public class UserController {
     /**
      * 退出登录
      */
-    @RequestMapping(value = "/logout")
+   /* @RequestMapping(value = "/logout")
     public String logout(HttpSession session){
         //清除Session
         session.invalidate();
         //重定向到登录页面的跳转方法
         return "redirect:login.action";
-    }
+    }*/
 
     /**
      * 向用户登录页面跳转

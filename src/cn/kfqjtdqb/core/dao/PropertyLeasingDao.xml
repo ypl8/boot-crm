@@ -37,12 +37,19 @@
                 and waterState = #{waterState}
             </if>
 
+            <if test="property_leasing_type != null">
+                and property_leasing_type = #{property_leasing_type}
+            </if>
+
             <if test="powerState != null">
                 and powerState = #{powerState}
             </if>
 
+
+
             <if test="assert_num != null and property_leasing_num == null  ">
-                and  property_leasing_num  in (select  property_leasing_num  from  t_assert_leasing where assert_num=#{assert_num})
+                and property_leasing_num in (select property_leasing_num from t_assert_leasing where
+                assert_num=#{assert_num})
             </if>
         </where>
     </sql>
@@ -53,7 +60,7 @@
         monthly_rental,rent_free_period,rent_period,collect_rent_way,collect_rent_time,estate_charge_standard,
         estate_charge_month,deposit,deposit_time,water_rate,power_rate,collect_rate_way,collect_rate_way,
         rent_start_time,rent_end_time,property_leasing_state,remark,total_rent,community_name,depositState,rentalState,estateState,
-        waterState,powerState
+        waterState,powerState,property_leasing_type
         FROM
         t_property_leasing
         <include refid="selectPropertyLeasingListWhere"/>
@@ -101,6 +108,7 @@
         <result property="estateState" column="estateState"/>
         <result property="waterState" column="waterState"/>
         <result property="powerState" column="powerState"/>
+        <result property="property_leasing_type" column="property_leasing_type"/>
         <collection property="assertInfols" column="property_leasing_num" ofType="AssertInfol"
                     select="cn.kfqjtdqb.core.dao.AssertInfolDao.findAssertInfolByNum">
         </collection>
@@ -296,22 +304,26 @@
             </if>
 
             <if test="powerState!=null">
-                powerState=#{powerState}
+                powerState=#{powerState},
             </if>
             <if test="building_num!=null">
-                building_num=#{building_num}
+                building_num=#{building_num},
             </if>
+
+            <if test="property_leasing_type!=null">
+                property_leasing_type=#{property_leasing_type}
+            </if>
+
 
         </set>
         <include refid="updatePropertyLeasingWhere"/>
     </update>
 
-    <select id ="updateState" statementType="CALLABLE" >
+    <select id="updateState" statementType="CALLABLE">
         <!--注明statementType="CALLABLE"表示调用存储过程-->
         {call update_conference_status()}
         <!--传入传出参数要注明mode=IN/OUT 并要注明jdbcType（在网上可以查询mybatis支持哪些jdbcType类型），返回参数要注明对应的resultMap-->
-    </select >
-
+    </select>
 
 
     <sql id="key">
@@ -432,9 +444,11 @@
                 powerState,
             </if>
             <if test="building_num!=null">
-                building_num
+                building_num,
             </if>
-
+            <if test="property_leasing_type!=null">
+                property_leasing_type,
+            </if>
 
         </trim>
     </sql>
@@ -575,7 +589,10 @@
                 #{powerState},
             </if>
             <if test="building_num!=null">
-                #{building_num}
+                #{building_num},
+            </if>
+            <if test="property_leasing_type!=null">
+              #{property_leasing_type}
             </if>
         </trim>
     </sql>
@@ -613,4 +630,21 @@
     </insert>
 
 
+    <delete id="deleteAssertLeasingByAssertNumAndPropertyLeasingNum" parameterType="assertLeasing">
+	     delete from t_assert_leasing where property_leasing_num=#{property_leasing_num} and  assert_num=#{assert_num};
+    </delete>
+
+    <delete id="deleteAssertLeasingByPropertyLeasingNum" parameterType="String">
+	     delete from t_assert_leasing where property_leasing_num=#{property_leasing_num}
+    </delete>
+
+
+    <select id="findEmptyPropertyLeasingCount" resultType="countEmpty">
+    select
+        sum(case when rentalState in ('6') then 1 else 0 end) as empty_rental_num,
+        sum(case when  estateState in ('8') then 1 else 0 end) as empty_estate_num,
+        sum(case when  powerState in ('22') then 1 else 0 end) as empty_power_num,
+        sum(case when  waterState in ('20') then 1 else 0 end) as empty_water_num
+    from t_property_leasing  where property_leasing_type='26' ;
+ </select>
 </mapper>

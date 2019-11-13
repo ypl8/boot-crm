@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -59,7 +60,6 @@
 <div id="wrapper">
 
 
-
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -71,29 +71,39 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/assertPowerRent/list.action"
-                      method="get">
+                      method="get" id="mainForm">
                     <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
-                        <input type="text" class="form-control" id="property_leasing_num" value="${property_leasing_num }" name="property_leasing_num">
+                        <input type="text" class="form-control" id="property_leasing_num"
+                               value="${property_leasing_num }" name="property_leasing_num">
                     </div>
                     <div class="form-group">
                         <label for="assert_num">资产编号</label>
-                        <input type="text" class="form-control" id="assert_num" value="${assert_num }" name="assert_num">
+                        <input type="text" class="form-control" id="assert_num" value="${assert_num }"
+                               name="assert_num">
                     </div>
 
                     <div class="form-group">
                         <label for="state">电费到账状态</label>
-                        <select	class="form-control" id="state" placeholder="电费到账状态" name="state">
+                        <select class="form-control" id="state" placeholder="电费到账状态" name="state">
                             <option value="">--请选择--</option>
                             <c:forEach items="${stateType}" var="item">
-                                <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
                             </c:forEach>
                         </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newPowerRentDialog" onclick="clearPowerRent()">新建</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newPowerRentDialog" onclick="clearPowerRent()">新建</a>
+                    </security:authorize>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadPowerRent()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadPowerRentAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -110,8 +120,8 @@
                             <th>序号</th>
                             <th>租凭合同编号</th>
                             <th>资产编号</th>
-                          <%--  <th>本次收取费用开始时间</th>
-                            <th>本次收取费用结束时间</th>--%>
+                            <%--  <th>本次收取费用开始时间</th>
+                              <th>本次收取费用结束时间</th>--%>
                             <th>电表编号</th>
                             <th>电费度数(元)</th>
                             <th>截止时间</th>
@@ -119,7 +129,9 @@
                             <th>实际已收电费（元）</th>
                             <th>本次实收电费（元)</th>
                             <th>状态</th>
-                            <th>操作</th>
+                            <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                <th>操作</th>
+                            </security:authorize>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -128,8 +140,8 @@
                                 <td>${row.id}</td>
                                 <td>${row.property_leasing_num}</td>
                                 <td>${row.assert_num}</td>
-                              <%--  <td><fmt:formatDate value="${row.rent_start_time}" pattern="yyyy-MM-dd"/></td>
-                                <td><fmt:formatDate value="${row.rent_end_time}" pattern="yyyy-MM-dd"/></td>--%>
+                                    <%--  <td><fmt:formatDate value="${row.rent_start_time}" pattern="yyyy-MM-dd"/></td>
+                                      <td><fmt:formatDate value="${row.rent_end_time}" pattern="yyyy-MM-dd"/></td>--%>
                                 <td>${row.powermeter_num}</td>
                                 <td>${row.power_num}</td>
                                 <td><fmt:formatDate value="${row.deadline}" pattern="yyyy-MM-dd"/></td>
@@ -137,18 +149,22 @@
                                 <td>${row.power_rent_recivied}</td>
                                 <td>${row.reality_power_rent}</td>
                                 <c:if test="${'21' eq row.state}">
-                                   <td>缴清</td>
+                                    <td>缴清</td>
                                 </c:if>
                                 <c:if test="${'22' eq row.state}">
                                     <td> 未缴清</td>
                                 </c:if>
                                 <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#EditPowerRentDialog" onclick="editPowerRent(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deletePowerRent(${row.id})">删除</a>
-                                    <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                       onclick="showDeposit(${row.id})">查看</a>--%>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#EditPowerRentDialog" onclick="editPowerRent(${row.id})">修改</a>
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deletePowerRent(${row.id})">删除</a>
+                                        </security:authorize>
+                                    </security:authorize>
+                                        <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
+                                           onclick="showDeposit(${row.id})">查看</a>--%>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -165,9 +181,6 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
-
-
-
 
 
 </div>
@@ -190,14 +203,16 @@
                     <div class="form-group">
                         <label for="edit_property_leasing_num" class="col-sm-2 control-label">租凭合同编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num">
+                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="edit_assert_num" class="col-sm-2 control-label">资产编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_assert_num" placeholder="资产编号" name="assert_num">
+                            <input type="text" class="form-control" id="edit_assert_num" placeholder="资产编号"
+                                   name="assert_num">
                         </div>
                     </div>
 
@@ -245,7 +260,8 @@
                     <div class="form-group">
                         <label for="edit_power_rent_received" class="col-sm-2 control-label">实际已收电费</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_power_rent_received" placeholder="实际已收电费（元）"
+                            <input type="text" class="form-control" id="edit_power_rent_received"
+                                   placeholder="实际已收电费（元）"
                                    name="power_rent_recivied">
                         </div>
                     </div>
@@ -261,7 +277,8 @@
                     <div class="form-group">
                         <label for="edit_reality_power_rent" class="col-sm-2 control-label">本次收取电费</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="edit_reality_power_rent" placeholder="本次收取电费（元）"
+                            <input type="number" class="form-control" id="edit_reality_power_rent"
+                                   placeholder="本次收取电费（元）"
                                    name="reality_power_rent">
                         </div>
                     </div>
@@ -309,7 +326,8 @@
                             租凭合同编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num"/>
+                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num"/>
                         </div>
                     </div>
 
@@ -317,7 +335,8 @@
                     <div class="form-group">
                         <label for="new_assert_num" class="col-sm-2 control-label">资产编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_assert_num" placeholder="资产编号" name="assert_num">
+                            <input type="text" class="form-control" id="new_assert_num" placeholder="资产编号"
+                                   name="assert_num">
                         </div>
                     </div>
 
@@ -378,23 +397,24 @@
                     <div class="form-group">
                         <label for="new_reality_power_rent" class="col-sm-2 control-label">本次收取电费</label>
                         <div class="col-sm-10">
-                            <input type="number" class="form-control" id="new_reality_power_rent" placeholder="本次收取电费（元）"
+                            <input type="number" class="form-control" id="new_reality_power_rent"
+                                   placeholder="本次收取电费（元）"
                                    name="reality_power_rent">
                         </div>
                     </div>
 
 
-                   <%-- <div class="form-group">
-                        <label for="new_state" style="float:left;padding:7px 15px 0 27px;">电费状态</label>
-                        <div class="col-sm-10">
-                            <select	class="form-control" id="new_state" placeholder="电费状态" name="state">
-                                <option value="">--请选择--</option>
-                                <c:forEach items="${stateType}" var="item">
-                                    <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>--%>
+                    <%-- <div class="form-group">
+                         <label for="new_state" style="float:left;padding:7px 15px 0 27px;">电费状态</label>
+                         <div class="col-sm-10">
+                             <select	class="form-control" id="new_state" placeholder="电费状态" name="state">
+                                 <option value="">--请选择--</option>
+                                 <c:forEach items="${stateType}" var="item">
+                                     <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                 </c:forEach>
+                             </select>
+                         </div>
+                     </div>--%>
                 </form>
             </div>
             <div class="modal-footer">
@@ -438,7 +458,7 @@
                 $("#edit_rent_end_time").val(data.rent_end_time);
                 $("#edit_reality_power_rent").val(data.reality_power_rent);
                 $("#edit_power_rent").val(data.power_rent);
-        /*        $("#edit_state").val(data.state);*/
+                /* $("#edit_state").val(data.state);*/
                 $("#edit_power_num").val(data.power_num);
                 $("#edit_deadline").val(data.deadline);
                 $("#edit_powermeter_num").val(data.powermeter_num);
@@ -451,10 +471,10 @@
 
     function updatePowerRent() {
         $.post("<%=basePath%>assertPowerRent/update.action", $("#edit_power_rent_form").serialize(), function (data) {
-            if(data.code==0){
+            if (data.code == 0) {
                 alert(data.msg);
                 window.location.reload();
-            }else{
+            } else {
                 alert(data.msg);
                 window.location.reload();
             }
@@ -464,8 +484,8 @@
     function deletePowerRent(id) {
         if (confirm('确实要删除电费信息吗?')) {
             $.post("<%=basePath%>assertPowerRent/delete.action", {"id": id}, function (data) {
-                    alert("电费信息删除成功！");
-                    window.location.reload();
+                alert("电费信息删除成功！");
+                window.location.reload();
 
             });
         }
@@ -478,7 +498,7 @@
         $("#new_rent_end_time").val("");
         $("#new_reality_power_rent").val("");
         $("#new_power_rent").val("");
-  /*      $("#new_state").val("");*/
+        /* $("#new_state").val("");*/
         $("#new_power_num").val("");
         $("#new_power_rent_received").val("");
         $("#new_powermeter_num").val("");
@@ -488,16 +508,28 @@
 
     // 创建电费
     function createPowerRent() {
-        $.post("<%=basePath%>assertWaterRent/create.action",
+        $.post("<%=basePath%>assertPowerRent/create.action",
             $("#new_power_rent_form").serialize(), function (data) {
-                if(data.code==0){
+                if (data.code == 0) {
                     alert(data.msg);
                     window.location.reload();
-                }else{
+                } else {
                     alert(data.msg);
                     window.location.reload();
                 }
             });
+    }
+
+    //导出
+    function downloadPowerRent() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertPowerRent/downloadPowerRent.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertPowerRent/list.action");
+    }
+
+    //导出
+    function downloadPowerRentAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertPowerRent/downloadPowerRentAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertPowerRent/list.action");
     }
 </script>
 

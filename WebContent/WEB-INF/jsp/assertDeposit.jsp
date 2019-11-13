@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -70,7 +71,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/assertDeposit/list.action"
-                      method="get">
+                      method="get" id="mainForm">
                     <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
                         <input type="text" class="form-control" id="property_leasing_num"
@@ -89,8 +90,14 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newDepositDialog" onclick="clearDeposit()">新建</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT','ROLE_DEPOSIT')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newDepositDialog" onclick="clearDeposit()">新建</a>
+                    </security:authorize>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadDepositInfol()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadDepositInfolAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -112,7 +119,9 @@
                             <th>实际保证金（元)</th>
                             <th>到帐时间</th>
                             <th>状态</th>
-                            <th>操作</th>
+                            <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT','ROLE_DEPOSIT')">
+                                <th>操作</th>
+                            </security:authorize>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -132,14 +141,19 @@
                                     <td> 未缴清</td>
                                 </c:if>
 
-                                <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#depositEditDialog" onclick="editDeposit(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteDeposit(${row.id})">删除</a>
-                                        <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                           onclick="showDeposit(${row.id})">查看</a>--%>
-                                </td>
+                                <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_DEPOSIT')">
+                                    <td>
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#depositEditDialog" onclick="editDeposit(${row.id})">修改</a>
+
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deleteDeposit(${row.id})">删除</a>
+                                        </security:authorize>
+                                            <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
+                                               onclick="showDeposit(${row.id})">查看</a>--%>
+                                    </td>
+                                </security:authorize>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -182,13 +196,13 @@
                         </div>
                     </div>
 
-                 <%--   <div class="form-group">
-                        <label for="edit_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_rent_start_time" placeholder="本次收取费用开始时间"
-                                   name="rent_start_time">
-                        </div>
-                    </div>--%>
+                    <%--   <div class="form-group">
+                           <label for="edit_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
+                           <div class="col-sm-10">
+                               <input type="text" class="form-control" id="edit_rent_start_time" placeholder="本次收取费用开始时间"
+                                      name="rent_start_time">
+                           </div>
+                       </div>--%>
 
                     <div class="form-group date form_date">
                         <label for="edit_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
@@ -198,13 +212,13 @@
                         </div>
                     </div>
 
-               <%--     <div class="form-group">
-                        <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_rent_end_time" placeholder="本次收取费用结束时间"
-                                   name="rent_end_time">
-                        </div>
-                    </div>--%>
+                    <%--     <div class="form-group">
+                             <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
+                             <div class="col-sm-10">
+                                 <input type="text" class="form-control" id="edit_rent_end_time" placeholder="本次收取费用结束时间"
+                                        name="rent_end_time">
+                             </div>
+                         </div>--%>
 
                     <div class="form-group date form_date">
                         <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
@@ -214,13 +228,13 @@
                         </div>
                     </div>
 
-                   <%-- <div class="form-group date form_date">
-                        <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
-                        <div class="col-sm-10">
-                            <input name="rent_start_time" id="edit_rent_end_time" type='text' value="${deadline }"
-                                   class="form-control" readonly="readonly" placeholder="本次收取费用开始时间"/>
-                        </div>
-                    </div>--%>
+                    <%-- <div class="form-group date form_date">
+                         <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
+                         <div class="col-sm-10">
+                             <input name="rent_start_time" id="edit_rent_end_time" type='text' value="${deadline }"
+                                    class="form-control" readonly="readonly" placeholder="本次收取费用开始时间"/>
+                         </div>
+                     </div>--%>
 
                     <div class="form-group">
                         <label for="edit_deposit" class="col-sm-2 control-label">应收保证金</label>
@@ -243,7 +257,7 @@
                         <label for="edit_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="edit_deadline" type='text'
-                                   class="form-control"  placeholder="到帐时间"/>
+                                   class="form-control" placeholder="到帐时间"/>
                         </div>
 
                     </div>
@@ -297,7 +311,6 @@
                     </div>
 
 
-
                     <div class="form-group date form_date">
                         <label for="new_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
@@ -305,7 +318,6 @@
                                    class="form-control" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
@@ -334,12 +346,11 @@
                     </div>
 
 
-
                     <div class="form-group date form_date">
                         <label for="new_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="new_deadline" type='text' value="${deadline }"
-                                   class="form-control"  placeholder="到帐时间"/>
+                                   class="form-control" placeholder="到帐时间"/>
                         </div>
                         <%-- <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-calendar"></span></span>--%>
                     </div>
@@ -450,6 +461,19 @@
                 }
             });
     }
+
+
+    //导出
+    function downloadDepositInfol() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertDeposit/downloadDepositInfol.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertDeposit/list.action");
+    }
+
+    //导出
+    function downloadDepositInfolAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertDeposit/downloadDepositInfolAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertDeposit/list.action");
+    }
 </script>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/bootstramp/bootstrap/js/bootstrap.min.js"
@@ -465,8 +489,8 @@
     $('#edit_deadline').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
@@ -478,8 +502,8 @@
     $('#new_deadline').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
@@ -490,8 +514,8 @@
     $('#edit_rent_start_time').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
@@ -503,8 +527,8 @@
     $('#edit_rent_end_time').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
@@ -515,8 +539,8 @@
     $('#new_rent_start_time').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
@@ -528,8 +552,8 @@
     $('#new_rent_end_time').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,

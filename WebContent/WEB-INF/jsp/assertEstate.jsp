@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -59,7 +60,6 @@
 <div id="wrapper">
 
 
-
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -71,25 +71,34 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/assertEstate/list.action"
-                      method="get">
+                      method="get" id="mainForm">
                     <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
-                        <input type="text" class="form-control" id="property_leasing_num" value="${property_leasing_num }" name="property_leasing_num">
+                        <input type="text" class="form-control" id="property_leasing_num"
+                               value="${property_leasing_num }" name="property_leasing_num">
                     </div>
 
                     <div class="form-group">
                         <label for="state">物业费到账状态</label>
-                        <select	class="form-control" id="state" placeholder="物业费到账状态" name="state">
+                        <select class="form-control" id="state" placeholder="物业费到账状态" name="state">
                             <option value="">--请选择--</option>
                             <c:forEach items="${stateType}" var="item">
-                                <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
                             </c:forEach>
                         </select>
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newEstateDialog" onclick="clearEstate()">新建</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ESTATE')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newEstateDialog" onclick="clearEstate()">新建</a>
+                    </security:authorize>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadEstateInfol()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadEstateInfolAll()">导出全部</a>
                 </form>
             </div>
         </div>
@@ -112,7 +121,9 @@
                             <th>本次实收物业费（元)</th>
                             <th>收费时间</th>
                             <th>状态</th>
-                            <th>操作</th>
+                   <%--         <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT','ROLE_ESTATE')">--%>
+                                <th>操作</th>
+                          <%--  </security:authorize>--%>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -127,19 +138,30 @@
                                 <td>${row.reality_estate}</td>
                                 <td><fmt:formatDate value="${row.deadline}" pattern="yyyy-MM-dd"/></td>
                                 <c:if test="${'9' eq row.state}">
-                                   <td>缴清</td>
+                                    <td>缴清</td>
                                 </c:if>
                                 <c:if test="${'8' eq row.state}">
                                     <td> 未缴清</td>
                                 </c:if>
+
                                 <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#EditEstateDialog" onclick="editEstate(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteEstate(${row.id})">删除</a>
-                                    <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                       onclick="showDeposit(${row.id})">查看</a>--%>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ESTATE')">
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#EditEstateDialog" onclick="editEstate(${row.id})">修改</a>
+
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        <a href="#" class="btn btn-danger btn-xs"
+                                           onclick="deleteEstate(${row.id})">删除</a>
+
+                                    </security:authorize>
+                                    </security:authorize>
+                                        <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
+                                           onclick="showDeposit(${row.id})">查看</a>--%>
+                                    <a href="${pageContext.request.contextPath}/totalEstate/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
                                 </td>
+
+
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -155,9 +177,6 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
-
-
-
 
 
 </div>
@@ -180,17 +199,17 @@
                     <div class="form-group">
                         <label for="edit_property_leasing_num" class="col-sm-2 control-label">租凭合同编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num">
+                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num">
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
                         <label for="edit_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
                             <input name="rent_start_time" id="edit_rent_start_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用开始时间"/>
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
 
@@ -199,7 +218,7 @@
                         <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
                         <div class="col-sm-10">
                             <input name="rent_end_time" id="edit_rent_end_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用结束时间"/>
+                                   class="form-control picket" placeholder="本次收取费用结束时间"/>
                         </div>
                     </div>
 
@@ -228,26 +247,25 @@
                     </div>
 
 
-
                     <div class="form-group date form_date">
                         <label for="edit_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="edit_deadline" type='text'
-                                   class="form-control picket"  placeholder="到帐时间"/>
+                                   class="form-control picket" placeholder="到帐时间"/>
                         </div>
 
                     </div>
-                  <%--  <div class="form-group">
-                        <label for="edit_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
-                        <div class="col-sm-10">
-                            <select	class="form-control" id="edit_state" placeholder="租金状态" name="state">
-                                <option value="">--请选择--</option>
-                                <c:forEach items="${stateType}" var="item">
-                                    <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>--%>
+                    <%--  <div class="form-group">
+                          <label for="edit_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
+                          <div class="col-sm-10">
+                              <select	class="form-control" id="edit_state" placeholder="租金状态" name="state">
+                                  <option value="">--请选择--</option>
+                                  <c:forEach items="${stateType}" var="item">
+                                      <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                  </c:forEach>
+                              </select>
+                          </div>
+                      </div>--%>
 
                 </form>
             </div>
@@ -279,27 +297,26 @@
                             租凭合同编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num"/>
+                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
                         <label for="new_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
                             <input name="rent_start_time" id="new_rent_start_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用开始时间"/>
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
                         <label for="new_rent_end_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
                             <input name="rent_end_time" id="new_rent_end_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用开始时间"/>
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
 
@@ -333,21 +350,21 @@
                         <label for="new_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="new_deadline" type='text'
-                                   class="form-control picket"  placeholder="到帐时间"/>
+                                   class="form-control picket" placeholder="到帐时间"/>
                         </div>
                     </div>
 
-                   <%-- <div class="form-group">
-                        <label for="new_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
-                        <div class="col-sm-10">
-                            <select	class="form-control" id="new_state" placeholder="租金状态" name="state">
-                                <option value="">--请选择--</option>
-                                <c:forEach items="${stateType}" var="item">
-                                    <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
-                                </c:forEach>
-                            </select>
-                        </div>
-                    </div>--%>
+                    <%-- <div class="form-group">
+                         <label for="new_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
+                         <div class="col-sm-10">
+                             <select	class="form-control" id="new_state" placeholder="租金状态" name="state">
+                                 <option value="">--请选择--</option>
+                                 <c:forEach items="${stateType}" var="item">
+                                     <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                 </c:forEach>
+                             </select>
+                         </div>
+                     </div>--%>
                 </form>
             </div>
             <div class="modal-footer">
@@ -392,20 +409,19 @@
                 $("#edit_reality_estate").val(data.reality_estate);
                 $("#edit_estate").val(data.estate);
                 $("#edit_deadline").val(data.deadline);
-          /*      $("#edit_state").val(data.state);*/
+                /*      $("#edit_state").val(data.state);*/
                 $("#edit_estate_received").val(data.estate_recivied);
             }
         });
     }
 
 
-
     function updateEstate() {
         $.post("<%=basePath%>assertEstate/update.action", $("#edit_estate_form").serialize(), function (data) {
-            if(data.code==0){
+            if (data.code == 0) {
                 alert(data.msg);
                 window.location.reload();
-            }else{
+            } else {
                 alert(data.msg);
                 window.location.reload();
             }
@@ -415,8 +431,8 @@
     function deleteEstate(id) {
         if (confirm('确实要删除租金信息吗?')) {
             $.post("<%=basePath%>assertEstate/delete.action", {"id": id}, function (data) {
-                    alert("租金信息删除成功！");
-                    window.location.reload();
+                alert("租金信息删除成功！");
+                window.location.reload();
 
             });
         }
@@ -429,7 +445,7 @@
         $("#new_reality_estate").val("");
         $("#new_estate").val("");
         $("#edit_deadline").val("");
-/*        $("#new_state").val("");*/
+        /*        $("#new_state").val("");*/
         $("#new_estate_received").val("");
     }
 
@@ -438,17 +454,28 @@
     function createEstate() {
         $.post("<%=basePath%>assertEstate/create.action",
             $("#new_estate_form").serialize(), function (data) {
-                if(data.code==0){
+                if (data.code == 0) {
                     alert(data.msg);
                     window.location.reload();
-                }else{
+                } else {
                     alert(data.msg);
                     window.location.reload();
                 }
             });
     }
-</script>
 
+    //导出
+    function downloadEstateInfol() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/downloadEstateInfol.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/list.action");
+    }
+
+    //导出
+    function downloadEstateInfolAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/downloadEstateInfolAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/list.action");
+    }
+</script>
 
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/bootstramp/bootstrap/js/bootstrap.min.js"
@@ -464,17 +491,14 @@
     $('.picket').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
         autoclose: 1,
         language: 'zh-CN'
     });
-
-
-
 
 
 </script>

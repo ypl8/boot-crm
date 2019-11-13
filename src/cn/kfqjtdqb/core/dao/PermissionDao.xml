@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.PermissionDao">
+
+    <sql id="selectPermissionListWhere">
+        <where>
+            <if test="id != null">
+               id=#{id}
+            </if>
+            <if test="id == null and  roleId!=null">
+                id  in (select  permissionId  from role_permission where roleId=#{roleId} )
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPermissionList" parameterType="permission" resultType="permission">
+        SELECT
+        id,
+        permissionName,
+        url
+        FROM
+        permission
+        <include refid="selectPermissionListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+    </select>
+
+    <select id="selectPermissionListCount" parameterType="permission" resultType="int">
+        select count(*)
+        from permission
+        <include refid="selectPermissionListWhere"/>
+    </select>
+
+    <select id="getPermissionById" parameterType="long" resultType="permission">
+		select * from permission  where id = #{id}
+	</select>
+
+
+
+
+    <update id="updatePermission" parameterType="permission">
+        update permission
+        <set>
+            <if test="permissionName!=null">
+                permissionName=#{permissionName},
+            </if>
+            <if test="url!=null">
+                url=#{url}
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="permissionName!=null">
+                permissionName,
+            </if>
+            <if test="url!=null">
+                url
+            </if>
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="permissionName!=null">
+                #{permissionName},
+            </if>
+            <if test="url!=null">
+                #{url},
+            </if>
+        </trim>
+    </sql>
+
+
+    <insert id="addPermission" parameterType="permission">
+        insert into permission(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deletePermission" parameterType="long">
+		delete from permission where id=#{id}
+	</delete>
+
+</mapper>

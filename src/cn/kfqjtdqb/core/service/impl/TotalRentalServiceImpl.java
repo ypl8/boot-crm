@@ -152,5 +152,67 @@ public class TotalRentalServiceImpl implements TotalRentalService {
         TotalRentalDao.deleteTotalRentalByPropertyLeasingNum(property_leasing_num);
     }
 
+    @Override
+    public List<TotalRental> selectTotalRentalList(String property_leasing_num, String community_name, String year_months) {
+        TotalRental TotalRental = new TotalRental();
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            TotalRental.setProperty_leasing_num(property_leasing_num);
+        }
+        if (StringUtils.isNotBlank(year_months)) {
+            TotalRental.setYear_months(year_months);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalRental.setCommunity_name(community_name);
+        }
+
+        List<TotalRental> TotalRentals = TotalRentalDao.selectTotalRentalList(TotalRental);
+        return TotalRentals;
+    }
+
+    @Override
+    public List<TotalRental> selectTotalRentalCommunityList(String year_months, String community_name) {
+        TotalRental TotalRental = new TotalRental();
+        if (StringUtils.isNotBlank(year_months)) {
+            TotalRental.setYear_months(year_months);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalRental.setCommunity_name(community_name);
+        }
+        //查询客户列表
+        List<TotalRental> TotalRentals = TotalRentalDao.selectTotalRentalCommunityList(TotalRental);
+        for (int i = 0; i < TotalRentals.size(); i++) {
+            TotalRentals.get(i).setDifference(TotalRentals.get(i).getRental() .subtract( TotalRentals.get(i).getReality_rental()));
+            if (TotalRentals.get(i).getRental() != null && TotalRentals.get(i).getRental().compareTo(BigDecimal.ZERO)==0 ) {
+                TotalRentals.get(i).setCollectionRate(new BigDecimal(100+""));
+            } else {
+                TotalRentals.get(i).setCollectionRate(TotalRentals.get(i).getReality_rental() .divide( TotalRentals.get(i).getRental(),2,BigDecimal.ROUND_HALF_UP) .multiply( new BigDecimal("100")));
+            }
+        }
+        return TotalRentals;
+    }
+
+    @Override
+    public List<TotalRental> selectTotalRentalCommunityByYearList(String years, String community_name) {
+        TotalRental TotalRental = new TotalRental();
+        if (StringUtils.isNotBlank(years)) {
+            TotalRental.setYear_months(years);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalRental.setCommunity_name(community_name);
+        }
+        //查询客户列表
+        List<TotalRental> TotalRentals = TotalRentalDao.selectTotalRentalCommunityByYearList(TotalRental);
+
+        for (int i = 0; i < TotalRentals.size(); i++) {
+            TotalRentals.get(i).setDifference(TotalRentals.get(i).getRental() .subtract( TotalRentals.get(i).getReality_rental()));
+            if (TotalRentals.get(i).getRental() != null && TotalRentals.get(i).getRental() .compareTo(BigDecimal.ZERO)==0 ) {
+                TotalRentals.get(i).setCollectionRate(new BigDecimal("100"));
+            } else {
+                TotalRentals.get(i).setCollectionRate((TotalRentals.get(i).getReality_rental() .divide( TotalRentals.get(i).getRental(),2,BigDecimal.ROUND_HALF_UP)) .multiply( new BigDecimal("100")));
+            }
+        }
+        return TotalRentals;
+    }
+
 
 }

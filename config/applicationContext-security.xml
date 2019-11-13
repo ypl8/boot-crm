@@ -2,10 +2,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
     http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-4.0.xsd
     http://www.springframework.org/schema/security
     http://www.springframework.org/schema/security/spring-security.xsd">
+
+
+
+    <!--    jsr250-annotations="enabled"-->
+<!--    <security:global-method-security secured-annotations="enabled"/>-->
 
     <!-- 配置不拦截的资源 -->
     <security:http pattern="/index.jsp" security="none"/>
@@ -15,29 +23,32 @@
     <security:http pattern="/bootstramp/**" security="none"/>
     <security:http pattern="/fonts/**" security="none"/>
     <security:http pattern="/js/**" security="none"/>
+    <security:http pattern="/plugins/**" security="none"/>
+    <!--  <security:http pattern="/index.action" security="none"/>-->
     <!--
     	配置具体的规则
     	auto-config="true"	不用自己编写登录的页面，框架提供默认登录页面
     	use-expressions="false"	是否使用SPEL表达式（没学习过）
     -->
-    <security:http auto-config="true" use-expressions="false">
+    <security:http auto-config="true" use-expressions="true">
         <!-- 配置具体的拦截的规则 pattern="请求路径的规则" access="访问系统的人，必须有ROLE_USER的角色" -->
-        <security:intercept-url pattern="/**" access="ROLE_USER,ROLE_ADMIN"/>
+        <security:intercept-url pattern="/**" access="hasAnyRole('ROLE_USER','ROLE_ADMIN','ROLE_WATER','ROLE_ASSERT','ROLE_CONTRACT','ROLE_DEPOSIT','ROLE_ESTATE','ROLE_RENTAL')"/>
 
         <!-- 定义跳转的具体的页面 -->
         <security:form-login
                 login-page="/index.jsp"
                 login-processing-url="/userInfo/login.action"
                 default-target-url="/index.action"
-                authentication-failure-url="/login.jsp"
-                authentication-success-forward-url="/index.action"
+                authentication-failure-url="/index.jsp"
+                username-parameter="userName"
+                password-parameter="password"
         />
-
+        <!-- authentication-success-handler-ref="index.action"-->
         <!-- 关闭跨域请求 -->
-        <security:csrf disabled="true"/>
+        <!--<security:csrf disabled="true"/>-->
 
         <!-- 退出 -->
-        <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="/login.jsp" />
+        <security:logout invalidate-session="true" logout-url="/logout.action" logout-success-url="/login.action"/>
 
     </security:http>
 

@@ -7,6 +7,7 @@
 --%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
          pageEncoding="UTF-8" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%@ page trimDirectiveWhitespaces="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
@@ -61,7 +62,6 @@
 <div id="wrapper">
 
 
-
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
@@ -73,32 +73,43 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/totalEstate/list.action"
+                      id="mainForm"
                       method="get">
 
                     <div class="form-group">
                         <label for="community_name">小区名称</label>
-                        <input type="text" class="form-control" id="community_name" value="${community_name }" name="community_name">
+                        <input type="text" class="form-control" id="community_name" value="${community_name }"
+                               name="community_name">
                     </div>
 
-                     <div class="form-group">
+                    <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
-                        <input type="text" class="form-control" id="property_leasing_num" value="${property_leasing_num }" name="property_leasing_num">
+                        <input type="text" class="form-control" id="property_leasing_num"
+                               value="${property_leasing_num }" name="property_leasing_num">
                     </div>
 
                     <div class="form-group date form_date">
                         <label for="year_months">按年月查找</label>
-                        <input name="year_months" id="year_months" type='text'  value="${year_months }" class="form-control" readonly="readonly"/>
-                       <%-- <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-calendar"></span></span>--%>
+                        <input name="year_months" id="year_months" type='text' value="${year_months }"
+                               class="form-control" readonly="readonly"/>
+                        <%-- <span class="input-group-addon input-sm"><span class="glyphicon glyphicon-calendar"></span></span>--%>
                     </div>
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newTotalEstateDialog" onclick="clearTotalEstate()">新建</a>
+                    <security:authorize access="hasRole('ROLE_ADMIN')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newTotalEstateDialog" onclick="clearTotalEstate()">新建</a>
+                    </security:authorize>
+
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadTotalEstate()">导出本页</a>
+                    <a href="#" class="btn btn-success "
+                       onclick="downloadTotalEstateAll()">导出全部</a>
                 </form>
             </div>
         </div>
 
 
-    <div class="row">
+        <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">物业费信息列表</div>
@@ -115,7 +126,10 @@
                             <th>实收物业费</th>
                             <th>对应月份</th>
                             <th>到帐时间</th>
-                            <th>操作</th>
+                            <security:authorize access="hasRole('ROLE_ADMIN')">
+                                <th>操作</th>
+                            </security:authorize>
+
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -131,12 +145,16 @@
                                 <td>${row.reality_estate}</td>
                                 <td>${row.year_months}</td>
                                 <td><fmt:formatDate value="${row.deadline}" pattern="yyyy-MM-dd"/></td>
-                                <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#EditTotalEstateDialog" onclick="editTotalEstate(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteTotalEstate(${row.id})">删除</a>
-                                </td>
+                                <security:authorize access="hasRole('ROLE_ADMIN')">
+                                    <td>
+
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#EditTotalEstateDialog"
+                                           onclick="editTotalEstate(${row.id})">修改</a>
+                                        <a href="#" class="btn btn-danger btn-xs"
+                                           onclick="deleteTotalEstate(${row.id})">删除</a>
+                                    </td>
+                                </security:authorize>
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -152,9 +170,6 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
-
-
-
 
 
 </div>
@@ -177,10 +192,10 @@
                     <div class="form-group">
                         <label for="edit_property_leasing_num" class="col-sm-2 control-label">租凭合同编号</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num">
+                            <input type="text" class="form-control" id="edit_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num">
                         </div>
                     </div>
-
 
 
                     <div class="form-group">
@@ -277,10 +292,10 @@
                             租凭合同编号
                         </label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号" name="property_leasing_num"/>
+                            <input type="text" class="form-control" id="new_property_leasing_num" placeholder="租凭合同编号"
+                                   name="property_leasing_num"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group">
@@ -399,13 +414,12 @@
     }
 
 
-
     function updateTotalEstate() {
         $.post("<%=basePath%>totalEstate/update.action", $("#edit_TotalEstate_form").serialize(), function (data) {
-            if(data.code==0){
+            if (data.code == 0) {
                 alert(data.msg);
                 window.location.reload();
-            }else{
+            } else {
                 alert(data.msg);
                 window.location.reload();
             }
@@ -415,8 +429,8 @@
     function deleteTotalEstate(id) {
         if (confirm('确实要删除物业费信息吗?')) {
             $.post("<%=basePath%>totalEstate/delete.action", {"id": id}, function (data) {
-                    alert("每个月物业费信息删除成功！");
-                    window.location.reload();
+                alert("每个月物业费信息删除成功！");
+                window.location.reload();
 
             });
         }
@@ -438,14 +452,27 @@
     function createTotalEstate() {
         $.post("<%=basePath%>totalEstate/create.action",
             $("#new_power_form").serialize(), function (data) {
-                if(data.code==0){
+                if (data.code == 0) {
                     alert(data.msg);
                     window.location.reload();
-                }else{
+                } else {
                     alert(data.msg);
                     window.location.reload();
                 }
             });
+    }
+
+
+    //导出
+    function downloadTotalEstate() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/downloadTotalEstate.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/list.action");
+    }
+
+    //导出
+    function downloadTotalEstateAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/downloadTotalEstateAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/totalEstate/list.action");
     }
 </script>
 

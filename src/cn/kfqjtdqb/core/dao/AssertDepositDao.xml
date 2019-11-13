@@ -5,9 +5,9 @@
     <sql id="selectAssertDepositListWhere">
         <where>
             <if test="property_leasing_num != null">
-              property_leasing_num like "%" #{property_leasing_num}"%"
+                property_leasing_num like "%" #{property_leasing_num}"%"
             </if>
-            <if test="state != null" >
+            <if test="state != null">
                 and state = #{state}
             </if>
         </where>
@@ -29,6 +29,7 @@
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>
+
     </select>
 
     <select id="selectAssertDepositListCount" parameterType="assertDeposit" resultType="int">
@@ -46,27 +47,24 @@
 	</select>
 
 
-
     <sql id="updateAssertDepositWhere">
         <where>
             <if test="id != null">
-                id = #{id}
+                id=#{id}
             </if>
-
-            <if test="property_leasing_num != null">
-                and property_leasing_num = #{property_leasing_num}
+            <if test="id==null and  property_leasing_num != null">
+                property_leasing_num = #{property_leasing_num}
             </if>
         </where>
     </sql>
-
 
     <update id="updateAssertDeposit" parameterType="assertDeposit">
         update t_assert_deposit
         <set>
 
-           <!-- <if test="property_leasing_num!=null">
-                property_leasing_num=#{property_leasing_num},
-            </if>-->
+            <if test="property_leasing_num != null">
+                property_leasing_num = #{property_leasing_num},
+            </if>
 
             <if test="rent_start_time!=null">
                 rent_start_time=#{rent_start_time},
@@ -90,11 +88,9 @@
             </if>
 
         </set>
-     /*   where  id=#{id};*/
+
         <include refid="updateAssertDepositWhere"/>
     </update>
-
-
 
 
     <sql id="key">

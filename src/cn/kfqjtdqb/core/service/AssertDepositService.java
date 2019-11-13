@@ -4,6 +4,8 @@ import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.AssertDeposit;
 import cn.kfqjtdqb.core.bean.AssertInfol;
 
+import java.util.List;
+
 public interface AssertDepositService {
     Page<AssertDeposit> findAssertDepositList(Integer page, Integer rows, String property_leasing_num, String state);
 
@@ -18,4 +20,6 @@ public interface AssertDepositService {
     AssertDeposit getAssertDepositByLeasingNum(String property_leasing_num);
 
     void deleteAssertDepositByLeasingNum(String property_leasing_num);
+
+    List<AssertDeposit> selectAssertDepositList(String property_leasing_num, String state);
 }

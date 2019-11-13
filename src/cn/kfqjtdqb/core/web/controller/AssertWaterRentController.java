@@ -3,13 +3,12 @@ package cn.kfqjtdqb.core.web.controller;
 import cn.kfqjtdqb.common.utils.ConstUtils;
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.common.utils.StringUtils;
-import cn.kfqjtdqb.core.bean.AssertWaterRent;
-import cn.kfqjtdqb.core.bean.BaseDict;
-import cn.kfqjtdqb.core.bean.PropertyLeasing;
-import cn.kfqjtdqb.core.bean.ResultCode;
+import cn.kfqjtdqb.core.bean.*;
+import cn.kfqjtdqb.core.service.AssertWaterRentService;
 import cn.kfqjtdqb.core.service.AssertWaterRentService;
 import cn.kfqjtdqb.core.service.PropertyLeasingService;
 import cn.kfqjtdqb.core.service.SystemService;
+import cn.kfqjtdqb.core.utils.CSVUtils;
 import cn.kfqjtdqb.core.utils.DateUtils;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import cn.kfqjtdqb.core.utils.RentUtils;
@@ -24,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 public class AssertWaterRentController {
@@ -150,16 +150,16 @@ public class AssertWaterRentController {
             int rows = AssertWaterRentService.createAssertWaterRent(assertWaterRent);
             if (rows > 0) {
                 resultCode.setCode(0);
-                resultCode.setMsg("水信息创建成功");
+                resultCode.setMsg("电信息创建成功");
                 return resultCode;
             } else {
                 resultCode.setCode(-1);
-                resultCode.setMsg("水信息创建失败");
+                resultCode.setMsg("电信息创建失败");
                 return resultCode;
             }
         } catch (DataAccessException e) {
             resultCode.setCode(-1);
-            resultCode.setMsg("水信息创建失败");
+            resultCode.setMsg("电信息创建失败");
             return resultCode;
         }
 
@@ -213,5 +213,65 @@ public class AssertWaterRentController {
         return assertWaterRent;
     }*/
 
+
+    @RequestMapping("/assertWaterRent/downloadWaterRent")
+    public void downloadWaterRent(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String state , @RequestParam  String property_leasing_num,@RequestParam String assert_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<AssertWaterRent> assertWaterRentPage = AssertWaterRentService.selectAssertWaterRentList(page, rows,property_leasing_num,assert_num,state);
+        //定义csv文件名称
+        String csvFileName = "水费信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,本次收取费用开始时间,本次收取费用结束时间,截止本月应收水费,实际已收水费,本次实收水费,收费时间,状态";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,rent_start_time,rent_end_time,water_rent,water_rent_recivied,reality_water_rent,deadline,state";
+        //遍历保存查询数据集到dataList中
+        for (AssertWaterRent assertWaterRent : assertWaterRentPage.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertWaterRent.getId());
+            map.put("property_leasing_num", assertWaterRent.getProperty_leasing_num());
+            map.put("assert_num", assertWaterRent.getAssert_num());
+            map.put("rent_start_time", sdf.format(assertWaterRent.getRent_start_time()));
+            map.put("rent_end_time", sdf.format(assertWaterRent.getRent_end_time()));
+            map.put("water_rent", assertWaterRent.getWater_rent());
+            map.put("water_rent_recivied", assertWaterRent.getWater_rent_recivied());
+            map.put("reality_water_rent", assertWaterRent.getReality_water_rent());
+            map.put("deadline", sdf.format(assertWaterRent.getDeadline()));
+            map.put("state", assertWaterRent.getState());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/assertWaterRent/downloadWaterRentAll")
+    public void downloadWaterRentAll(HttpServletResponse response, @RequestParam   String state , @RequestParam  String property_leasing_num, @RequestParam String assert_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<AssertWaterRent> assertWaterRents = AssertWaterRentService.selectAssertWaterRentList(property_leasing_num,assert_num,state);
+        //定义csv文件名称
+        String csvFileName = "水费信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,本次收取费用开始时间,本次收取费用结束时间,截止本月应收水费,实际已收水费,本次实收水费,收费时间,状态";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,rent_start_time,rent_end_time,water_rent,water_rent_recivied,reality_water_rent,deadline,state";
+        //遍历保存查询数据集到dataList中
+        for (AssertWaterRent assertWaterRent : assertWaterRents) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertWaterRent.getId());
+            map.put("property_leasing_num", assertWaterRent.getProperty_leasing_num());
+            map.put("assert_num", assertWaterRent.getAssert_num());
+            map.put("rent_start_time", sdf.format(assertWaterRent.getRent_start_time()));
+            map.put("rent_end_time", sdf.format(assertWaterRent.getRent_end_time()));
+            map.put("water_rent", assertWaterRent.getWater_rent());
+            map.put("water_rent_recivied", assertWaterRent.getWater_rent_recivied());
+            map.put("reality_water_rent", assertWaterRent.getReality_water_rent());
+            map.put("deadline", sdf.format(assertWaterRent.getDeadline()));
+            map.put("state", assertWaterRent.getState());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
 
 }

@@ -125,12 +125,21 @@
                                     <td> 未启用</td>
                                 </c:if>
                                 <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
                                        data-target="#EditUserInfoDialog" onclick="editUserInfo(${row.id})">修改</a>
                                     <a href="#" class="btn btn-danger btn-xs"
                                        onclick="deleteUserInfo(${row.id})">删除</a>
-                                        <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                           onclick="showDeposit(${row.id})">查看</a>--%>
+
+                                    <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                       data-target="#updatePasswordDialog"
+                                       onclick="editPassword(${row.id})">修改密码</a>
+
+                                    <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                       data-target="#addRoleDialog"
+                                       onclick="addRole(${row.id})">添加角色</a>
+                                    <a
+                                            href="${pageContext.request.contextPath}/role/list.action?userId=${row.id}"
+                                            class="btn  btn-primary btn-xs" target="main">查看</a>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -150,6 +159,115 @@
 
 
 </div>
+
+
+<div class="modal fade" id="addRoleDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel3">添加角色信息</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" id="add_role_form">
+
+                    <%--     <div class="form-group">
+                             <label for="add_userId" class="col-sm-2 control-label">id</label>
+                             <div class="col-sm-10"></div>
+                             <input type="text" class="form-control" id="add_userId" placeholder="id"
+                                    name="userId">
+                         </div>--%>
+
+                    <div class="form-group">
+                        <label for="add_userId" class="col-sm-2 control-label">id</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="add_userId" placeholder="用户id"
+                                   name="userId"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="add_email" class="col-sm-2 control-label">
+                            邮箱
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text" disabled class="form-control" id="add_email" placeholder="邮箱"
+                                   name="email"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="add_userName" class="col-sm-2 control-label">用户名</label>
+                        <div class="col-sm-10">
+                            <input type="text" disabled class="form-control" id="add_userName" placeholder="用户名"
+                                   name="userName">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="add_phoneNum" class="col-sm-2 control-label">手机号</label>
+                        <div class="col-sm-10">
+                            <input type="text" disabled class="form-control" id="add_phoneNum" placeholder="手机号"
+                                   name="phoneNum">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="add_roleId" style="float:left;padding:7px 15px 0 27px;">角色名称</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="add_roleId" placeholder="角色名称" name="roleId">
+                                <option value="">--请选择--</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="createUserRole()">创建</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="updatePasswordDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel4">更新用户密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit_password_form">
+                    <input type="hidden" id="new_id" name="id"/>
+
+                    <div class="form-group">
+                        <label for="edit_password" class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_password" placeholder="密码"
+                                   name="password">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="updatePassword()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- 用户修改对话框 -->
 <div class="modal fade" id="EditUserInfoDialog" tabindex="-1" role="dialog"
@@ -176,18 +294,18 @@
                     <div class="form-group">
                         <label for="edit_userName" class="col-sm-2 control-label">用户名</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_userName" placeholder="资产编号"
+                            <input type="text" class="form-control" id="edit_userName" placeholder="用户名"
                                    name="userName">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="edit_password" class="col-sm-2 control-label">密码</label>
-                        <div class="col-sm-10">
-                            <input type="text" class="form-control" id="edit_password" placeholder="电表编号"
-                                   name="password">
-                        </div>
-                    </div>
+                    <%-- <div class="form-group">
+                         <label for="edit_password" class="col-sm-2 control-label">密码</label>
+                         <div class="col-sm-10">
+                             <input type="text" class="form-control" id="edit_password" placeholder="密码"
+                                    name="password">
+                         </div>
+                     </div>--%>
 
                     <div class="form-group">
                         <label for="edit_phoneNum" class="col-sm-2 control-label">手机号</label>
@@ -198,17 +316,18 @@
                     </div>
 
 
-                   <div class="form-group">
-                      <label for="edit_status" style="float:left;padding:7px 15px 0 27px;">用户状态</label>
-                      <div class="col-sm-10">
-                          <select	class="form-control" id="edit_status" placeholder="用户状态" name="status">
-                              <option value="">--请选择--</option>
-                              <c:forEach items="${stateType}" var="item">
-                                  <option value="${item.dict_id}"<c:if test="${item.dict_id == status}"> selected</c:if>>${item.dict_item_name }</option>
-                              </c:forEach>
-                          </select>
-                      </div>
-                  </div>
+                    <div class="form-group">
+                        <label for="edit_status" style="float:left;padding:7px 15px 0 27px;">用户状态</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_status" placeholder="用户状态" name="status">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${stateType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == status}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
 
                 </form>
             </div>
@@ -257,7 +376,7 @@
                     <div class="form-group">
                         <label for="new_password" class="col-sm-2 control-label">密码</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_password" placeholder="电表编号"
+                            <input type="password" class="form-control" id="new_password" placeholder="密码"
                                    name="password">
                         </div>
                     </div>
@@ -273,7 +392,7 @@
                     <div class="form-group">
                         <label for="new_status" style="float:left;padding:7px 15px 0 27px;">用户状态</label>
                         <div class="col-sm-10">
-                            <select	class="form-control" id="new_status" placeholder="用户状态" name="status">
+                            <select class="form-control" id="new_status" placeholder="用户状态" name="status">
                                 <option value="">--请选择--</option>
                                 <c:forEach items="${stateType}" var="item">
                                     <option value="${item.dict_id}">${item.dict_item_name }</option>
@@ -342,6 +461,38 @@
         });
     }
 
+    function editPassword(id) {
+        $("#new_id").val(id);
+    }
+
+
+    function updatePassword(id) {
+        $.post("<%=basePath%>userInfo/updatePassword.action",
+            $("#edit_password_form").serialize(), function (data) {
+                if (data.code == 0) {
+                    alert(data.msg);
+                    window.location.reload();
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            });
+    }
+
+    function createUserRole() {
+
+        $.post("<%=basePath%>userInfo/addRoleToUser.action", $("#add_role_form").serialize(), function (data) {
+            if (data.code == 0) {
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                alert(data.msg);
+                window.location.reload();
+            }
+        });
+
+    }
+
     function deleteUserInfo(id) {
         if (confirm('确实要删除用户信息吗?')) {
             $.post("<%=basePath%>userInfo/delete.action", {"id": id}, function (data) {
@@ -350,6 +501,38 @@
 
             });
         }
+    }
+
+    function addRole(id) {
+        var f = document.getElementById("add_roleId");
+        var childs = f.childNodes;
+        for (var i = childs.length - 1; i >= 0; i--) {
+            f.removeChild(childs[i]);
+        }
+        $.ajax({
+            type: "get",
+            url: "<%=basePath%>userInfo/findUserByIdAndAllRole.action",
+            data: {"id": id},
+            success: function (data) {
+                var map = data.data;
+                for (var i in map) {
+                    if (i == "user") {
+                        $("#add_userId").val(map[i].id);
+                        $("#add_email").val(map[i].email);
+                        $("#add_userName").val(map[i].userName);
+                        $("#add_phoneNum").val(map[i].phoneNum);
+                    } else {
+                        if (map[i].length == 0) {
+                            alert("该用户没有其他角色了");
+                        }
+                        for (var index = 0; index < map[i].length; index++) {
+                            document.getElementById("add_roleId").options.add(new Option(map[i][index].roleName, map[i][index].id));
+                        }
+                    }
+                }
+
+            }
+        });
     }
 
     function clearUserInfo() {

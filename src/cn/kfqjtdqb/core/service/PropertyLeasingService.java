@@ -2,6 +2,7 @@ package cn.kfqjtdqb.core.service;
 
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.AssertLeasing;
+import cn.kfqjtdqb.core.bean.CountEmpty;
 import cn.kfqjtdqb.core.bean.PropertyLeasing;
 import org.springframework.dao.DataAccessException;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 public interface PropertyLeasingService {
 
-    Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num);
+    Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type);
 
     PropertyLeasing getPropertyLeasingById(Long id);
 
@@ -23,6 +24,10 @@ public interface PropertyLeasingService {
 
     int addAssertLeasing(AssertLeasing assertLeasing) throws DataAccessException;
 
+    void deleteAssertLeasingByPropertyLeasingNum(String property_leasing_num) throws  Exception;
+
+    void deleteAssertLeasingByAssertNumAndPropertyLeasingNum(String property_leasing_num,String  assert_num) throws  Exception;
+
 
     PropertyLeasing findPropertyLeasingWithAssert(Long id);
 
@@ -35,6 +40,8 @@ public interface PropertyLeasingService {
     List<AssertLeasing> selectAssertLeasingByPropertyLeasingNum(String property_leasing_num);
 
     PropertyLeasing findPropertyLeasingByNum(String property_leasing_num);
+
+    CountEmpty findEmptyPropertyLeasingCount();
 
     Page<PropertyLeasing> findPropertyLeasingByStateList(Integer page, Integer rows, String depositState, String rentalState, String estateState, String waterState, String powerState, String community_name);
 }

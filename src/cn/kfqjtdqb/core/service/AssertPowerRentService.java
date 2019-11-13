@@ -15,4 +15,6 @@ public interface AssertPowerRentService {
     int createAssertPowerRent(AssertPowerRent assertPowerRent)throws DataAccessException;;
     List<AssertPowerRent>  getAssertPowerRentByLeasingNum(String property_leasing_num);
     BigDecimal getAssertPowerRentCountByLeasingNum(AssertPowerRent assertPowerRent);   //统计已经提交的钱
+    void deleteAssertPowerRentByPropertyLeasingNum(String property_leasing_num)throws Exception ;
+    List<AssertPowerRent> selectAssertPowerRentList(String property_leasing_num, String assert_num, String state);
 }

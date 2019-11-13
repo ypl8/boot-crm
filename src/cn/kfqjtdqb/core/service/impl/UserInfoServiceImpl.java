@@ -16,11 +16,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service("userInfoService")
+@Transactional
 public class UserInfoServiceImpl implements UserInfoService {
     // 定义dao属性
     @Autowired
@@ -64,7 +66,9 @@ public class UserInfoServiceImpl implements UserInfoService {
 
     @Override
     public void updateUserInfo(UserInfo userInfo) {
-        userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        if(StringUtils.isNotBlank(userInfo.getPassword())){
+            userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
+        }
         userInfoDao.updateUserInfo(userInfo);
     }
 
@@ -85,9 +89,35 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo userInfo = new UserInfo();
         userInfo.setUserName(userName);
         userInfo.setPassword(password);
-        userInfo.setStatus("24");
+        userInfo.setStatus("23");
         userInfo = userInfoDao.findUserByUserName(userInfo);
         return userInfo;
+    }
+
+    @Override
+    public UserInfo findById(Long id) throws Exception {
+        return userInfoDao.findById(id);
+    }
+
+    @Override
+    public List<Role> findOtherRole(Long userId) {
+        return userInfoDao.findOtherRoles(userId);
+    }
+
+    @Override
+    public void addRoleToUser(Long userId, Long roleId) throws Exception{
+        userInfoDao.addRoleToUser(userId, roleId);
+    }
+
+    @Override
+    public Integer findUserCount(String  status) {
+        UserInfo userInfo = new UserInfo();
+        //判断客户名称(公司名称)
+
+        if (StringUtils.isNotBlank(status)) {
+            userInfo.setStatus(status);
+        }
+        return userInfoDao.selectUserInfoListCount(userInfo);
     }
 
     /*@Override
@@ -98,29 +128,36 @@ public class UserInfoServiceImpl implements UserInfoService {
     }*/
 
 
-
     @Override
-    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        System.out.println("username:" + username);
         UserInfo userInfo = null;
         try {
-            userInfo = userInfoDao.findByUsername(userName);
+            userInfo = userInfoDao.findByUsername(username);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        boolean  flag="23".equals(userInfo.getStatus());
+        boolean flag = "23".equals(userInfo.getStatus());
         //处理自己的用户对象封装成UserDetails
-        //  User user=new User(userInfo.getUsername(),"{noop}"+userInfo.getPassword(),getAuthority(userInfo.getRoles()));
-        User user = new User(userInfo.getUserName(), "{noop}" + userInfo.getPassword(), flag , true, true, true, getAuthority(userInfo.getRoles()));
+        // User user=new User(userInfo.getUserName(),userInfo.getPassword(),getAuthority());
+        User user = new User(userInfo.getUserName(), userInfo.getPassword(), flag, true, true, true, getAuthority(userInfo.getRoles()));
         return user;
     }
 
     //作用就是返回一个List集合，集合中装入的是角色描述
     public List<SimpleGrantedAuthority> getAuthority(List<Role> roles) {
-
         List<SimpleGrantedAuthority> list = new ArrayList<>();
         for (Role role : roles) {
             list.add(new SimpleGrantedAuthority("ROLE_" + role.getRoleName()));
         }
+        return list;
+    }
+
+    //作用就是返回一个List集合，集合中装入的是角色描述
+    public List<SimpleGrantedAuthority> getAuthority() {
+        List<SimpleGrantedAuthority> list = new ArrayList<>();
+        list.add(new SimpleGrantedAuthority("ROLE_" + "USER"));
         return list;
     }
 }

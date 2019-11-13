@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -70,7 +71,7 @@
         <div class="panel panel-default">
             <div class="panel-body">
                 <form class="form-inline" action="${pageContext.request.contextPath }/assertRental/list.action"
-                      method="get"  id="mainForm">
+                      method="get" id="mainForm">
                     <div class="form-group">
                         <label for="property_leasing_num">合同编号</label>
                         <input type="text" class="form-control" id="property_leasing_num"
@@ -89,9 +90,10 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
-
-                    <a href="#" class="btn btn-primary" data-toggle="modal"
-                       data-target="#newRentalDialog" onclick="clearRental()">新建</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">
+                        <a href="#" class="btn btn-primary" data-toggle="modal"
+                           data-target="#newRentalDialog" onclick="clearRental()">新建</a>
+                    </security:authorize>
                     <a href="#" class="btn btn-primary "
                        onclick="downloadAssertRental()">导出本页</a>
                     <a href="#" class="btn btn-primary "
@@ -119,7 +121,9 @@
                             <th>本次实收租金（元)</th>
                             <th>收费时间</th>
                             <th>状态</th>
+                            <%--             <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">--%>
                             <th>操作</th>
+                            <%--            </security:authorize>--%>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -139,14 +143,22 @@
                                 <c:if test="${'6' eq row.state}">
                                     <td> 未缴清</td>
                                 </c:if>
+
                                 <td>
-                                    <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#EditRentalDialog" onclick="editRental(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deleteRental(${row.id})">删除</a>
-                                        <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
-                                           onclick="showDeposit(${row.id})">查看</a>--%>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_RENTAL')">
+                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                           data-target="#EditRentalDialog" onclick="editRental(${row.id})">修改</a>
+
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deleteRental(${row.id})">删除</a>
+                                        </security:authorize>
+                                    </security:authorize>
+                                    <a href="${pageContext.request.contextPath}/totalRental/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
                                 </td>
+
+
                             </tr>
                         </c:forEach>
                         </tbody>
@@ -206,17 +218,16 @@
                         <label for="edit_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
                             <input name="rent_start_time" id="edit_rent_start_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用开始时间"/>
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
                         <label for="edit_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
                         <div class="col-sm-10">
                             <input name="rent_end_time" id="edit_rent_end_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用结束时间"/>
+                                   class="form-control picket" placeholder="本次收取费用结束时间"/>
                         </div>
                     </div>
 
@@ -248,7 +259,7 @@
                         <label for="edit_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="edit_deadline" type='text'
-                                   class="form-control picket"  placeholder="到帐时间"/>
+                                   class="form-control picket" placeholder="到帐时间"/>
                         </div>
                     </div>
 
@@ -315,22 +326,20 @@
                     </div>
 
 
-
                     <div class="form-group date form_date">
                         <label for="new_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
                         <div class="col-sm-10">
                             <input name="rent_start_time" id="new_rent_start_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用开始时间"/>
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
                         </div>
                     </div>
-
 
 
                     <div class="form-group date form_date">
                         <label for="new_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
                         <div class="col-sm-10">
                             <input name="rent_end_time" id="new_rent_end_time" type='text'
-                                   class="form-control picket"  placeholder="本次收取费用结束时间"/>
+                                   class="form-control picket" placeholder="本次收取费用结束时间"/>
                         </div>
                     </div>
 
@@ -370,27 +379,26 @@
                     </div>
 
 
-
                     <div class="form-group date form_date">
                         <label for="new_deadline" class="col-sm-2 control-label">到帐时间</label>
                         <div class="col-sm-10">
                             <input name="deadline" id="new_deadline" type='text'
-                                   class="form-control picket"  placeholder="到帐时间"/>
+                                   class="form-control picket" placeholder="到帐时间"/>
                         </div>
                     </div>
 
 
-                      <%--       <div class="form-group">
-                                 <label for="new_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
-                                 <div class="col-sm-10">
-                                     <select	class="form-control" id="new_state" placeholder="租金状态" name="state">
-                                         <option value="">--请选择--</option>
-                                         <c:forEach items="${stateType}" var="item">
-                                             <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
-                                         </c:forEach>
-                                     </select>
-                                 </div>
-                             </div>--%>
+                    <%--       <div class="form-group">
+                               <label for="new_state" style="float:left;padding:7px 15px 0 27px;">租金状态</label>
+                               <div class="col-sm-10">
+                                   <select	class="form-control" id="new_state" placeholder="租金状态" name="state">
+                                       <option value="">--请选择--</option>
+                                       <c:forEach items="${stateType}" var="item">
+                                           <option value="${item.dict_id}"<c:if test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                       </c:forEach>
+                                   </select>
+                               </div>
+                           </div>--%>
                 </form>
             </div>
             <div class="modal-footer">
@@ -455,15 +463,15 @@
 
 
     //导出
-    function downloadAssertRental(){
-        $("#mainForm").attr("action","${pageContext.request.contextPath }/assertRental/downloadAssertRental.action").submit();
-        $("#mainForm").attr("action","${pageContext.request.contextPath }/assertRental/list.action");
+    function downloadAssertRental() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertRental/downloadAssertRental.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertRental/list.action");
     }
 
     //导出
-    function downloadAssertRentalAll(){
-        $("#mainForm").attr("action","${pageContext.request.contextPath }/assertRental/downloadAssertRentalAll.action").submit();
-        $("#mainForm").attr("action","${pageContext.request.contextPath }/assertRental/list.action");
+    function downloadAssertRentalAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertRental/downloadAssertRentalAll.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertRental/list.action");
     }
 
     function updateRental() {
@@ -606,7 +614,6 @@
 </script>
 
 
-
 <script type="text/javascript" src="${pageContext.request.contextPath}/bootstramp/bootstrap/js/bootstrap.min.js"
         charset="UTF-8"></script>
 <%--<script type="text/javascript" src="${pageContext.request.contextPath}/bootstramp/jquery/jquery-1.8.3.min.js"></script>--%>
@@ -620,17 +627,14 @@
     $('.picket').datetimepicker({
         format: 'yyyymmdd',//显示格式
         todayHighlight: 1,//今天高亮
-        minView:2,//设置只显示到月份
-        startView:2,
+        minView: 2,//设置只显示到月份
+        startView: 2,
         forceParse: 0,
         todayBtn: 1,
         showMeridian: 1,
         autoclose: 1,
         language: 'zh-CN'
     });
-
-
-
 
 
 </script>

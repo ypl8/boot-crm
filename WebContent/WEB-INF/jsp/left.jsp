@@ -1,11 +1,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=8">
     <title>左边导航</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/reset.css"/>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/common.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/common2.css"/>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
     <!--框架高度设置-->
     <script type="text/javascript">
@@ -33,7 +34,8 @@
 
         <li class="now">
             <div class="nav_m">
-                <span><a href="${pageContext.request.contextPath }/propertyLeasing/queryList.action" target="main">主页面</a></span>
+                <span><a href="${pageContext.request.contextPath }/propertyLeasing/queryList.action"
+                         target="main">首页</a></span>
             </div>
         </li>
 
@@ -59,6 +61,13 @@
                              target="main">资产合同管理</a></span>
                 </li>
             </ul>
+
+            <ul class="erji">
+                <li>
+                    <span><a href="${pageContext.request.contextPath}/assertLeasing/list.action"
+                             target="main">资产合同关系管理</a></span>
+                </li>
+            </ul>
         </li>
 
         <li>
@@ -69,7 +78,8 @@
             <ul class="erji">
 
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/assertDeposit/list.action" target="main">押金收入管理</a></span>
+                    <span><a href="${pageContext.request.contextPath}/assertDeposit/list.action"
+                             target="main">押金收入管理</a></span>
                 </li>
 
                 <li>
@@ -77,15 +87,18 @@
                 </li>
 
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/assertEstate/list.action" target="main">物业费收入管理</a></span>
+                    <span><a href="${pageContext.request.contextPath}/assertEstate/list.action"
+                             target="main">物业费收入管理</a></span>
                 </li>
 
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/assertWaterRent/list.action" target="main">水费收入管理</a></span>
+                    <span><a href="${pageContext.request.contextPath}/assertWaterRent/list.action"
+                             target="main">水费收入管理</a></span>
                 </li>
 
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/assertPowerRent/list.action" target="main">电费收入管理</a></span>
+                    <span><a href="${pageContext.request.contextPath}/assertPowerRent/list.action"
+                             target="main">电费收入管理</a></span>
                 </li>
                 <%-- <li>
                      <span><a href="log/loginLog.do" target="main">资产合同管理</a></span>
@@ -96,7 +109,7 @@
             </ul>
         </li>
 
-        <li >
+        <li>
             <div class="nav_m">
                 <span><a>水电信息录入管理</a></span>
                 <i>&nbsp;</i>
@@ -112,20 +125,22 @@
         </li>
 
 
-        <li >
+        <li>
             <div class="nav_m">
                 <span><a>租金物业费信息管理</a></span>
                 <i>&nbsp;</i>
             </div>
             <ul class="erji">
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/totalRental/list.action" target="main">租金明细</a></span>
+                    <span><a href="${pageContext.request.contextPath}/totalRental/list.action"
+                             target="main">租金明细</a></span>
                 </li>
                 <li>
                     <span><a href="${pageContext.request.contextPath}/totalRental/listCommunity.action" target="main">租金统计</a></span>
                 </li>
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/totalEstate/list.action" target="main">物业费明细</a></span>
+                    <span><a href="${pageContext.request.contextPath}/totalEstate/list.action"
+                             target="main">物业费明细</a></span>
                 </li>
                 <li>
                     <span><a href="${pageContext.request.contextPath}/totalEstate/listCommunity.action" target="main">物业费统计</a></span>
@@ -137,30 +152,39 @@
         </li>
 
 
-        <li >
+        <security:authorize access="hasRole('ROLE_ADMIN')">
+        <li>
             <div class="nav_m">
                 <span><a>系统管理</a></span>
                 <i>&nbsp;</i>
             </div>
             <ul class="erji">
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/userInfo/list.action" target="main">用户管理</a></span>
-                </li>
-                <%--<li>
-                    <span><a href="${pageContext.request.contextPath}/totalRental/listCommunity.action" target="main">租金统计</a></span>
+                    <span><a href="${pageContext.request.contextPath}/userInfo/list.action"
+                             target="main">用户管理</a></span>
                 </li>
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/totalEstate/list.action" target="main">物业费明细</a></span>
+                    <span><a href="${pageContext.request.contextPath}/role/list.action" target="main">角色管理</a></span>
                 </li>
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/totalEstate/listCommunity.action" target="main">物业费统计</a></span>
+                    <span><a href="${pageContext.request.contextPath}/permission/list.action"
+                             target="main">权限管理</a></span>
                 </li>
+
                 <li>
-                    <span><a href="${pageContext.request.contextPath}/assertInfol/listCommunity.action" target="main">资产统计</a></span>
-                </li>--%>
+                    <span><a href="${pageContext.request.contextPath}/sysLog.action"
+                             target="main">日志管理</a></span>
+                </li>
+                <%--  <li>
+                   <span><a href="${pageContext.request.contextPath}/totalEstate/listCommunity.action" target="main">物业费统计</a></span>
+               </li>
+               <li>
+                   <span><a href="${pageContext.request.contextPath}/assertInfol/listCommunity.action" target="main">资产统计</a></span>
+               </li>--%>
             </ul>
         </li>
-        <li >
+        </security:authorize>
+        <li>
             <div class="nav_m">
                 <span><a href="${pageContext.request.contextPath }/logout.action" target="_top">退出系统</a></span>
             </div>

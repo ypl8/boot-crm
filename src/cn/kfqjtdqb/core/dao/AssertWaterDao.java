@@ -12,4 +12,5 @@ public interface  AssertWaterDao {
     void updateAssertWater(AssertWater assertWater)throws DataAccessException;
     void deleteAssertWater(Long id);
     int addAssertWater(AssertWater assertWater)throws DataAccessException;
+    void deleteAssertWaterByPropertyLeasingNum(String property_leasing_num)throws Exception;
 }

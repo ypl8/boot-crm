@@ -138,5 +138,8 @@
 		delete from t_assert_power where id=#{id}
 	</delete>
 
+    <delete id="deleteAssertPowerByPropertyLeasingNum" parameterType="String">
+		delete from t_assert_power where property_leasing_num=#{property_leasing_num}
+	</delete>
 
 </mapper>

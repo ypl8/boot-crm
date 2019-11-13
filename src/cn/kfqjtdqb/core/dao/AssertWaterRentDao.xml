@@ -219,5 +219,9 @@
 		delete from t_assert_water_rent where id=#{id}
 	</delete>
 
+    <delete id="deleteAssertWaterRentByPropertyLeasingNum" parameterType="String">
+		delete from t_assert_water_rent where property_leasing_num=#{property_leasing_num}
+	</delete>
+
 
 </mapper>

@@ -5,6 +5,7 @@ import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.common.utils.StringUtils;
 import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.service.*;
+import cn.kfqjtdqb.core.utils.CSVUtils;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AssertWaterController {
@@ -194,5 +200,59 @@ public class AssertWaterController {
             }
         }
 
+    }
+
+    @RequestMapping("/assertWater/downloadWater")
+    public void downloadWater(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String assert_num , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<AssertWater> assertWaterPage = assertWaterService.selectAssertWaterList(page, rows,property_leasing_num,assert_num);
+        //定义csv文件名称
+        String csvFileName = "用水信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,水表编号,水表度数,截止抄表时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,watermeter_num,water_num,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (AssertWater assertWater : assertWaterPage.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertWater.getId());
+            map.put("property_leasing_num", assertWater.getProperty_leasing_num());
+            map.put("assert_num", assertWater.getAssert_num());
+            map.put("watermeter_num",assertWater.getWatermeter_num());
+            map.put("water_num", assertWater.getWater_num());
+            map.put("deadline",sdf.format(assertWater.getDeadline()));
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/assertWater/downloadWaterAll")
+    public void downloadWaterAll(HttpServletResponse response, @RequestParam   String assert_num , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<AssertWater> assertWaters = assertWaterService.selectAssertWaterListByAssertNum(property_leasing_num,assert_num);
+        //定义csv文件名称
+        String csvFileName = "用水信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,水表编号,水表度数,截止抄表时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,watermeter_num,water_num,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (AssertWater assertWater : assertWaters) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertWater.getId());
+            map.put("property_leasing_num", assertWater.getProperty_leasing_num());
+            map.put("assert_num", assertWater.getAssert_num());
+            map.put("watermeter_num",assertWater.getWatermeter_num());
+            map.put("water_num", assertWater.getWater_num());
+            map.put("deadline",sdf.format(assertWater.getDeadline()));
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
     }
 }

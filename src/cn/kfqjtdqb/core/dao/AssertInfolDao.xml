@@ -34,8 +34,8 @@
         remark
         FROM
         t_assert_infol
-
         <include refid="selectAssertInfolListWhere"/>
+        order  by community_name ,building_num , room_number
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>

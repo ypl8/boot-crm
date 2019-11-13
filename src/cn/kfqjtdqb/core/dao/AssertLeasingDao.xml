@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.AssertLeasingDao">
+
+    <sql id="selectAssertLeasingListWhere">
+        <where>
+            <if test="property_leasing_num != null">
+                property_leasing_num like "%" #{property_leasing_num}"%"
+            </if>
+            <if test="assert_num != null">
+                and assert_num like "%" #{assert_num}"%"
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAssertLeasingList" parameterType="assertLeasing" resultType="assertLeasing">
+        SELECT
+        id,
+        property_leasing_num,
+        assert_num,
+        water_num,
+        electric_num
+        FROM
+        t_assert_leasing
+        <include refid="selectAssertLeasingListWhere"/>
+        <if test="start !=null and rows != null">
+            limit #{start},#{rows}
+        </if>
+
+    </select>
+
+    <select id="selectAssertLeasingListCount" parameterType="assertLeasing" resultType="int">
+        select count(*)
+        from t_assert_leasing
+        <include refid="selectAssertLeasingListWhere"/>
+    </select>
+
+    <select id="getAssertLeasingById" parameterType="long" resultType="assertLeasing">
+		select * from t_assert_leasing where id= #{id}
+	</select>
+
+
+
+    <sql id="updateAssertLeasingWhere">
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </sql>
+
+
+    <update id="updateAssertLeasing" parameterType="AssertLeasing">
+        update t_assert_leasing
+        <set>
+            <if test="property_leasing_num!=null">
+                property_leasing_num=#{property_leasing_num},
+            </if>
+            <if test="assert_num!=null">
+                assert_num=#{assert_num},
+            </if>
+
+            <if test="water_num!=null">
+                water_num=#{water_num},
+            </if>
+
+            <if test="electric_num!=null">
+                electric_num=#{electric_num},
+            </if>
+
+        </set>
+        where id=#{id};
+
+    </update>
+
+    <sql id="key">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                property_leasing_num,
+            </if>
+            <if test="assert_num!=null">
+                assert_num,
+            </if>
+
+            <if test="water_num!=null">
+                water_num=#{water_num},
+            </if>
+
+            <if test="electric_num!=null">
+                electric_num=#{electric_num}
+            </if>
+
+        </trim>
+    </sql>
+
+    <sql id="value">
+        <!-- 去掉最后一个逗号 -->
+        <trim suffixOverrides=",">
+            <if test="property_leasing_num!=null">
+                #{property_leasing_num},
+            </if>
+            <if test="assert_num!=null">
+                #{assert_num},
+            </if>
+            <if test="water_num!=null">
+                #{water_num},
+            </if>
+
+            <if test="electric_num!=null">
+                #{electric_num}
+            </if>
+
+        </trim>
+    </sql>
+
+    <insert id="addAssertLeasing" parameterType="AssertLeasing">
+        insert into t_assert_leasing(<include refid="key"></include>) values(<include refid="value"></include>)
+    </insert>
+
+    <delete id="deleteAssertLeasing" parameterType="long">
+		delete from t_assert_leasing where id=#{id}
+	</delete>
+
+    <delete id="deleteAssertLeasingByPropertyLeasingNum" parameterType="String">
+		delete from t_assert_leasing where property_leasing_num=#{property_leasing_num}
+	</delete>
+
+
+
+</mapper>

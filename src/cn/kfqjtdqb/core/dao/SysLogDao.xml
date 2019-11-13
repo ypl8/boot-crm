@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.kfqjtdqb.core.dao.SysLogDao">
+
+
+	<sql id="selectSysLogWhere">
+		<where>
+			<if test="id != null">
+				id=#{id},
+			</if>
+			<if test="username != null">
+			  and username like "%"#{username}"%"
+			</if>
+
+		</where>
+	</sql>
+
+	<select id="selectSysLogList" parameterType="sysLog" resultType="sysLog">
+		SELECT
+		   *
+		FROM
+		sysLog
+		<include refid="selectSysLogWhere"/>
+		<if test="start !=null and rows != null">
+			limit #{start},#{rows}
+		</if>
+	</select>
+
+	<select id="selectSysLogListCount" parameterType="sysLog" resultType="int">
+		select count(*)
+		from sysLog
+		<include refid="selectSysLogWhere"/>
+	</select>
+
+	<sql id="key">
+		<!-- 去掉最后一个逗号 -->
+		<trim suffixOverrides=",">
+			<if test="visitTime!=null">
+				visitTime,
+			</if>
+			<if test="username!=null">
+				username,
+			</if>
+			<if test="ip!=null">
+				ip,
+			</if>
+
+			<if test="method!=null">
+				method,
+			</if>
+			<if test="url!=null">
+				url,
+			</if>
+		</trim>
+	</sql>
+
+	<sql id="value">
+		<!-- 去掉最后一个逗号 -->
+		<trim suffixOverrides=",">
+			<if test="visitTime!=null">
+				#{visitTime},
+			</if>
+			<if test="username!=null">
+				#{username},
+			</if>
+			<if test="ip!=null">
+				#{ip},
+			</if>
+			<if test="method!=null">
+				#{method},
+			</if>
+			<if test="url!=null">
+				#{url},
+			</if>
+		</trim>
+	</sql>
+
+
+	<insert id="addSysLog" parameterType="sysLog">
+		insert into sysLog(<include refid="key"></include>) values(<include refid="value"></include>)
+	</insert>
+
+
+</mapper>

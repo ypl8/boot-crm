@@ -43,7 +43,7 @@ public class AssertInfolController {
     @Autowired
     private SystemService systemService;
 
-    public static final String csv_assertInfol_upload_path = "D://loanrefweb//csv//assertInfol";
+    public static final String csv_assertInfol_upload_path = "D://csv//assertInfol";
     private static final String POINT_SUCCESS_URL = "/assertInfol/list.action";
     @Value("${floor.state.type}")
     private String STATE_TYPE;
@@ -194,6 +194,7 @@ public class AssertInfolController {
             // 获取错误信息
             List<FieldError> errorList = errors.getFieldErrors();
             for (FieldError error : errorList) {
+
                 // 打印字段错误信息
                 stringBuilder.append("fied :" + error.getField() + "\t" + "msg:" + error.getDefaultMessage());
                 //  System.err.println("fied :" + error.getField() + "\t" + "msg:" + error.getDefaultMessage());
@@ -352,6 +353,58 @@ public class AssertInfolController {
         }
         CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
     }
+    @RequestMapping("/assertInfol/downloadCommunityAssertInfol")
+    public void downloadCommunityAssertInfol(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows,
+                                 @RequestParam  String community_name) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity(page, rows, community_name);
+        //定义csv文件名称
+        String csvFileName = "资产信息统计表";
+        //定义csv表头
+        String colNames = "小区编号,资产总数,资产出租个数,资产空闲个数,资产非法占用,出租率";
+        //定义表头对应字段的key
+        String mapKey = "community_name,countSum,countRented,countUnrent,countOccupy,assertRate";
+        //遍历保存查询数据集到dataList中
+        for (AssertInfolTotal assertInfolTotal : assertInfolList.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("community_name", assertInfolTotal.getCommunity_name());
+            map.put("countSum", assertInfolTotal.getCountSum());
+            map.put("countRented", assertInfolTotal.getCountRented());
+            map.put("countUnrent", assertInfolTotal.getCountUnrent());
+            map.put("countOccupy", assertInfolTotal.getCountOccupy());
+            map.put("assertRate", assertInfolTotal.getAssertRate());
 
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/assertInfol/downloadCommunityAssertInfolAll")
+    public void downloadCommunityAssertInfolAll(HttpServletResponse response, @RequestParam  String community_name) {
+
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity( community_name);
+        //定义csv文件名称
+        String csvFileName = "资产信息统计表";
+        //定义csv表头
+        String colNames = "小区编号,资产总数,资产出租个数,资产空闲个数,资产非法占用,出租率";
+        //定义表头对应字段的key
+        String mapKey = "community_name,countSum,countRented,countUnrent,countOccupy,assertRate";
+        //遍历保存查询数据集到dataList中
+        for (AssertInfolTotal assertInfolTotal : assertInfolList) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("community_name", assertInfolTotal.getCommunity_name());
+            map.put("countSum", assertInfolTotal.getCountSum());
+            map.put("countRented", assertInfolTotal.getCountRented());
+            map.put("countUnrent", assertInfolTotal.getCountUnrent());
+            map.put("countOccupy", assertInfolTotal.getCountOccupy());
+            map.put("assertRate", assertInfolTotal.getAssertRate());
+
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
 
 }

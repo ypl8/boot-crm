@@ -10,9 +10,8 @@ public class AssertLeasing  implements Serializable {
     private String property_leasing_num;
     private BigDecimal water_num;
     private BigDecimal  electric_num;
-
-
-
+    private Integer start;
+    private Integer rows;
 
     public BigDecimal getWater_num() {
         return water_num;
@@ -52,5 +51,22 @@ public class AssertLeasing  implements Serializable {
 
     public void setProperty_leasing_num(String property_leasing_num) {
         this.property_leasing_num = property_leasing_num;
+    }
+
+
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
     }
 }

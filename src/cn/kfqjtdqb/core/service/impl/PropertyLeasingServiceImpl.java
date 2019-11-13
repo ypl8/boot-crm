@@ -1,10 +1,7 @@
 package cn.kfqjtdqb.core.service.impl;
 
 import cn.kfqjtdqb.common.utils.Page;
-import cn.kfqjtdqb.core.bean.AssertInfol;
-import cn.kfqjtdqb.core.bean.AssertLeasing;
-import cn.kfqjtdqb.core.bean.PropertyLeasing;
-import cn.kfqjtdqb.core.bean.TotalRental;
+import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.dao.*;
 import cn.kfqjtdqb.core.service.AssertEstateService;
 import cn.kfqjtdqb.core.service.PropertyLeasingService;
@@ -27,7 +24,7 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     private PropertyLeasingDao propertyLeasingDao;
 
     @Override
-    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num) {
+    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type) {
         PropertyLeasing propertyLeasing = new PropertyLeasing();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -55,6 +52,10 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
         }
         if (StringUtils.isNotBlank(assert_num)) {
             propertyLeasing.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(property_leasing_type)) {
+            propertyLeasing.setProperty_leasing_type(property_leasing_type);
         }
         //当前页
         propertyLeasing.setStart((page - 1) * rows);
@@ -102,6 +103,25 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     }
 
     @Override
+    public void deleteAssertLeasingByPropertyLeasingNum(String property_leasing_num) throws Exception {
+        propertyLeasingDao.deleteAssertLeasingByPropertyLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public void deleteAssertLeasingByAssertNumAndPropertyLeasingNum(String property_leasing_num,String  assert_num) throws Exception {
+        AssertLeasing assertLeasing=new AssertLeasing();
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            assertLeasing.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(assert_num)) {
+            assertLeasing.setAssert_num(assert_num);
+        }
+        propertyLeasingDao.deleteAssertLeasingByAssertNumAndPropertyLeasingNum(assertLeasing);
+
+    }
+
+    @Override
     public PropertyLeasing findPropertyLeasingWithAssert(Long id) {
         return propertyLeasingDao.findPropertyLeasingWithAssert(id);
     }
@@ -129,6 +149,11 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     @Override
     public PropertyLeasing findPropertyLeasingByNum(String property_leasing_num) {
         return propertyLeasingDao.findPropertyLeasingByLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public CountEmpty findEmptyPropertyLeasingCount() {
+        return propertyLeasingDao.findEmptyPropertyLeasingCount();
     }
 
     @Override

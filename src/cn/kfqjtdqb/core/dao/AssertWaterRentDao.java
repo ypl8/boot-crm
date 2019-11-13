@@ -20,4 +20,5 @@ public interface AssertWaterRentDao {
     int addAssertWaterRent(AssertWaterRent AssertWaterRent)throws DataAccessException;
     List<AssertWaterRent>   getAssertWaterRentByLeasingNum(String property_leasing_num);
     BigDecimal getAssertWaterRentCountByLeasingNum(AssertWaterRent assertWaterRent);   //统计实际已收取的费用
+    void deleteAssertWaterRentByPropertyLeasingNum(String property_leasing_num) throws Exception;
 }

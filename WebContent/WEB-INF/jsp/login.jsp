@@ -45,7 +45,7 @@
             <span>${msg}</span>
         </form>
     </div>
-    <div class="copyright" style="margin-bottom: 100px">赣州开发区建设投资(集团)有限公司 版权所有©2019-2021 技术支持电话：000-00000000</div>
+    <div class="copyright" style="margin-bottom: 100px">赣州市建控投资股份有限公司 版权所有©2019-2021 </div>
 </div>
 </body>
 </html>

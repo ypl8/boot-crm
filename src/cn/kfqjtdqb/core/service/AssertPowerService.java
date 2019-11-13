@@ -14,4 +14,5 @@ public interface AssertPowerService {
     void deleteAssertPower(Long id);
     List<AssertPower> selectAssertPowerListByAssertNum(String property_leasing_num, String assert_num);
     int createAssertPower(AssertPower assertPower)throws DataAccessException;;
+    void deleteAssertPowerByPropertyLeasingNum(String property_leasing_num)throws Exception ;
 }

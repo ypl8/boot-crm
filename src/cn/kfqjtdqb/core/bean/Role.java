@@ -1,13 +1,41 @@
 package cn.kfqjtdqb.core.bean;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Role {
+public class Role implements Serializable {
     private Long id;
     private String roleName;
     private String roleDesc;
     private List<Permission> permissions;
     private List<UserInfo> users;
+    private Long  userId;
+    private Integer start;
+    private Integer rows;
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Integer getStart() {
+        return start;
+    }
+
+    public void setStart(Integer start) {
+        this.start = start;
+    }
+
+    public Integer getRows() {
+        return rows;
+    }
+
+    public void setRows(Integer rows) {
+        this.rows = rows;
+    }
 
     public Long getId() {
         return id;

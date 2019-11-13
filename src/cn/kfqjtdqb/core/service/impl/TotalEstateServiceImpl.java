@@ -148,5 +148,71 @@ public class TotalEstateServiceImpl implements TotalEstateService {
         TotalEstateDao.deleteTotalEstateByPropertyLeasingNum(property_leasing_num);
     }
 
+    @Override
+    public List<TotalEstate> selectTotalEstateList(String property_leasing_num, String community_name, String year_months) {
+        TotalEstate TotalEstate = new TotalEstate();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            TotalEstate.setProperty_leasing_num(property_leasing_num);
+        }
+        if (StringUtils.isNotBlank(year_months)) {
+            TotalEstate.setYear_months(year_months);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalEstate.setCommunity_name(community_name);
+        }
+
+        //查询客户列表
+        List<TotalEstate> TotalEstates = TotalEstateDao.selectTotalEstateList(TotalEstate);
+
+        return TotalEstates;
+    }
+
+    @Override
+    public List<TotalEstate> selectTotalEstateCommunityByYearList(String years, String community_name) {
+        TotalEstate TotalEstate = new TotalEstate();
+        if (StringUtils.isNotBlank(years)) {
+            TotalEstate.setYear_months(years);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalEstate.setCommunity_name(community_name);
+        }
+        //查询客户列表
+        List<TotalEstate> TotalEstates = TotalEstateDao.selectTotalEstateCommunityByYearList(TotalEstate);
+        for (int i = 0; i < TotalEstates.size(); i++) {
+            TotalEstates.get(i).setDifference(TotalEstates.get(i).getEstate() .subtract( TotalEstates.get(i).getReality_estate()));
+            if (TotalEstates.get(i).getEstate() != null && TotalEstates.get(i).getEstate().compareTo(BigDecimal.ZERO)==0) {
+                TotalEstates.get(i).setCollectionRate(new BigDecimal("100"));
+            } else {
+                TotalEstates.get(i).setCollectionRate(TotalEstates.get(i).getReality_estate() .divide( TotalEstates.get(i).getEstate(),2,BigDecimal.ROUND_HALF_UP) .multiply(new BigDecimal("100")));
+            }
+        }
+        return TotalEstates;
+    }
+
+    @Override
+    public List<TotalEstate> selectTotalEstateCommunityList(String year_months, String community_name) {
+        TotalEstate TotalEstate = new TotalEstate();
+        if (StringUtils.isNotBlank(year_months)) {
+            TotalEstate.setYear_months(year_months);
+        }
+        if (StringUtils.isNotBlank(community_name)) {
+            TotalEstate.setCommunity_name(community_name);
+        }
+
+        //查询客户列表
+        List<TotalEstate> TotalEstates = TotalEstateDao.selectTotalEstateCommunityList(TotalEstate);
+        for (int i = 0; i < TotalEstates.size(); i++) {
+            TotalEstates.get(i).setDifference(TotalEstates.get(i).getEstate() .subtract( TotalEstates.get(i).getReality_estate()));
+            if (TotalEstates.get(i).getEstate() != null && TotalEstates.get(i).getEstate() .compareTo(BigDecimal.ZERO)==0 ) {
+                TotalEstates.get(i).setCollectionRate(new BigDecimal("100"));
+            } else {
+                TotalEstates.get(i).setCollectionRate(TotalEstates.get(i).getReality_estate() .divide( TotalEstates.get(i).getEstate(),2,BigDecimal.ROUND_HALF_UP) .multiply(new BigDecimal("100")));
+            }
+        }
+
+        return TotalEstates;
+    }
+
 
 }

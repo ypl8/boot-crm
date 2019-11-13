@@ -11,6 +11,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="itcast" uri="http://itcast.cn/common/" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@taglib uri="http://www.springframework.org/security/tags" prefix="security" %>
 <%
     String path = request.getContextPath();
     String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort()
@@ -124,7 +125,8 @@
 
                     <div class="form-group" style="visibility: visible">
                         <label for="assert_num">资产编号</label>
-                        <input type="text" class="form-control" id="assert_num" value="${assert_num }" name="assert_num">
+                        <input type="text" class="form-control" id="assert_num" value="${assert_num }"
+                               name="assert_num">
                     </div>
 
                     <div class="form-group">
@@ -133,7 +135,7 @@
                                value="${community_name }" name="community_name">
                     </div>
 
-                    <br/>  <br/>
+                    <br/> <br/>
                     <div class="form-group">
                         <label for="query_collect_rent_way">租金缴纳方式</label>
                         <select class="form-control" id="query_collect_rent_way" placeholder="租金缴纳方式"
@@ -172,11 +174,27 @@
 
 
 
+
+                    <div class="form-group">
+                        <label for="query_property_leasing_state">返迁安置</label>
+                        <select class="form-control" id="query_property_leasing_typee" placeholder="返迁安置"
+                                name="property_leasing_type">
+                            <option value="">--请选择--</option>
+                            <c:forEach items="${contractType}" var="item">
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == property_leasing_type}"> selected</c:if>>${item.dict_item_name }</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+
                     <button type="submit" class="btn btn-primary">查询</button>
-                    <a href="#" class="btn btn-warning" data-toggle="modal"
-                       data-target="#newPropertyLeasingDialog" onclick="clearPropertyLeasing()">新建</a>
-                    <a href="#" class="btn btn-info"
-                       onclick="uploadPropertyLeasing()">导入</a>
+                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">
+                        <a href="#" class="btn btn-warning" data-toggle="modal"
+                           data-target="#newPropertyLeasingDialog" onclick="clearPropertyLeasing()">新建</a>
+                        <a href="#" class="btn btn-info"
+                           onclick="uploadPropertyLeasing()">导入</a>
+                    </security:authorize>
                     <a href="#" class="btn btn-success"
                        onclick="downloadPropertyLeasing()">导出</a>
                 </form>
@@ -216,12 +234,17 @@
                             <th>租期开始时间</th>
                             <th>租期结束时间</th>
                             <th>合同状态</th>
-                            <th>操作</th>
+                            <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">
+                                <th>操作</th>
+                            </security:authorize>
                             <th>资产管理</th>
+                            <th>水电初始化管理</th>
                             <th>押金管理</th>
                             <th>租金管理</th>
                             <th>物业费管理</th>
+                            <th>水抄表管理</th>
                             <th>水费管理</th>
+                            <th>电操表管理</th>
                             <th>电费管理</th>
                         </tr>
                         </thead>
@@ -263,91 +286,146 @@
                                 </c:if>
                                     <%--   <td>${row.property_leasing_state}</td>--%>
                                     <%-- <td>${row.remark}</td>--%>
+                                <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">
+                                    <td>
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#caseEditDialog" onclick="editPropertyLeasing(${row.id})">修改</a>
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        <a href="#" class="btn btn-danger btn-xs"
+                                           onclick="deletePropertyLeasing(${row.id})">删除</a>
+                                        </security:authorize>
+                                    </td>
+                                </security:authorize>
+
                                 <td>
-                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
-                                       data-target="#caseEditDialog" onclick="editPropertyLeasing(${row.id})">修改</a>
-                                    <a href="#" class="btn btn-danger btn-xs"
-                                       onclick="deletePropertyLeasing(${row.id})">删除</a>
+
+                                        <%--   <a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
+                                              data-target="#showAssertDialog"
+                                              onclick="showAssert(${row.id})">查看</a>--%>
+                                    <a href="${pageContext.request.contextPath}/assertInfol/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
+
                                 </td>
 
                                 <td>
-                                    <a href="#" class="btn btn-info btn-xs" data-toggle="modal"
-                                       data-target="#addAssertDialog"
-                                       onclick="addAssert('${row.property_leasing_num}')">添加</a>
-                                 <%--   <a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
-                                       data-target="#showAssertDialog"
-                                       onclick="showAssert(${row.id})">查看</a>--%>
-                                    <a href="${pageContext.request.contextPath}/assertInfol/list.action?property_leasing_num=${row.property_leasing_num}" class="btn  btn-primary btn-xs"  target="main">查看</a>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT')">
+                                        <a href="#" class="btn btn-info btn-xs" data-toggle="modal"
+                                           data-target="#addAssertDialog"
+                                           onclick="addAssert('${row.property_leasing_num}')">添加</a>
+                                    </security:authorize>
+
+
+                                    <a href="${pageContext.request.contextPath}/assertLeasing/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
                                 </td>
 
                                 <td>
-                                    <a href="#" class="btn btn-info  btn-xs" data-toggle="modal"
-                                       data-target="#newDepositDialog"
-                                       onclick="editDeposit(${row.id})">添加</a>
-                                    <a href="${pageContext.request.contextPath}/assertDeposit/list.action?property_leasing_num=${row.property_leasing_num}" class="btn  btn-primary btn-xs"  target="main">查看</a>
-                                    <%--<a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
-                                       data-target="#showDepositDialog"
-                                       onclick="showDeposit('${row.property_leasing_num}')">查看</a>--%>
+                                    <security:authorize
+                                            access="hasAnyRole('ROLE_ADMIN','ROLE_DEPOSIT')">
+                                        <a href="#" class="btn btn-info  btn-xs" data-toggle="modal"
+                                           data-target="#newDepositDialog"
+                                           onclick="editDeposit(${row.id})">添加</a>
+                                    </security:authorize>
+                                    <a href="${pageContext.request.contextPath}/assertDeposit/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-primary btn-xs" target="main">查看</a>
+                                        <%--<a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
+                                           data-target="#showDepositDialog"
+                                           onclick="showDeposit('${row.property_leasing_num}')">查看</a>--%>
                                 </td>
 
 
                                 <td>
-                                    <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
-                                       data-target="#newRentalDialog"
-                                       onclick="editRental(${row.id})">月缴</a>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_RENTAL')">
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#newRentalDialog"
+                                           onclick="editRental(${row.id})">月缴</a>
 
-                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
-                                       data-target="#newRentalByDefDialog"
-                                       onclick="editRentalByDef(${row.id})">自缴</a>
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#newRentalByDefDialog"
+                                           onclick="editRentalByDef(${row.id})">自缴</a>
+                                    </security:authorize>
                                     <a href="${pageContext.request.contextPath}/assertRental/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
-                                  <%--  <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#showRentalDialog"
-                                       onclick=" showRental(${row.id})">查看</a>--%>
+                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
+
+                                    <a href="${pageContext.request.contextPath}/totalRental/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-success btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">明细</a>
+                                        <%--  <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                             data-target="#showRentalDialog"
+                                             onclick=" showRental(${row.id})">查看</a>--%>
                                 </td>
 
                                 <td>
-                                    <a href="#" class="btn btn-info btn-xs" data-toggle="modal"
-                                       data-target="#newEstateDialog"
-                                       onclick="editEstate(${row.id})">添加</a>
-                                 <%--   <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                       data-target="#showEstateDialog"
-                                       onclick="showEstate(${row.id})">查看</a>--%>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ESTATE')">
+                                        <a href="#" class="btn btn-info btn-xs" data-toggle="modal"
+                                           data-target="#newEstateDialog"
+                                           onclick="editEstate(${row.id})">月缴</a>
+
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#newEstateByDefDialog"
+                                           onclick="editEstateByDef(${row.id})">自缴</a>
+                                    </security:authorize>
+                                        <%--   <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                              data-target="#showEstateDialog"
+                                              onclick="showEstate(${row.id})">查看</a>--%>
                                     <a href="${pageContext.request.contextPath}/assertEstate/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
+                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
+
+                                    <a href="${pageContext.request.contextPath}/totalEstate/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-success btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">明细</a>
                                 </td>
 
+
                                 <td>
-                                    <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
-                                       data-target="#newWaterDialog"
-                                       onclick="editWater(${row.id})">录入</a>
-
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#newWaterDialog"
+                                           onclick="editWater(${row.id})">添加</a>
+                                    </security:authorize>
                                     <a href="${pageContext.request.contextPath}/assertWater/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-info btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
+                                       class="btn  btn-info btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
+                                </td>
+                                <td>
 
-                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
-                                       data-target="#newWaterRentDialog"
-                                       onclick="editWaterRent(${row.id})">添加</a>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#newWaterRentDialog"
+                                           onclick="editWaterRent(${row.id})">添加</a>
+                                    </security:authorize>
                                         <%-- <a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
                                             data-target="#showEstateDialog"
                                             onclick="showEstate(${row.id})">查看</a>--%>
                                     <a href="${pageContext.request.contextPath}/assertWaterRent/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
+                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
+                                </td>
 
 
+                                <td>
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#newPowerDialog"
+                                           onclick="editPower(${row.id})">录入</a>
+                                    </security:authorize>
+                                    <a href="${pageContext.request.contextPath}/assertPower/list.action?property_leasing_num=${row.property_leasing_num}"
+                                       class="btn  btn-info btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
                                 </td>
 
                                 <td>
-                                    <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
-                                       data-target="#newPowerDialog"
-                                       onclick="editPower(${row.id})">录入</a>
-                                    <a href="${pageContext.request.contextPath}/assertPower/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-info btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
-                                    <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
-                                       data-target="#newPowerRentDialog"
-                                       onclick="editPowerRent(${row.id})">添加</a>
+
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_WATER')">
+                                        <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                           data-target="#newPowerRentDialog"
+                                           onclick="editPowerRent(${row.id})">添加</a>
+                                    </security:authorize>
                                     <a href="${pageContext.request.contextPath}/assertPowerRent/list.action?property_leasing_num=${row.property_leasing_num}"
-                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%> target="main">查看</a>
+                                       class="btn  btn-primary btn-xs" <%--onclick="return showRental(${row.id})"--%>
+                                       target="main">查看</a>
                                         <%-- <a href="#" class="btn btn-danger btn-xs" data-toggle="modal"
                                             data-target="#showEstateDialog"
                                             onclick="showEstate(${row.id})">查看</a>--%>
@@ -664,6 +742,22 @@
 
 
                     <div class="form-group">
+                        <label for="edit_property_leasing_type"
+                               style="float:left;padding:7px 15px 0 27px;">返迁安置</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_property_leasing_type" placeholder="合同状态"
+                                    name="property_leasing_type">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${contractType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == property_leasing_type}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
                         <label for="edit_property_leasing_state"
                                style="float:left;padding:7px 15px 0 27px;">合同状态</label>
                         <div class="col-sm-10">
@@ -834,7 +928,7 @@
                     <div class="form-group">
                         <label for="new_rent_period" class="col-sm-2 control-label">合同期</label>
                         <div class="col-sm-10">
-                            <input type="text" class="form-control" id="new_rent_period" placeholder="合同期(年)"
+                            <input type="text" class="form-control" id="new_rent_period" placeholder="合同期(月)"
                                    name="rent_period"/>
                         </div>
                     </div>
@@ -966,6 +1060,21 @@
                         </div>
                     </div>
 
+
+
+                    <div class="form-group">
+                        <label for="new_property_leasing_type" style="float:left;padding:7px 15px 0 27px;">返迁安置</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="new_property_leasing_type" placeholder="返迁安置"
+                                    name="property_leasing_type">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${contractType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == property_leasing_type}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
 
                     <div class="form-group">
                         <label for="new_property_leasing_state" style="float:left;padding:7px 15px 0 27px;">合同状态</label>
@@ -1239,7 +1348,7 @@
     </div>
 </div>
 
-<!-- 显示对应资产的对话框  -->
+<!-- 显示对应资产的对话框 -->
 <div class="modal fade" id="showAssertDialog" tabindex="-1" role="dialog"
      aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
@@ -1718,6 +1827,108 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" onclick="createEstate()">创建物业费</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 创建物业费对话框 -->
+<div class="modal fade" id="newEstateByDefDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel44">添加物业费信息</h4>
+            </div>
+            <div class="modal-body">
+
+                <form class="form-horizontal" id="new2_estate_form">
+                    <input type="hidden" id="estate_day" name="estate_day"/>
+                    <div class="form-group">
+                        <label for="estate2_property_leasing_num" class="col-sm-2 control-label">
+                            租凭合同编号
+                        </label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="estate2_property_leasing_num"
+                                   placeholder="租凭合同编号" name="property_leasing_num"/>
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="form-group date form_date">
+                        <label for="estate2_rent_start_time" class="col-sm-2 control-label">本次收取费用开始时间</label>
+                        <div class="col-sm-10">
+                            <input name="rent_start_time" id="estate2_rent_start_time" type='text'
+                                   class="form-control picket" placeholder="本次收取费用开始时间"/>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group date form_date">
+                        <label for="estate2_rent_end_time" class="col-sm-2 control-label">本次收取费用结束时间</label>
+                        <div class="col-sm-10">
+                            <input name="rent_end_time" id="estate2_rent_end_time" type='text'
+                                   class="form-control picket" placeholder="本次收取费用结束时间"/>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="estate2_estate_received" class="col-sm-2 control-label">实际已收物业费</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="estate2_estate_received" placeholder="实际已收物业费（元）"
+                                   name="estate_recivied">
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="estate2_estate" class="col-sm-2 control-label">截取当前应收物业费</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="estate2_estate" placeholder="截取当前应收物业费（元）"
+                                   name="estate">
+                        </div>
+                    </div>
+
+                    <div class="form-group date form_date">
+                        <label for="estate2_deadline" class="col-sm-2 control-label">收费时间</label>
+                        <div class="col-sm-10">
+                            <input name="deadline" id="estate2_deadline" type='text'
+                                   class="form-control picket" placeholder="收费时间"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="estate2_reality_estate" class="col-sm-2 control-label">本次收取物业费</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="estate2_reality_estate" placeholder="本次收取物业费（元）"
+                                   name="reality_estate">
+                        </div>
+                    </div>
+
+
+                    <%-- <div class="form-group">
+                         <label for="estate_state" style="float:left;padding:7px 15px 0 27px;">物业状态</label>
+                         <div class="col-sm-10">
+                             <select class="form-control" id="estate_state" placeholder="物业状态" name="state">
+                                 <option value="">--请选择--</option>
+                                 <c:forEach items="${estateStateType}" var="item">
+                                     <option value="${item.dict_id}"<c:if
+                                             test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                 </c:forEach>
+                             </select>
+                         </div>
+                     </div>--%>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="createEstate2()">创建物业费</button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
             </div>
         </div>
@@ -2241,7 +2452,6 @@
 <script type="text/javascript">
 
 
-
     //编辑合同信息
     function editPropertyLeasing(id) {
         $.ajax({
@@ -2257,8 +2467,8 @@
                 for (var i = childs.length - 1; i >= 0; i--) {
                     f.removeChild(childs[i]);
                 }
-                document.getElementById("edit_building_num").options.add(new Option("请选择",""));
-                var rentalLocation=data.rentalLocation;
+                document.getElementById("edit_building_num").options.add(new Option("请选择", ""));
+                var rentalLocation = data.rentalLocation;
                 var community_name = data.community_name;
                 var building_num = data.building_num;
                 var tenant = data.tenant;
@@ -2267,24 +2477,24 @@
                 var rent_charge_standard = data.rent_charge_standard;
                 var monthly_rental = data.monthly_rental;
                 var rent_free_period = data.rent_free_period;
-                var rent_period=data.rent_period;
+                var rent_period = data.rent_period;
 
                 var collect_rent_way = data.collect_rent_way;
                 var collect_rent_time = data.collect_rent_time;
                 var estate_charge_standard = data.estate_charge_standard;
-                var estate_charge_month=data.estate_charge_month;
+                var estate_charge_month = data.estate_charge_month;
 
 
                 var deposit = data.deposit;
                 var deposit_time = data.deposit_time;
                 var water_rate = data.water_rate;
-                var power_rate=data.power_rate;
+                var power_rate = data.power_rate;
 
                 var collect_rate_way = data.collect_rate_way;
                 var rent_start_time = data.rent_start_time;
                 var rent_end_time = data.rent_end_time;
-                var property_leasing_state=data.property_leasing_state;
-                var remark=data.remark;
+                var property_leasing_state = data.property_leasing_state;
+                var remark = data.remark;
 
                 $.ajax({
                     type: "get",
@@ -2318,8 +2528,8 @@
 
                                         for (var i = 0; i < rentalLocations.length; i++) {
                                             var option = new Option(rentalLocations[i], rentalLocations[i]);
-                                            var  rentalLocationArray=  rentalLocation.split(",");
-                                            for (var j = 0; j <rentalLocationArray.length; j++) {
+                                            var rentalLocationArray = rentalLocation.split(",");
+                                            for (var j = 0; j < rentalLocationArray.length; j++) {
                                                 if (rentalLocationArray[j] == rentalLocations[i]) {
                                                     option.selected = true;
                                                 }
@@ -2331,8 +2541,8 @@
                                         });
                                         $("#edit_rentalLocation").selectpicker('refresh');
                                         // 缺一不可
-                                        /*  $('#new_rentalLocation').selectpicker('refresh');
-                                          $('#new_rentalLocation').selectpicker('render');*/
+                                        /* $('#new_rentalLocation').selectpicker('refresh');
+                                        $('#new_rentalLocation').selectpicker('render');*/
                                         $("#edit_tenant").val(tenant);
                                         $("#edit_rental_area").val(rental_area);
                                         $("#edit_sign_in_time").val(sign_in_time);
@@ -2369,21 +2579,21 @@
                 });
 
 
-                /*   document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
-                /*    var building_num = $("#edit_building_num").find("option:selected").text();
-                    var community_name = $("#edit_community_name").val();
-                    var rentalLocation = $("#edit_rentalLocation").find("option:selected").text();*/
+                /* document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
+                /* var building_num = $("#edit_building_num").find("option:selected").text();
+                var community_name = $("#edit_community_name").val();
+                var rentalLocation = $("#edit_rentalLocation").find("option:selected").text();*/
 
 
-                /*   $("#edit_rentalLocation").prepend(option2);
-                   $("#edit_rentalLocation").selectpicker('refresh');*/
+                /* $("#edit_rentalLocation").prepend(option2);
+                $("#edit_rentalLocation").selectpicker('refresh');*/
 
             }
         });
     }
 
 
-    /*    ,rent_start_time,rent_end_time,deposit*/
+    /* ,rent_start_time,rent_end_time,deposit*/
     //编辑押金
     function editDeposit(id) {
         $.ajax({
@@ -2438,15 +2648,35 @@
                 $("#rental2_rent_start_time").val(data.rent_start_time);
                 $("#rental2_rent_end_time").val(data.rent_end_time);
                 /* $("#rental_reality_rental").val(data.reality_rental);*/
-                /*   for (var i = 0; i < data.totalRentals.length; i++) {
-                       document.getElementById("rental_year_months").options.add(new Option(data.totalRentals[i].year_months, data.totalRentals[i].id));
-                   }*/
+                /* for (var i = 0; i < data.totalRentals.length; i++) {
+                document.getElementById("rental_year_months").options.add(new Option(data.totalRentals[i].year_months, data.totalRentals[i].id));
+                }*/
             }
         });
 
     }
 
+    function   editEstateByDef(id){
 
+        $.ajax({
+            type: "get",
+            url: "<%=basePath%>propertyLeasing/editEstate.action",
+            data: {"id": id},
+            success: function (data) {
+                $("#estate2_property_leasing_num").val(data.property_leasing_num);
+                $("#estate2_estate_received").val(data.estate_recivied);
+                $("#estate2_estate").val(data.estate);
+                $("#estate2_rent_start_time").val(data.rent_start_time);
+                $("#estate2_rent_end_time").val(data.rent_end_time);
+                /* $("#rental_reality_rental").val(data.reality_rental);*/
+                /* for (var i = 0; i < data.totalRentals.length; i++) {
+                document.getElementById("rental_year_months").options.add(new Option(data.totalRentals[i].year_months, data.totalRentals[i].id));
+                }*/
+            }
+        });
+
+
+    }
     function editEstate(id) {
         var f = document.getElementById("estate_year_months");
         var childs = f.childNodes;
@@ -2494,7 +2724,7 @@
                 for (var i = 0; i < data.assertInfols.length; i++) {
                     document.getElementById("water_assert_num").options.add(new Option(data.assertInfols[i].assert_num, data.assertInfols[i].assert_num));
                 }
-                /*   $("#water_watermeter_num").val(data.assertInfols[0].watermeter_num);*/
+                /* $("#water_watermeter_num").val(data.assertInfols[0].watermeter_num);*/
             }
         });
     }
@@ -2662,7 +2892,18 @@
                 }
             });
     }
-
+    function createEstate2() {
+        $.post("<%=basePath%>assertEstate/create2.action",
+            $("#new2_estate_form").serialize(), function (data) {
+                if (data.code == 0) {
+                    alert(data.msg);
+                    window.location.reload();
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            });
+    }
 
     // 显示租金
     function showEstate(id) {
@@ -2724,21 +2965,21 @@
     }
 
     // 显示押金
-   /* function showDeposit(property_leasing_num) {
-        $.ajax({
-            type: "get",
-            url: "<%=basePath%>/assertDeposit/find.action",
-            data: {"property_leasing_num": property_leasing_num},
-            success: function (data) {
-                $("#show_property_leasing_num").val(data.property_leasing_num);
-                $("#show_deposit").val(data.deposit);
-                $("#show_rent_start_time").val(data.rent_start_time);
-                $("#show_rent_end_time").val(data.rent_end_time);
-                $("#show_state").val(data.state);
-                $("#show_reality_deposit").val(data.reality_deposit);
-                $("#show_deadline").val(data.deadline);
-            }
-        });
+    /* function showDeposit(property_leasing_num) {
+    $.ajax({
+    type: "get",
+    url: "/assertDeposit/find.action",
+    data: {"property_leasing_num": property_leasing_num},
+    success: function (data) {
+    $("#show_property_leasing_num").val(data.property_leasing_num);
+    $("#show_deposit").val(data.deposit);
+    $("#show_rent_start_time").val(data.rent_start_time);
+    $("#show_rent_end_time").val(data.rent_end_time);
+    $("#show_state").val(data.state);
+    $("#show_reality_deposit").val(data.reality_deposit);
+    $("#show_deadline").val(data.deadline);
+    }
+    });
 
     }*/
 
@@ -2756,7 +2997,7 @@
                 $("#rental_show_rent_start_time").val(data.rent_start_time);
                 $("#rental_show_rent_end_time").val(data.rent_end_time);
                 $("#rental_show_rent_received").val(data.rent_recivied);
-                /*       $("#rental_show_deadline").val(data.deadline);*/
+                /* $("#rental_show_deadline").val(data.deadline);*/
                 $("#rental_show_state").val(data.state);
             }
         });
@@ -2800,6 +3041,8 @@
 
     //添加水电信息
     function addAssert(property_leasing_num) {
+
+
         var f = document.getElementById("edit_customerFrom");
         var childs = f.childNodes;
         for (var i = childs.length - 1; i >= 0; i--) {
@@ -2811,9 +3054,9 @@
             data: {"property_leasing_num": property_leasing_num},
             success: function (data) {
                 $("#add_property_leasing_num").val(property_leasing_num);
-                if(data.length==0){
+                if (data.length == 0) {
                     alert("该合同未关联资产信息");
-                    return ;
+                    return;
                 }
                 for (var i = 0; i < data.length; i++) {
                     document.getElementById("edit_customerFrom").options.add(new Option(data[i].assert_num, data[i].assert_num));
@@ -2826,7 +3069,7 @@
     //更新合同信息
     function updatePropertyLeasing() {
 
-        if (confirm('确实要删除该合同吗?会清除掉以前的租金和物业费信息。')) {
+        if (confirm('确实要更新该合同吗?会清除掉以前的租金和物业费信息。')) {
             $.post("<%=basePath%>propertyLeasing/update.action", $("#edit_case_form").serialize(), function (data) {
                 if (data.code == 0) {
                     alert(data.msg);
@@ -2844,14 +3087,13 @@
     function deletePropertyLeasing(id) {
         if (confirm('确实要删除该合同吗?')) {
             $.post("<%=basePath%>propertyLeasing/delete.action", {"id": id}, function (data) {
-                if (data == "OK") {
-                    alert("合同删除更新成功！");
+                if (data.code == 0) {
+                    alert(data.msg);
                     window.location.reload();
                 } else {
-                    alert("合同删除失败！");
+                    alert(data.msg);
                     window.location.reload();
                 }
-
             });
         }
     }
@@ -2882,6 +3124,7 @@
         $("#new_rent_start_time").val("");
         $("#new_rent_end_time").val("");
         $("#new_property_leasing_state").val("");
+        $("#new_property_leasing_type").val("");
         $("#new_remark").val("");
     }
 
@@ -2926,18 +3169,18 @@
 
 
     /* $(function () {
-         $('.form_date').datetimepicker({
-             language: 'zh-CN',
-             format: 'yyyymmdd',//显示格式
-             weekStart: 1,
-             todayBtn: 1,
-             autoclose: 1,
-             todayHighlight: 1,
-             startView: 2,
-             minView: 2,
-             forceParse: 0
-         });
-     });*/
+    $('.form_date').datetimepicker({
+    language: 'zh-CN',
+    format: 'yyyymmdd',//显示格式
+    weekStart: 1,
+    todayBtn: 1,
+    autoclose: 1,
+    todayHighlight: 1,
+    startView: 2,
+    minView: 2,
+    forceParse: 0
+    });
+    });*/
 
 
     $('.picket').datetimepicker({
@@ -3073,7 +3316,7 @@
         $.ajax({
             type: "get",
             url: "<%=basePath%>/assertInfol/getAllBuildNum.action",
-            data: {"community_name": community_name,"floor_state":"2"},
+            data: {"community_name": community_name, "floor_state": "2"},
             success: function (data) {
                 if (data.code == 0) {
                     var building_nums = data.data;
@@ -3131,19 +3374,19 @@
         for (var i = childs.length - 1; i >= 0; i--) {
             f.removeChild(childs[i]);
         }
-        /*   document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
+        /* document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
         var building_num = $("#new_building_num").find("option:selected").text();
         var community_name = $("#new_community_name").val();
         $.ajax({
             type: "get",
             url: "<%=basePath%>/assertInfol/getAllRentalLocation.action",
-            data: {"community_name": community_name, "building_num": building_num,"floor_state":"2"},
+            data: {"community_name": community_name, "building_num": building_num, "floor_state": "2"},
             success: function (data) {
                 if (data.code == 0) {
                     var rentalLocations = data.data;
 
                     /*for (var i = 0; i < rentalLocations.length; i++) {
-                        document.getElementById("new_rentalLocation").options.add(new Option(rentalLocations[i], rentalLocations[i]));
+                    document.getElementById("new_rentalLocation").options.add(new Option(rentalLocations[i], rentalLocations[i]));
                     }*/
                     for (var i = 0; i < rentalLocations.length; i++) {
                         $('#new_rentalLocation').append("<option value=" + rentalLocations[i] + ">" + rentalLocations[i] + "</option>");
@@ -3153,8 +3396,8 @@
                     });
                     $("#new_rentalLocation").selectpicker('refresh');
                     // 缺一不可
-                    /*  $('#new_rentalLocation').selectpicker('refresh');
-                      $('#new_rentalLocation').selectpicker('render');*/
+                    /* $('#new_rentalLocation').selectpicker('refresh');
+                    $('#new_rentalLocation').selectpicker('render');*/
 
                 } else {
                     alert(data.msg);
@@ -3173,7 +3416,7 @@
         for (var i = childs.length - 1; i >= 0; i--) {
             f.removeChild(childs[i]);
         }
-        /*   document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
+        /* document.getElementById("new_rentalLocation").options.add(new Option("--请选择--", ""));*/
         var building_num = $("#edit_building_num").find("option:selected").text();
         var community_name = $("#edit_community_name").val();
         $.ajax({
@@ -3186,8 +3429,8 @@
 
                     for (var i = 0; i < rentalLocations.length; i++) {
                         var option = new Option(rentalLocations[i], rentalLocations[i]);
-                        var  rentalLocationArray=  rentalLocation.split(",");
-                        for (var j = 0; j <rentalLocationArray.length; j++) {
+                        var rentalLocationArray = rentalLocation.split(",");
+                        for (var j = 0; j < rentalLocationArray.length; j++) {
                             if (rentalLocationArray[j] == rentalLocations[i]) {
                                 option.selected = true;
                             }
@@ -3196,15 +3439,15 @@
                     }
                     /*for (var i = 0; i < rentalLocations.length; i++) {
 
-                        $('#edit_rentalLocation').append("<option value=" + rentalLocations[i] + ">" + rentalLocations[i] + "</option>");
+                    $('#edit_rentalLocation').append("<option value=" + rentalLocations[i] + ">" + rentalLocations[i] + "</option>");
                     }*/
                     $("#edit_rentalLocation").selectpicker({
                         noneSelectedText: '请选择'//默认显示内容投入额
                     });
                     $("#edit_rentalLocation").selectpicker('refresh');
                     // 缺一不可
-                    /*  $('#new_rentalLocation').selectpicker('refresh');
-                      $('#new_rentalLocation').selectpicker('render');*/
+                    /* $('#new_rentalLocation').selectpicker('refresh');
+                    $('#new_rentalLocation').selectpicker('render');*/
 
                 } else {
                     alert(data.msg);
@@ -3227,17 +3470,17 @@
     }
 
     function getXmonthToday(type, year, month, day) {
-        // type 0 是当天 -1 是上个月   1是下个月
+        // type 0 是当天 -1 是上个月 1是下个月
         // var now = new Date(); 可以传值调式 now = new Date(2019,2,30); 今天是3月30号
         /* var year = now.getFullYear();//getYear()+1900=getFullYear()
-         var month = now.getMonth() + 1;//0-11表示1-12月
-         var day = now.getDate(); // 当天日期*/
+        var month = now.getMonth() + 1;//0-11表示1-12月
+        var day = now.getDate(); // 当天日期*/
         /* if (parseInt(month) < 10) {
-             month = "0" + month;
-         }
-         if (parseInt(day) < 10) {
-             day = "0" + day;
-         }*/
+        month = "0" + month;
+        }
+        if (parseInt(day) < 10) {
+        day = "0" + day;
+        }*/
         /* now = year + '-' + month + '-' + day; // 如果取当月日期可直接 return 返回*/
         var preMonth = parseInt(month) - 1;
         preMonth = preMonth < 10 ? '0' + preMonth : preMonth; // 获取上个月的值

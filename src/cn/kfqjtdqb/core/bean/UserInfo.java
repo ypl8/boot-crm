@@ -11,7 +11,7 @@ public class UserInfo implements Serializable {
     private String userName;
     @NotNull
     private String email;
-    @NotNull
+
     private String password;
     @NotNull
     private String phoneNum;

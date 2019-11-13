@@ -12,4 +12,6 @@ public interface AssertPowerDao {
     void updateAssertPower(AssertPower assertPower) throws DataAccessException;;
     void deleteAssertPower(Long id);
     int addAssertPower(AssertPower assertPower)throws DataAccessException;;
+
+    void deleteAssertPowerByPropertyLeasingNum(String property_leasing_num);
 }

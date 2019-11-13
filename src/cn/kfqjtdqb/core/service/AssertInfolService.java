@@ -39,4 +39,8 @@ public interface AssertInfolService {
     List<String> findAllBuildNum(String community_name, String floor_state);
 
     List<String> findAllRoomNum(String community_name, String building_num, String floor_state);
+
+    Integer   findEmptyAssertCount(String floor_state);
+
+    List<AssertInfolTotal> findAssertInfolListByCommunity(String community_name);
 }

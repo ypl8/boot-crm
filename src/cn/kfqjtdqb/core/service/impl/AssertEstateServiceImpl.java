@@ -82,4 +82,18 @@ public class AssertEstateServiceImpl implements AssertEstateService {
     public void deleteAssertEstateByPropertyLeasingNum(String property_leasing_num) {
         AssertEstateDao.deleteAssertEstateByPropertyLeasingNum(property_leasing_num);
     }
+
+    @Override
+    public List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state) {
+        AssertEstate assertEstate = new AssertEstate();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            assertEstate.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(state)) {
+            assertEstate.setState(state);
+        }
+        return AssertEstateDao.selectAssertEstateList(assertEstate);
+    }
 }

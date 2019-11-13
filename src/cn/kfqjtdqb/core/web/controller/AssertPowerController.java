@@ -7,6 +7,7 @@ import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.service.AssertPowerRentService;
 import cn.kfqjtdqb.core.service.AssertPowerService;
 import cn.kfqjtdqb.core.service.PropertyLeasingService;
+import cn.kfqjtdqb.core.utils.CSVUtils;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -18,9 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class AssertPowerController {
@@ -200,5 +206,60 @@ public class AssertPowerController {
             }
         }
     }
+
+    @RequestMapping("/assertPower/downloadPower")
+    public void downloadPower(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String assert_num , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<AssertPower> assertPowerPage = assertPowerService.selectAssertPowerList(page, rows,property_leasing_num,assert_num);
+        //定义csv文件名称
+        String csvFileName = "用电信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,电表编号,电表度数,截止抄表时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,powermeter_num,power_num,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (AssertPower assertPower : assertPowerPage.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertPower.getId());
+            map.put("property_leasing_num", assertPower.getProperty_leasing_num());
+            map.put("assert_num", assertPower.getAssert_num());
+            map.put("powermeter_num",assertPower.getPowermeter_num());
+            map.put("power_num", assertPower.getPower_num());
+            map.put("deadline",assertPower.getDeadline());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/assertPower/downloadPowerAll")
+    public void downloadPowerAll(HttpServletResponse response, @RequestParam   String assert_num , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<AssertPower> assertPowers = assertPowerService.selectAssertPowerListByAssertNum(property_leasing_num,assert_num);
+        //定义csv文件名称
+        String csvFileName = "用电信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,资产编号,电表编号,电表度数,截止抄表时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,assert_num,powermeter_num,power_num,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (AssertPower assertPower : assertPowers) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertPower.getId());
+            map.put("property_leasing_num", assertPower.getProperty_leasing_num());
+            map.put("assert_num", assertPower.getAssert_num());
+            map.put("powermeter_num",assertPower.getPowermeter_num());
+            map.put("power_num", assertPower.getPower_num());
+            map.put("deadline",assertPower.getDeadline());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
 
 }

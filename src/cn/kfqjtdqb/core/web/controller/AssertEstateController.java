@@ -5,6 +5,7 @@ import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.common.utils.StringUtils;
 import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.service.*;
+import cn.kfqjtdqb.core.utils.CSVUtils;
 import cn.kfqjtdqb.core.utils.DateUtils;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import cn.kfqjtdqb.core.utils.RentUtils;
@@ -19,10 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 public class AssertEstateController {
@@ -168,6 +170,77 @@ public class AssertEstateController {
 
     }
 
+    /**
+     * 创建物流
+     */
+    @RequestMapping("/assertEstate/create2")
+    @ResponseBody
+    public ResultCode createEstate2(@Valid AssertEstate assertEstate, Errors errors) {
+
+        ResultCode resultCode = new ResultCode();
+        if (errors.hasErrors()) {
+            return ErrorUtils.getRsult(errors);
+        }
+        try {
+            if (assertEstate.getEstate_recivied() == null) {
+                assertEstate.setEstate_recivied(BigDecimal.ZERO);
+            }
+            String property_leasing_num = assertEstate.getProperty_leasing_num();
+            PropertyLeasing propertyLeasing = new PropertyLeasing();
+            propertyLeasing.setProperty_leasing_num(property_leasing_num);
+
+            if (assertEstate.getEstate().compareTo(assertEstate.getEstate_recivied().add(assertEstate.getReality_estate())) <= 0) {  //表示的已经缴清
+                assertEstate.setState(ConstUtils.ESTATESTATESUCCESS);
+                propertyLeasing.setEstateState(ConstUtils.ESTATESTATESUCCESS);
+            } else {
+                assertEstate.setState(ConstUtils.ESTATESTATEFAIL);
+                propertyLeasing.setEstateState(ConstUtils.ESTATESTATEFAIL);
+            }
+            propertyLeasingService.updatePropertyLeasing(propertyLeasing);
+            int rows = assertEstateService.createAssertEstate(assertEstate);
+            if (rows > 0) {
+                BigDecimal realityEstate = assertEstate.getReality_estate();
+                List<TotalEstate> totalEstates = totalEstateService.getTotalEstateByLeasingNum(property_leasing_num);
+                for (int i = 0; i < totalEstates.size(); i++) {
+                    if (totalEstates.get(i).getEstate().compareTo(totalEstates.get(i).getReality_estate()) > 0) {  //表示的是应该收的租金 大于租金。
+                        BigDecimal different = totalEstates.get(i).getEstate().subtract(totalEstates.get(i).getReality_estate());  //表示的应该收的金额减去本次收的金额  就是当前月份应该收的金额
+                        if (realityEstate.compareTo(different)<=0){
+                            totalEstates.get(i).setDeadline(assertEstate.getDeadline());
+                            totalEstates.get(i).setReality_estate(totalEstates.get(i).getReality_estate().add(realityEstate));
+                            totalEstateService.updateTotalEstate( totalEstates.get(i));
+                            break;
+                        }else{
+                            totalEstates.get(i).setDeadline(assertEstate.getDeadline());
+                            totalEstates.get(i).setReality_estate(totalEstates.get(i).getEstate());
+                            totalEstateService.updateTotalEstate( totalEstates.get(i));
+                            realityEstate=realityEstate.subtract(different);
+                        }
+                    }
+
+                }
+               /* TotalEstate totalEstate = new TotalEstate();
+                totalEstate.setProperty_leasing_num(assertEstate.getProperty_leasing_num());
+                totalEstate.setId(Long.parseLong(assertEstate.getYear_months()));
+                totalEstate.setReality_estate(assertEstate.getReality_estate());
+                totalEstate.setDeadline(new Date());
+                totalEstateService.updateTotalEstate(totalEstate);*/
+                resultCode.setCode(0);
+                resultCode.setMsg("物业费创建成功");
+                return resultCode;
+            } else {
+                resultCode.setCode(-1);
+                resultCode.setMsg("物业费创建失败");
+                return resultCode;
+            }
+        } catch (DataAccessException e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg("物业费创建失败");
+            return resultCode;
+        }
+
+    }
+
+
 
     @RequestMapping("/assertEstate/find")
     @ResponseBody
@@ -196,6 +269,67 @@ public class AssertEstateController {
         }
         return AssertEstate;
     }
+
+
+
+    @RequestMapping("/assertEstate/downloadEstateInfol")
+    public void downloadEstateInfol(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String state , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<AssertEstate> assertEstateList = assertEstateService.selectAssertEstateList(page, rows,property_leasing_num,state);
+        //定义csv文件名称
+        String csvFileName = "物业信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,本次收取费用开始时间,本次收取费用结束时间,截止本月应收物业费,实际已收物业费,本次实收物业费,收费时间,状态";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,rent_start_time,rent_end_time,estate,estate_recivied,reality_estate,deadline,state";
+        //遍历保存查询数据集到dataList中
+        for (AssertEstate assertEstate : assertEstateList.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertEstate.getId());
+            map.put("property_leasing_num", assertEstate.getProperty_leasing_num());
+            map.put("rent_start_time", sdf.format(assertEstate.getRent_start_time()));
+            map.put("rent_end_time", sdf.format(assertEstate.getRent_end_time()));
+            map.put("estate", assertEstate.getEstate());
+            map.put("estate_recivied", assertEstate.getEstate_recivied());
+            map.put("reality_estate", assertEstate.getReality_estate());
+            map.put("deadline", sdf.format(assertEstate.getDeadline()));
+            map.put("state", assertEstate.getState());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/assertEstate/downloadEstateInfolAll")
+    public void downloadEstateInfolAll(HttpServletResponse response, @RequestParam   String state , @RequestParam  String property_leasing_num) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<AssertEstate> assertEstateList = assertEstateService.selectAssertEstateList(property_leasing_num,state);
+        //定义csv文件名称
+        String csvFileName = "物业信息表";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv表头
+        String colNames = "序号,租凭合同编号,本次收取费用开始时间,本次收取费用结束时间,截止本月应收物业费,实际已收物业费,本次实收物业费,收费时间,状态";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,rent_start_time,rent_end_time,estate,estate_recivied,reality_estate,deadline,state";
+        //遍历保存查询数据集到dataList中
+        for (AssertEstate assertEstate : assertEstateList) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", assertEstate.getId());
+            map.put("property_leasing_num", assertEstate.getProperty_leasing_num());
+            map.put("rent_start_time", sdf.format(assertEstate.getRent_start_time()));
+            map.put("rent_end_time",  sdf.format(assertEstate.getRent_end_time()));
+            map.put("estate", assertEstate.getEstate());
+            map.put("estate_recivied", assertEstate.getEstate_recivied());
+            map.put("reality_estate", assertEstate.getReality_estate());
+            map.put("deadline",  sdf.format(assertEstate.getDeadline()));
+            map.put("state", assertEstate.getState());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
 
 
 }

@@ -25,4 +25,10 @@ public interface TotalEstateService {
     Page<TotalEstate> selectTotalEstateCommunityByYearList(Integer page, Integer rows, String years, String community_name);
 
     void deleteTotalEstateByPropertyLeasingNum(String property_leasing_num);
+
+    List<TotalEstate> selectTotalEstateList(String property_leasing_num, String community_name, String year_months);
+
+    List<TotalEstate> selectTotalEstateCommunityByYearList(String years, String community_name);
+
+    List<TotalEstate> selectTotalEstateCommunityList(String year_months, String community_name);
 }

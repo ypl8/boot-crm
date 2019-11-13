@@ -1,6 +1,7 @@
 package cn.kfqjtdqb.core.bean;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 public class AssertInfolTotal implements Serializable {
 
@@ -14,7 +15,7 @@ public class AssertInfolTotal implements Serializable {
 
     private Integer  countOccupy ;  // 表示的是占用
 
-    private  Double  assertRate;  //表示的是出租率
+    private BigDecimal assertRate;  //表示的是出租率
 
     public String getCommunity_name() {
         return community_name;
@@ -56,11 +57,12 @@ public class AssertInfolTotal implements Serializable {
         this.countOccupy = countOccupy;
     }
 
-    public Double getAssertRate() {
+
+    public BigDecimal getAssertRate() {
         return assertRate;
     }
 
-    public void setAssertRate(Double assertRate) {
+    public void setAssertRate(BigDecimal assertRate) {
         this.assertRate = assertRate;
     }
 }

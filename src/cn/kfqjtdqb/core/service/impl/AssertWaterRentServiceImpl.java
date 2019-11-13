@@ -80,4 +80,27 @@ public class AssertWaterRentServiceImpl implements AssertWaterRentService {
     public BigDecimal getAssertWaterRentCountByLeasingNum(AssertWaterRent assertWaterRent) {
         return assertWaterRentDao.getAssertWaterRentCountByLeasingNum(assertWaterRent);
     }
+
+    @Override
+    public void deleteAssertWaterRentByPropertyLeasingNum(String property_leasing_num) throws Exception {
+              assertWaterRentDao.deleteAssertWaterRentByPropertyLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public List<AssertWaterRent> selectAssertWaterRentList(String property_leasing_num, String assert_num, String state) {
+        AssertWaterRent AssertWaterRent = new AssertWaterRent();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            AssertWaterRent.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(state)) {
+            AssertWaterRent.setState(state);
+        }
+        if (StringUtils.isNotBlank(assert_num)) {
+            AssertWaterRent.setAssert_num(assert_num);
+        }
+        List<AssertWaterRent> AssertWaterRents = assertWaterRentDao.selectAssertWaterRentList(AssertWaterRent);
+        return AssertWaterRents;
+    }
 }

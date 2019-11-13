@@ -1,10 +1,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:aop="http://www.springframework.org/schema/aop" 
-	xmlns:tx="http://www.springframework.org/schema/tx"
-	xmlns:task="http://www.springframework.org/schema/task"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
 		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd 
 		http://www.springframework.org/schema/mvc 
 		http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
@@ -14,42 +15,56 @@
 		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd 
 		http://www.springframework.org/schema/tx 
 		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd
 		http://www.springframework.org/schema/task
    		http://www.springframework.org/schema/task/spring-task-4.0.xsd">
-		
-		<!-- 加载属性文件 -->
-		<context:property-placeholder location="classpath:resource.properties"/>
-		<!-- 配置扫描 器 -->
-		<context:component-scan base-package="cn.kfqjtdqb.core.web.controller"/>
-		<!-- 配置处理器映射器  适配器 -->
-		<mvc:annotation-driven/>
-		
-		<!-- 配置视图解释器 jsp -->
-		<bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-			<property name="prefix" value="/WEB-INF/jsp/"/>
-			<property name="suffix" value=".jsp"/>
-		</bean>
 
-	<!-- 文件上传表单的视图解析器 -->
-	<bean id="multipartResolver"
-		  class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-		<property name="maxUploadSize" value="204800" />
-	</bean>
+    <!--    jsr250-annotations="enabled"-->
+    <security:global-method-security secured-annotations="enabled" jsr250-annotations="enabled" pre-post-annotations="enabled"/>
+    <!-- 加载属性文件 -->
+    <context:property-placeholder location="classpath:resource.properties"/>
+    <!-- 配置扫描 器 -->
+    <context:component-scan base-package="cn.kfqjtdqb.core.web.controller"/>
 
+    <!-- 配置扫描 器 -->
+    <context:component-scan base-package="cn.kfqjtdqb.core.service.impl"/>
+    <context:component-scan base-package="cn.kfqjtdqb.core.service"/>
+    <!-- 配置处理器映射器  适配器 -->
+    <mvc:annotation-driven/>
 
-	<!-- task任务注解扫描包（定时器开关） -->
-	<task:annotation-driven/> <!-- 用定时器注解 -->
-	<!-- 扫描位置是 -->
-	<context:annotation-config/>
-	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
-	<context:component-scan base-package="cn.kfqjtdqb.core.service"/>
+    <!-- 配置视图解释器 jsp -->
+    <bean id="jspViewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 
-	<!--配置拦截器-->
-	<mvc:interceptors>
-		<mvc:interceptor>
-			<mvc:mapping path="/**"/>
-			<bean class="cn.kfqjtdqb.core.interceptor.LoginInterceptor"/>
-		</mvc:interceptor>
-	</mvc:interceptors>
-		
+    <!-- 文件上传表单的视图解析器 -->
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="204800"/>
+    </bean>
+
+    <!--
+         支持AOP的注解支持，AOP底层使用代理技术
+         JDK动态代理，要求必须有接口
+         cglib代理，生成子类对象，proxy-target-class="true" 默认使用cglib的方式
+     -->
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!-- task任务注解扫描包（定时器开关） -->
+    <task:annotation-driven/> <!-- 用定时器注解 -->
+    <!-- 扫描位置是 -->
+    <context:annotation-config/>
+    <bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor"/>
+    <context:component-scan base-package="cn.kfqjtdqb.core.service"/>
+
+    <!--配置拦截器-->
+    <!--	<mvc:interceptors>
+            <mvc:interceptor>
+                <mvc:mapping path="/**"/>
+                <bean class="cn.kfqjtdqb.core.interceptor.LoginInterceptor"/>
+            </mvc:interceptor>
+        </mvc:interceptors>-->
+
 </beans>

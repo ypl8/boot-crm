@@ -6,9 +6,12 @@ import cn.kfqjtdqb.core.service.AssertWaterRentService;
 import cn.kfqjtdqb.core.service.AssertWaterService;
 import cn.kfqjtdqb.core.service.PropertyLeasingService;
 import cn.kfqjtdqb.core.service.TotalRentalService;
+import cn.kfqjtdqb.core.utils.CSVUtils;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import cn.kfqjtdqb.core.utils.RentUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Controller;
@@ -19,18 +22,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 public class TotalRentalController {
 
-
+    public final Log logger = LogFactory.getLog(TotalRentalController.class);
     @Autowired
     private TotalRentalService totalRentalService;
 
@@ -63,7 +66,7 @@ public class TotalRentalController {
     // 客户列表
     @RequestMapping(value = "/totalRental/listCommunity")
     public String listCommunity(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                                String community_name, String year_months, String  years,Model model) {
+                                String community_name, String year_months, String years, Model model) {
        /* if(community_name!=null){
             try {
                 community_name = new String(community_name.getBytes("ISO8859-1"), "utf-8");
@@ -71,11 +74,11 @@ public class TotalRentalController {
                 e.printStackTrace();
             }
         }*/
-        Page<TotalRental> totalRentalPage=null;
+        Page<TotalRental> totalRentalPage = null;
         if (!StringUtils.isNotBlank(year_months) && StringUtils.isNotBlank(years)) {
-            totalRentalPage=totalRentalService.selectTotalRentalCommunityByYearList(page, rows, years, community_name);
+            totalRentalPage = totalRentalService.selectTotalRentalCommunityByYearList(page, rows, years, community_name);
         } else {
-            totalRentalPage =  totalRentalService.selectTotalRentalCommunityList(page, rows, year_months, community_name);
+            totalRentalPage = totalRentalService.selectTotalRentalCommunityList(page, rows, year_months, community_name);
         }
 
         model.addAttribute("page", totalRentalPage);
@@ -184,5 +187,149 @@ public class TotalRentalController {
         return assertWaterRent;
     }
 */
+
+
+    @RequestMapping("/totalRental/downloadTotalRental")
+    public void downloadTotalRental(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows,
+                                    @RequestParam String property_leasing_num, @RequestParam String community_name, @RequestParam String year_months) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        Page<TotalRental> totalRentalPage = totalRentalService.selectTotalRentalList(page, rows, property_leasing_num, year_months, community_name);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv文件名称
+        String csvFileName = "租金收入明细表";
+        //定义csv表头
+        String colNames = "序号,合同编号,小区名称,栋号,承租人,承租位置,应收租金,实收租金,对应月份,到帐时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,community_name,building_num,tenant,rentalLocation,rental,reality_rental,year_months,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (TotalRental totalRental : totalRentalPage.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", totalRental.getId());
+            map.put("property_leasing_num", totalRental.getProperty_leasing_num());
+            map.put("community_name", totalRental.getCommunity_name());
+            map.put("building_num", totalRental.getBuilding_num());
+            map.put("tenant", totalRental.getTenant());
+            map.put("rentalLocation", totalRental.getRentalLocation());
+            map.put("rental", totalRental.getRental());
+            map.put("reality_rental", totalRental.getReality_rental());
+            map.put("year_months", totalRental.getYear_months());
+            if (totalRental.getDeadline() != null) {
+                map.put("deadline", sdf.format(totalRental.getDeadline()));
+            } else {
+                map.put("deadline", null);
+            }
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/totalRental/downloadTotalRentalAll")
+    public void downloadTotalRentalAll(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows,
+                                       @RequestParam String property_leasing_num, @RequestParam String community_name, @RequestParam String year_months) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<TotalRental> totalRentals = totalRentalService.selectTotalRentalList(property_leasing_num, community_name, year_months);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义csv文件名称
+        String csvFileName = "租金收入明细表";
+        //定义csv表头
+        String colNames = "序号,合同编号,小区名称,栋号,承租人,承租位置,应收租金,实收租金,对应月份,到帐时间";
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,community_name,building_num,tenant,rentalLocation,rental,reality_rental,year_months,deadline";
+        //遍历保存查询数据集到dataList中
+
+        for (TotalRental totalRental : totalRentals) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", totalRental.getId());
+            map.put("property_leasing_num", totalRental.getProperty_leasing_num());
+            map.put("community_name", totalRental.getCommunity_name());
+            map.put("building_num", totalRental.getBuilding_num());
+            map.put("tenant", totalRental.getTenant());
+            map.put("rentalLocation", totalRental.getRentalLocation());
+            map.put("rental", totalRental.getRental());
+            map.put("reality_rental", totalRental.getReality_rental());
+            map.put("year_months", totalRental.getYear_months());
+            if (totalRental.getDeadline() != null) {
+                map.put("deadline", sdf.format(totalRental.getDeadline()));
+            } else {
+                map.put("deadline", null);
+            }
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/totalRental/downloadCommunityRental")
+    public void downloadCommunityRental(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows,
+                                        @RequestParam String community_name, @RequestParam String year_months, @RequestParam String years) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        //遍历保存查询数据集到dataList中
+        Page<TotalRental> totalRentalPage = null;
+        if (!StringUtils.isNotBlank(year_months) && StringUtils.isNotBlank(years)) {
+            totalRentalPage = totalRentalService.selectTotalRentalCommunityByYearList(page, rows, years, community_name);
+        } else {
+            totalRentalPage = totalRentalService.selectTotalRentalCommunityList(page, rows, year_months, community_name);
+        }
+        //定义csv文件名称
+        String csvFileName = "租金统计";
+        //定义csv表头
+        String colNames = "小区编号,应收租金费,实收租金费,欠缴金额,收取率,对应月份";
+
+        //定义表头对应字段的key
+        String mapKey = "community_name,rental,reality_rental,difference,collectionRate,year_months";
+
+        for (TotalRental totalRental : totalRentalPage.getRows()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("community_name", totalRental.getCommunity_name());
+            map.put("rental", totalRental.getRental());
+            map.put("reality_rental", totalRental.getReality_rental());
+            map.put("difference", totalRental.getDifference());
+            map.put("collectionRate", totalRental.getCollectionRate());
+            map.put("year_months", totalRental.getYear_months());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/totalRental/downloadCommunityRentalAll")
+    public void downloadCommunityRentalAll(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
+            page, @RequestParam(defaultValue = "10") Integer rows,
+                                           @RequestParam String community_name, @RequestParam String year_months, @RequestParam String years) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+
+        List<TotalRental>  totalRentals=null;
+        if (!StringUtils.isNotBlank(year_months) && StringUtils.isNotBlank(years)) {
+            totalRentals = totalRentalService.selectTotalRentalCommunityByYearList(years, community_name);
+        } else {
+            totalRentals = totalRentalService.selectTotalRentalCommunityList(year_months, community_name);
+        }
+
+        //定义csv文件名称
+        String csvFileName = "租金统计";
+        //定义csv表头
+        String colNames = "小区编号,应收租金费,实收租金费,欠缴金额,收取率,对应月份";
+
+        //定义表头对应字段的key
+        String mapKey = "community_name,rental,reality_rental,difference,collectionRate,year_months";
+
+        for (TotalRental totalRental : totalRentals) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("community_name", totalRental.getCommunity_name());
+            map.put("rental", totalRental.getRental());
+            map.put("reality_rental", totalRental.getReality_rental());
+            map.put("difference", totalRental.getDifference());
+            map.put("collectionRate", totalRental.getCollectionRate());
+            map.put("year_months", totalRental.getYear_months());
+            dataList.add(map);
+        }
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
 
 }

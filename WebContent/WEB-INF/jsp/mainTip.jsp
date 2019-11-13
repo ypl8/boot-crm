@@ -24,7 +24,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="<%=basePath%>css/oksub.css" media="all"/>
     <title>提示页面</title>
 
     <!-- Bootstrap Core CSS -->
@@ -54,18 +59,147 @@
 
 </head>
 
-<body>
+<body  class="console console1 ok-body-scroll">
 
-<div id="wrapper">
+<div class="ok-body home" style="margin-top: 5px">
+
+    <div class="layui-row layui-col-space15">
+
+        <div class="layui-col-xs6 layui-col-md2">
+            <a href="${pageContext.request.contextPath}/assertInfol/list.action?floor_state=2" target="main">
+            <div class="ok-card layui-card">
+                <div class="ok-card-body p0 clearfix cart-data">
+                    <div class="data-body">
+                        <div class="media-cont">
+                            <p class="tit">空闲资产</p>
+                            <h5 class="num">${empty_assert_num}</h5>
+                        </div>
+                        <div class="w-img" ok-pc-in-show>
+                            <img src="<%=basePath%>images/home-02.png" alt="空闲资产"/>
+                        </div>
+                    </div>
+                    <div id="echIncome" class="line-home-a"></div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+
+
+            <div class="layui-col-xs6 layui-col-md2">
+                <a href="${pageContext.request.contextPath}/propertyLeasing/queryList.action?rentalState=6" target="main">
+                <div class="ok-card layui-card">
+                    <div class="ok-card-body p0 clearfix cart-data">
+                        <div class="data-body">
+                            <div class="media-cont">
+                                <p class="tit">租金未缴清</p>
+                                <h5 class="num">${empty_rental_num}</h5>
+                            </div>
+                            <div class="w-img" ok-pc-in-show>
+                                <img src="<%=basePath%>images/home-03.png" alt="租金未缴清"/>
+                            </div>
+                        </div>
+                        <div id="echGoods" class="line-home-a"></div>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+
+        <div class="layui-col-xs6 layui-col-md2">
+            <a href="${pageContext.request.contextPath}/propertyLeasing/queryList.action?estateState=8" target="main">
+            <div class="ok-card layui-card">
+                <div class="ok-card-body p0 clearfix cart-data">
+                    <div class="data-body">
+                        <div class="media-cont">
+                            <p class="tit">物业未缴清</p>
+                            <h5 class="num">${empty_estate_num}</h5>
+                        </div>
+                        <div class="w-img" ok-pc-in-show>
+                            <img src="<%=basePath%>images/home-03.png" alt="物业未缴清"/>
+                        </div>
+                    </div>
+                    <div id="echBlogs" class="line-home-a"></div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+
+
+        <div class="layui-col-xs6 layui-col-md2">
+            <a href="${pageContext.request.contextPath}/propertyLeasing/queryList.action?waterState=20" target="main">
+            <div class="ok-card layui-card">
+                <div class="ok-card-body p0 clearfix cart-data">
+                    <div class="data-body">
+                        <div class="media-cont">
+                            <p class="tit">水费未缴清</p>
+                            <h5 class="num">${empty_water_num}</h5>
+                        </div>
+                        <div class="w-img" ok-pc-in-show>
+                            <img src="<%=basePath%>images/home-01.png" alt="水费未缴清"/>
+                        </div>
+                    </div>
+                    <div id="echWater" class="line-home-a"></div>
+                </div>
+            </div>
+        </a>
+        </div>
+
+
+
+        <div class="layui-col-xs6 layui-col-md2">
+            <a href="${pageContext.request.contextPath}/propertyLeasing/queryList.action?powerState=22" target="main">
+            <div class="ok-card layui-card">
+                <div class="ok-card-body p0 clearfix cart-data">
+                    <div class="data-body">
+                        <div class="media-cont">
+                            <p class="tit">电费未缴清</p>
+                            <h5 class="num">${empty_power_num}</h5>
+                        </div>
+                        <div class="w-img" ok-pc-in-show>
+                            <img src="<%=basePath%>images/home-01.png" alt="电费未缴清"/>
+                        </div>
+                    </div>
+                    <div id="echPower" class="line-home-a"></div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+
+        <div class="layui-col-xs6 layui-col-md2">
+            <a href="#" target="main">
+            <div class="ok-card layui-card">
+                <div class="ok-card-body p0 clearfix cart-data">
+                    <div class="data-body">
+                        <div class="media-cont">
+                            <p class="tit">用户</p>
+                            <h5 class="num">${empty_user_num}</h5>
+                        </div>
+                        <div class="w-img" ok-pc-in-show>
+                            <img src="<%=basePath%>images/home-04.png" alt="用户"/>
+                        </div>
+                    </div>
+                    <div id="echUser" class="line-home-a"></div>
+                </div>
+            </div>
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<div id="wrapper" style="margin-top:30px">
 
 
     <div id="page-wrapper">
-        <div class="row">
+        <%--<div class="row">
             <div class="col-lg-12">
                 <h1 class="page-header">欢迎您的光临，查看您需要的信息！</h1>
             </div>
             <!-- /.col-lg-12 -->
-        </div>
+        </div>--%>
         <!-- /.row -->
         <div class="panel panel-default">
             <div class="panel-body">

@@ -28,4 +28,11 @@ public interface TotalRentalService {
     Page<TotalRental> selectTotalRentalCommunityByYearList(Integer page, Integer rows, String years, String community_name);
 
     void deleteTotalRentalByPropertyLeasingNum(String property_leasing_num);
+
+    List<TotalRental> selectTotalRentalList(String property_leasing_num, String community_name, String year_months);
+
+    //按照小区名称分组统计
+    List<TotalRental> selectTotalRentalCommunityList( String year_months, String community_name);
+
+    List<TotalRental> selectTotalRentalCommunityByYearList(String years, String community_name);
 }

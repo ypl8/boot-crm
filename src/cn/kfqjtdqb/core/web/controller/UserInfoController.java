@@ -8,6 +8,8 @@ import cn.kfqjtdqb.core.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -15,10 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.annotation.security.RolesAllowed;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class UserInfoController {
@@ -38,7 +44,9 @@ public class UserInfoController {
     }
 
     // 客户列表
+
     @RequestMapping(value = "/userInfo/list")
+    @Secured("ROLE_ADMIN")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
                        String userName, String status, Model model) {
 
@@ -57,7 +65,9 @@ public class UserInfoController {
     public String login(){
         return "login";
     }
-
+  /*  @RolesAllowed({"ADMIN"})*/
+   /*@Secured("ROLE_ADMIN")*/
+    /*
     @RequestMapping(value = "/userInfo/login",method = RequestMethod.POST)
     public String login(String userName, String password, Model model ,HttpSession session){
         //通过账号和密码查询客户
@@ -76,6 +86,7 @@ public class UserInfoController {
 
     @RequestMapping("/userInfo/edit")
     @ResponseBody
+
     public UserInfo getUserInfoById(Long id) {
         UserInfo userInfo = userInfoService.getUserInfoById(id);
         return userInfo;
@@ -84,7 +95,7 @@ public class UserInfoController {
 
     @RequestMapping("/userInfo/update")
     @ResponseBody
-    public ResultCode updateAssertWater(@Valid UserInfo userInfo, Errors errors) {
+    public ResultCode updateUserInfo(@Valid UserInfo userInfo, Errors errors) {
         ResultCode resultCode = new ResultCode();
         if (errors.hasErrors()) {
             return ErrorUtils.getRsult(errors);
@@ -93,16 +104,35 @@ public class UserInfoController {
             userInfoService.updateUserInfo(userInfo);
         } catch (DataAccessException e) {
             resultCode.setCode(-1);
-            resultCode.setMsg("每个月租金信息更新失败");
+            resultCode.setMsg(e.getMessage());
             return resultCode;
         }
         resultCode.setCode(0);
-        resultCode.setMsg("每个月租金信息更新成功");
+        resultCode.setMsg("用户信息更新成功");
         return resultCode;
     }
 
-    @RequestMapping("/userInfo/delete")
+    @RequestMapping("/userInfo/updatePassword")
     @ResponseBody
+    public ResultCode updatePassword( UserInfo userInfo, Errors errors) {
+        ResultCode resultCode = new ResultCode();
+        if (errors.hasErrors()) {
+            return ErrorUtils.getRsult(errors);
+        }
+        try {
+            userInfoService.updateUserInfo(userInfo);
+        } catch (DataAccessException e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("用户密码更新成功");
+        return resultCode;
+    }
+
+
+    @RequestMapping("/userInfo/delete")
     public String deleteUserInfo(Long id) {
         userInfoService.deleteUserInfo(id);
         return "OK";
@@ -114,6 +144,8 @@ public class UserInfoController {
      */
     @RequestMapping("/userInfo/create")
     @ResponseBody
+/*    @PreAuthorize("hasRole('ROLE_ADMIN')")*/
+
 
     public ResultCode createUserInfo(@Valid UserInfo userInfo, Errors errors) {
         ResultCode resultCode = new ResultCode();
@@ -137,5 +169,39 @@ public class UserInfoController {
             return resultCode;
         }
     }
+
+
+    @RequestMapping("/userInfo/findUserByIdAndAllRole.action")
+    @ResponseBody
+    public ResultCode findUserByIdAndAllRole(Long id) throws Exception {
+        UserInfo user = userInfoService.findById(id);
+        List<Role> roleList = userInfoService.findOtherRole(id);
+
+        ResultCode resultCode = new ResultCode();
+        Map map=new HashMap<String,Object>();
+        map.put("user",user);
+        map.put("roleList",roleList);
+        resultCode.setData(map);
+        resultCode.setCode(0);
+        return resultCode;
+    }
+
+
+    @RequestMapping("/userInfo/addRoleToUser.action")
+    @ResponseBody
+    public ResultCode addRoleToUser(Long userId, Long roleId) {
+        ResultCode  resultCode=new ResultCode();
+        try {
+            userInfoService.addRoleToUser(userId,roleId);
+        }catch (Exception e){
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("用户角色添加成功");
+        return resultCode;
+    }
+
 
 }

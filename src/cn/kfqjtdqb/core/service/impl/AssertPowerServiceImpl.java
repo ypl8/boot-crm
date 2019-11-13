@@ -73,14 +73,21 @@ public class AssertPowerServiceImpl implements AssertPowerService {
         if (StringUtils.isNotBlank(assert_num)) {
             assertPower.setAssert_num(assert_num);
         }
-        List<AssertPower> assertWaters = assertPowerDao.selectAssertPowerList(assertPower);
-        return assertWaters;
+        List<AssertPower> assertPowers = assertPowerDao.selectAssertPowerList(assertPower);
+        return assertPowers;
     }
 
     @Override
     public int createAssertPower(AssertPower AssertPower) {
         return assertPowerDao.addAssertPower(AssertPower);
     }
+
+    @Override
+    public void deleteAssertPowerByPropertyLeasingNum(String property_leasing_num) throws Exception {
+        assertPowerDao.deleteAssertPowerByPropertyLeasingNum(property_leasing_num);
+    }
+
+
 
 
 }

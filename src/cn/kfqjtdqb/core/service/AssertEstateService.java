@@ -22,4 +22,6 @@ public interface AssertEstateService {
     BigDecimal getAssertEstateCountByLeasingNum(String property_leasing_num);   //统计已经提交的钱
 
     void deleteAssertEstateByPropertyLeasingNum(String property_leasing_num);
+
+    List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state);
 }
