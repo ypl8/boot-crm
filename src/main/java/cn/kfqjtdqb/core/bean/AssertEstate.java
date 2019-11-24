@@ -1,6 +1,7 @@
 package cn.kfqjtdqb.core.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -11,7 +12,7 @@ import java.util.Date;
 
 public class AssertEstate  implements Serializable {
     private Long id;
-    @NotNull
+    @NotBlank
     private String property_leasing_num;
     @NotNull
     @DateTimeFormat(pattern="yyyyMMdd")
@@ -34,11 +35,21 @@ public class AssertEstate  implements Serializable {
     private String state;
     private String  year_months;
 
+    private  String  status;
+
     @NotNull
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     @DateTimeFormat(pattern="yyyyMMdd")
     private Date deadline;
 
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Date getDeadline() {
         return deadline;

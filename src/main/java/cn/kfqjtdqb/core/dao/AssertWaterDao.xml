@@ -10,6 +10,10 @@
             <if test="assert_num != null">
                 and  assert_num like "%" #{assert_num}"%"
             </if>
+
+            <if test="status != null">
+                and  status = #{status}
+            </if>
         </where>
     </sql>
 
@@ -20,11 +24,12 @@
         assert_num,
         water_num,
         watermeter_num,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_water
         <include refid="selectAssertWaterListWhere"/>
-        order by deadline  desc
+        order by water_num  desc
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>
@@ -40,6 +45,11 @@
     <select id="getAssertWaterById" parameterType="long" resultType="assertWater">
 		select * from t_assert_water where id= #{id}
 	</select>
+
+    <select id="getMaxWaterNum" resultType="BigDecimal">
+		 select max(water_num) as maxPower from  t_assert_water where  status=30
+	</select>
+
 
 
     <!--<select id="getAssertWaterByLeasingNum" parameterType="String" resultType="AssertWater">
@@ -81,7 +91,9 @@
                 deadline=#{deadline},
             </if>
 
-
+            <if test="status!=null">
+                status=#{status},
+            </if>
         </set>
         where id=#{id};
 
@@ -106,7 +118,9 @@
             <if test="deadline!=null">
                 deadline,
             </if>
-
+            <if test="status!=null">
+                status,
+            </if>
         </trim>
     </sql>
 
@@ -127,6 +141,9 @@
             </if>
             <if test="deadline!=null">
                 #{deadline},
+            </if>
+            <if test="status!=null">
+                #{status},
             </if>
 
         </trim>

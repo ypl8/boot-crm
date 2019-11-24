@@ -1,20 +1,30 @@
 package cn.kfqjtdqb.core.web.controller;
 
 
+import cn.kfqjtdqb.common.utils.ConstUtils;
 import cn.kfqjtdqb.common.utils.Page;
-import cn.kfqjtdqb.core.bean.AssertInfol;
-import cn.kfqjtdqb.core.bean.AssertInfolTotal;
-import cn.kfqjtdqb.core.bean.BaseDict;
-import cn.kfqjtdqb.core.bean.ResultCode;
-import cn.kfqjtdqb.core.service.AssertInfolService;
-import cn.kfqjtdqb.core.service.SystemService;
+import cn.kfqjtdqb.core.bean.*;
+import cn.kfqjtdqb.core.service.*;
 import cn.kfqjtdqb.core.utils.Assert;
 import cn.kfqjtdqb.core.utils.CSVUtils;
 
 
+import cn.kfqjtdqb.core.utils.DgbSecurityUserHelper;
+import cn.kfqjtdqb.core.utils.ErrorUtils;
+import org.activiti.engine.HistoryService;
+import org.activiti.engine.RepositoryService;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.TaskService;
+import org.activiti.engine.history.HistoricActivityInstance;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
+import org.activiti.engine.task.Task;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.DataBinder;
@@ -33,6 +43,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @Controller
 public class AssertInfolController {
@@ -42,11 +53,31 @@ public class AssertInfolController {
     private AssertInfolService assertInfolService;
     @Autowired
     private SystemService systemService;
+    @Autowired
+    private RuntimeService runtimeService;
 
-    public static final String csv_assertInfol_upload_path = "D://csv//assertInfol";
+    @Autowired
+    private ActivitiService activitiService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+
+    @Autowired
+    private AssertLeasingService assertLeasingService;
+
+    public final Log logger = LogFactory.getLog(LogAop.class);
+
+
+    public static final String csv_assertInfol_upload_path = "/home/csv/assertInfol";
     private static final String POINT_SUCCESS_URL = "/assertInfol/list.action";
     @Value("${floor.state.type}")
     private String STATE_TYPE;
+
+    @Value("${check.state.type}")
+    private String CHECK_STATE_TYPE;
+
+    @Value("${assert.type}")
+    private String  ASSERT_TYPE;
 
     @RequestMapping(value = "/assertInfol")
     public String showAssertInfol() {
@@ -56,7 +87,7 @@ public class AssertInfolController {
     // 客户列表
     @RequestMapping(value = "/assertInfol/list")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                     String assert_num, String property_leasing_num, String floor_state, String community_name, Model model) {
+                       String assert_num, String property_leasing_num, String floor_state, String community_name, Model model, String status,String assertType) {
         /*if (community_name != null) {
             try {
                 community_name = new String(community_name.getBytes("ISO8859-1"), "utf-8");
@@ -64,13 +95,21 @@ public class AssertInfolController {
                 e.printStackTrace();
             }
         }*/
-        Page<AssertInfol> assertInfolList = assertInfolService.findAssertInfolList(page, rows, assert_num, floor_state, community_name,property_leasing_num);
+
+        Page<AssertInfol> assertInfolList = assertInfolService.findAssertInfolList(page, rows, assert_num, floor_state, community_name, property_leasing_num, status,assertType);
         model.addAttribute("page", assertInfolList);
         List<BaseDict> stateType = systemService.findBaseDictListByType(STATE_TYPE);
         model.addAttribute("stateType", stateType);
+        List<BaseDict> checkType = systemService.findBaseDictListByType(CHECK_STATE_TYPE);
+        model.addAttribute("checkType", checkType);
+        List<BaseDict>  assertStateType=systemService.findBaseDictListByType(ASSERT_TYPE);
+        model.addAttribute("assertStateType", assertStateType);
+
         //参数回显
         model.addAttribute("community_name", community_name);
         model.addAttribute("assert_num", assert_num);
+        model.addAttribute("status", status);
+        model.addAttribute("assertType", assertType);
         model.addAttribute("floor_state", floor_state);
         model.addAttribute("property_leasing_num", property_leasing_num);
         return "assertInfol";
@@ -80,7 +119,7 @@ public class AssertInfolController {
     // 客户列表
     @RequestMapping(value = "/assertInfol/listCommunity")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-             String community_name, Model model) {
+                       String community_name, Model model) {
 
         Page<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity(page, rows, community_name);
         model.addAttribute("page", assertInfolList);
@@ -100,9 +139,26 @@ public class AssertInfolController {
 
     @RequestMapping("/assertInfol/findByAssertNum")
     @ResponseBody
-    public AssertInfol getAssertInfolByAssertNum(String assert_num) {
+    public ResultCode getAssertInfolByAssertNum(String assert_num, String property_leasing_num) {
         AssertInfol assertInfol = assertInfolService.getAssertInfolByAssertNum(assert_num);
-        return assertInfol;
+        List<AssertLeasing> assertLeasings = assertLeasingService.selectAssertLeasingListByAssertNum(property_leasing_num, assert_num);
+        ResultCode resultCode = new ResultCode();
+        if (assertLeasings != null && assertLeasings.size() == 1) {   //查找初始化审核记录有没有通过
+            AssertLeasing assertLeasing = assertLeasings.get(0);
+            if (ConstUtils.CheckPASS.equals(assertLeasing.getStatus())) {
+                resultCode.setData(assertInfol);
+                resultCode.setCode(0);
+                return resultCode;
+            }
+        } else {
+            resultCode.setMsg("请先初始化水电，并进行审核成功");
+            resultCode.setCode(-1);
+            return resultCode;
+        }
+        resultCode.setMsg("请先初始化水电，并进行审核成功");
+        resultCode.setCode(-1);
+        return resultCode;
+
     }
 
     @RequestMapping("/assertInfol/show")
@@ -111,38 +167,38 @@ public class AssertInfolController {
         AssertInfol assertInfol = assertInfolService.findAssertWithPropertyLeasing(id);
         return assertInfol;
     }
+
     @RequestMapping("/assertInfol/getAllBuildNum")
     @ResponseBody
-    public ResultCode getAllBuildNum(String community_name,@RequestParam(defaultValue = "") String  floor_state) {
-        List<String> buildNums = assertInfolService.findAllBuildNum(community_name,floor_state);
-        ResultCode  resultCode=new ResultCode();
+    public ResultCode getAllBuildNum(String community_name, @RequestParam(defaultValue = "") String floor_state) {
+        List<String> buildNums = assertInfolService.findAllBuildNum(community_name, floor_state);
+        ResultCode resultCode = new ResultCode();
 
-        if(buildNums==null||buildNums.size()==0){
+        if (buildNums == null || buildNums.size() == 0) {
             resultCode.setCode(-1);
             resultCode.setMsg("该小区没有对应未出租的栋号");
-        }else{
+        } else {
             resultCode.setCode(0);
             resultCode.setData(buildNums);
         }
-        return resultCode ;
+        return resultCode;
     }
 
     @RequestMapping("/assertInfol/getAllRentalLocation")
     @ResponseBody
-    public ResultCode getAllRentalLocation(String community_name,String building_num,@RequestParam(defaultValue = "") String  floor_state) {
-        List<String> rentalLocations = assertInfolService.findAllRoomNum(community_name,building_num,floor_state);
-        ResultCode  resultCode=new ResultCode();
+    public ResultCode getAllRentalLocation(String community_name, String building_num, @RequestParam(defaultValue = "") String floor_state) {
+        List<String> rentalLocations = assertInfolService.findAllRoomNum(community_name, building_num, floor_state);
+        ResultCode resultCode = new ResultCode();
 
-        if(rentalLocations==null||rentalLocations.size()==0){
+        if (rentalLocations == null || rentalLocations.size() == 0) {
             resultCode.setCode(-1);
             resultCode.setMsg("该栋没有对应未出租的资产");
-        }else{
+        } else {
             resultCode.setCode(0);
             resultCode.setData(rentalLocations);
         }
-        return resultCode ;
+        return resultCode;
     }
-
 
 
     @RequestMapping("/assertInfol/update")
@@ -162,7 +218,21 @@ public class AssertInfolController {
             resultCode.setMsg(stringBuilder.toString());
             return resultCode;
         }
-        assertInfolService.updateAssertInfol(assertInfol);
+        assertInfol.setStatus(ConstUtils.CheckUNCOMINT);
+
+        try {
+            assertInfolService.updateAssertInfol(assertInfol);
+        } catch (Exception e) {
+            resultCode.setMsg(e.getMessage());
+            resultCode.setCode(0);
+            return resultCode;
+        }
+
+     /*   UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+        UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+        String processDefinitionKey = "assert";
+        activitiService.startProcesser(assertInfol.getId(), processDefinitionKey,userInfo.getId());  //开启流程*/
+        // activitiService.startProcesser(assertInfol.getId());
         resultCode.setMsg("资产信息修改成功");
         resultCode.setCode(0);
         return resultCode;
@@ -190,32 +260,16 @@ public class AssertInfolController {
 
         ResultCode resultCode = new ResultCode();
         if (errors.hasErrors()) {
-            StringBuilder stringBuilder = new StringBuilder();
-            // 获取错误信息
-            List<FieldError> errorList = errors.getFieldErrors();
-            for (FieldError error : errorList) {
-
-                // 打印字段错误信息
-                stringBuilder.append("fied :" + error.getField() + "\t" + "msg:" + error.getDefaultMessage());
-                //  System.err.println("fied :" + error.getField() + "\t" + "msg:" + error.getDefaultMessage());
-            }
-            resultCode.setCode(-1);
-            resultCode.setMsg(stringBuilder.toString());
-            return resultCode;
+            return ErrorUtils.getRsult(errors);
         }
-      /*  AssertInfol assertInfol = new AssertInfol();
-        assertInfol.setAssert_num(assert_num);
-        assertInfol.setCard_num(card_num);
-        assertInfol.setCommunity_name(community_name);
-        assertInfol.setBuilding_num(building_num);
-        assertInfol.setRoom_number(room_number);
-        assertInfol.setFloorage(Double.parseDouble(floorage));
-        assertInfol.setFloor_state(floor_state);
-        assertInfol.setWatermeter_num(watermeter_num);
-        assertInfol.setElectricmeter_num(electricmeter_num);*/
+        assertInfol.setStatus(ConstUtils.CheckUNCOMINT);
+
         try {
             int rows = assertInfolService.createAssertInfol(assertInfol);
             if (rows > 0) {
+                /* taskService.complete(list.get(0).getId());*/
+                //  activitiService.startProcesser(assertInfol.getId());
+
                 resultCode.setCode(0);
                 resultCode.setMsg("资产信息创建成功");
                 return resultCode;
@@ -226,7 +280,7 @@ public class AssertInfolController {
             }
         } catch (DataAccessException e) {
             resultCode.setCode(-1);
-            resultCode.setMsg("资产信息创建失败");
+            resultCode.setMsg(e.getMessage());
             return resultCode;
         }
 
@@ -234,6 +288,100 @@ public class AssertInfolController {
     }
 
 
+    @RequestMapping("/assertInfol/changeState")
+    @ResponseBody
+    public ResultCode changeState(Long id, String comment_state, @RequestParam(defaultValue = "") String comment) {
+        String status = comment_state;
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+
+            // String processDefinitionKey = "assert";  //第一个版本
+
+            String processDefinitionKey = "assert";
+
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+
+          /*  AssertInfol assertInfol = assertInfolService.getAssertInfolById(id);
+            assertInfol.setStatus(status);
+            assertInfolService.updateAssertInfol(assertInfol);*/
+
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), status, pi.getId(), comment);
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setMsg(e.getMessage());
+            resultCode.setCode(-1);
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("操作成功");
+
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertInfol/assertSubmit")
+    @ResponseBody
+    public ResultCode assertSubmit(Long id) {
+        String processDefinitionKey = "assert";
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+            activitiService.startProcesser(id, processDefinitionKey, userInfo.getId());  //开启流程
+            AssertInfol assertInfol = assertInfolService.getAssertInfolById(id);
+            assertInfol.setStatus(ConstUtils.CheckING);
+            assertInfolService.updateAssertInfol(assertInfol);
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), pi.getId(), "资产申请");
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("提交成功");
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertInfol/getComments")
+    @ResponseBody
+    public ResultCode getComment(Long id) {
+
+        ResultCode resultCode = new ResultCode();
+        String processDefinitionKey = "assert";
+        List<Comment> data = null;
+        try {
+            data = activitiService.getProcessComments(id, processDefinitionKey);
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setData(data);
+        resultCode.setMsg("查询成功");
+
+        return resultCode;
+    }
 
 
     @RequestMapping("/assertInfol/showUpload")
@@ -267,6 +415,7 @@ public class AssertInfolController {
                 assertInfol.setWatermeter_num(content[8]);
                 assertInfol.setElectricmeter_num(content[9]);
                 assertInfol.setRemark(content[10]);
+                assertInfol.setStatus(ConstUtils.CheckUNCOMINT);
                 assertInfolService.createAssertInfol(assertInfol);
             }
             String successMsg = "资产信息csv文件导入成功";
@@ -284,12 +433,13 @@ public class AssertInfolController {
 
     }
 
+
     @RequestMapping("/assertInfol/downloadAssertInfol")
     public void downloadAssertInfol(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
             page, @RequestParam(defaultValue = "10") Integer rows,
-                                    @RequestParam String assert_num, @RequestParam String floor_state,@RequestParam  String community_name, @RequestParam  String property_leasing_num) {
+                                    @RequestParam String assert_num, @RequestParam String floor_state, @RequestParam String community_name, @RequestParam String property_leasing_num, String status,String assertType) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        Page<AssertInfol> assertInfolList = assertInfolService.findAssertInfolList(page, rows, assert_num, floor_state, community_name,property_leasing_num);
+        Page<AssertInfol> assertInfolList = assertInfolService.findAssertInfolList(page, rows, assert_num, floor_state, community_name, property_leasing_num, status,assertType);
         //定义csv文件名称
         String csvFileName = "资产信息表";
         //定义csv表头
@@ -353,10 +503,11 @@ public class AssertInfolController {
         }
         CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
     }
+
     @RequestMapping("/assertInfol/downloadCommunityAssertInfol")
     public void downloadCommunityAssertInfol(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
             page, @RequestParam(defaultValue = "10") Integer rows,
-                                 @RequestParam  String community_name) {
+                                             @RequestParam String community_name) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         Page<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity(page, rows, community_name);
         //定义csv文件名称
@@ -382,10 +533,10 @@ public class AssertInfolController {
 
 
     @RequestMapping("/assertInfol/downloadCommunityAssertInfolAll")
-    public void downloadCommunityAssertInfolAll(HttpServletResponse response, @RequestParam  String community_name) {
+    public void downloadCommunityAssertInfolAll(HttpServletResponse response, @RequestParam String community_name) {
 
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        List<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity( community_name);
+        List<AssertInfolTotal> assertInfolList = assertInfolService.findAssertInfolListByCommunity(community_name);
         //定义csv文件名称
         String csvFileName = "资产信息统计表";
         //定义csv表头

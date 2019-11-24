@@ -22,7 +22,7 @@ public class AssertDepositServiceImpl implements AssertDepositService {
     private AssertDepositDao assertDepositDao;
 
     @Override
-    public Page<AssertDeposit> findAssertDepositList(Integer page, Integer rows, String property_leasing_num,String  state) {
+    public Page<AssertDeposit> findAssertDepositList(Integer page, Integer rows, String property_leasing_num,String  state,String status) {
         AssertDeposit assertDeposit = new AssertDeposit();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -32,7 +32,9 @@ public class AssertDepositServiceImpl implements AssertDepositService {
         if (StringUtils.isNotBlank(state)) {
             assertDeposit.setState(state);
         }
-
+        if (StringUtils.isNotBlank(status)) {
+            assertDeposit.setStatus(status);
+        }
         //当前页
         assertDeposit.setStart((page - 1) * rows);
         //每页数

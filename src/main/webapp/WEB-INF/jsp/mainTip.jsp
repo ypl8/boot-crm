@@ -169,16 +169,16 @@
 
 
         <div class="layui-col-xs6 layui-col-md2">
-            <a href="#" target="main">
+            <a href="${pageContext.request.contextPath}/assertInfol/list.action?status=29" target="main">
             <div class="ok-card layui-card">
                 <div class="ok-card-body p0 clearfix cart-data">
                     <div class="data-body">
                         <div class="media-cont">
-                            <p class="tit">用户</p>
+                            <p class="tit">待审核</p>
                             <h5 class="num">${empty_user_num}</h5>
                         </div>
                         <div class="w-img" ok-pc-in-show>
-                            <img src="<%=basePath%>images/home-04.png" alt="用户"/>
+                            <img src="<%=basePath%>images/home-04.png" alt="待审核"/>
                         </div>
                     </div>
                     <div id="echUser" class="line-home-a"></div>
@@ -268,6 +268,8 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">查询</button>
+                    <a href="#" class="btn btn-success " data-toggle="modal"
+                       data-target="#updatePasswordDialog">修改密码</a>
 
                 </form>
             </div>
@@ -324,7 +326,36 @@
 
 </div>
 
+<div class="modal fade" id="updatePasswordDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel4">更新用户密码</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit_password_form">
+                    <input type="hidden" id="new_id" name="id"/>
 
+                    <div class="form-group">
+                        <label for="edit_password" class="col-sm-2 control-label">密码</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_password" placeholder="密码"
+                                   name="password">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="updatePassword()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- /#wrapper -->
 
 
@@ -345,9 +376,19 @@
 <script src="<%=basePath%>js/sb-admin-2.js"></script>
 
 <script type="text/javascript">
+    function updatePassword(id) {
 
-
-
+        $.post("<%=basePath%>userInfo/updatePassword.action",
+            $("#edit_password_form").serialize(), function (data) {
+                if (data.code == 0) {
+                    alert(data.msg);
+                    window.location.reload();
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            });
+    }
 </script>
 
 </body>

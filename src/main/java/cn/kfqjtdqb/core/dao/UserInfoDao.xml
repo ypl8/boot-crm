@@ -5,7 +5,7 @@
     <sql id="selectUserInfoListWhere">
         <where>
             <if test="userName != null">
-                userName like "%"#{userName}"%"
+                userName =#{userName}
             </if>
 
             <if test="status != null">

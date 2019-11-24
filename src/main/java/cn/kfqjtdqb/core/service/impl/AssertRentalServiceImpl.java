@@ -23,7 +23,7 @@ public class AssertRentalServiceImpl implements AssertRentalService {
     private AssertRentalDao assertRentalDao;
 
     @Override
-    public Page<AssertRental> selectAssertRentalList(Integer page, Integer rows, String property_leasing_num, String state) {
+    public Page<AssertRental> selectAssertRentalList(Integer page, Integer rows, String property_leasing_num, String state, String status) {
         AssertRental assertRental = new AssertRental();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -32,6 +32,10 @@ public class AssertRentalServiceImpl implements AssertRentalService {
 
         if (StringUtils.isNotBlank(state)) {
             assertRental.setState(state);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            assertRental.setStatus(status);
         }
 
         //当前页
@@ -87,13 +91,16 @@ public class AssertRentalServiceImpl implements AssertRentalService {
     }
 
     @Override
-    public List<AssertRental> selectAssertRentalAllList(String property_leasing_num, String state) {
+    public List<AssertRental> selectAssertRentalAllList(String property_leasing_num, String state,String status) {
         AssertRental assertRental = new AssertRental();
         if (StringUtils.isNotBlank(property_leasing_num)) {
             assertRental.setProperty_leasing_num(property_leasing_num);
         }
         if (StringUtils.isNotBlank(state)) {
             assertRental.setState(state);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            assertRental.setStatus(status);
         }
         List<AssertRental> assertRentals = assertRentalDao.selectAssertRentalList(assertRental);
         return assertRentals;

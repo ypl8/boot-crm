@@ -19,7 +19,7 @@ public class AssertLeasingServiceImpl implements AssertLeasingService {
     private AssertLeasingDao assertLeasingDao;
 
     @Override
-    public Page<AssertLeasing> selectAssertLeasingList(Integer page, Integer rows, String property_leasing_num, String assert_num) {
+    public Page<AssertLeasing> selectAssertLeasingList(Integer page, Integer rows, String property_leasing_num, String assert_num,String status) {
         AssertLeasing assertLeasing = new AssertLeasing();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -28,6 +28,10 @@ public class AssertLeasingServiceImpl implements AssertLeasingService {
 
         if (StringUtils.isNotBlank(assert_num)) {
             assertLeasing.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            assertLeasing.setStatus(status);
         }
         //当前页
         assertLeasing.setStart((page - 1) * rows);

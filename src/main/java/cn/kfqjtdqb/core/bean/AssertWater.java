@@ -1,6 +1,7 @@
 package cn.kfqjtdqb.core.bean;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -11,21 +12,33 @@ import java.util.Date;
 
 public class AssertWater  implements Serializable {
     private Long id;
-    @NotNull
+    @NotBlank
     private String assert_num;
     @NotNull
     private String property_leasing_num;
     @NotNull
     @Min(0)
     private BigDecimal water_num;
-    @NotNull
+    @NotBlank
     private String watermeter_num;
     @NotNull
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     @DateTimeFormat(pattern="yyyyMMdd")
     private Date deadline;
+
+    private String status;
+
     private Integer start;
     private Integer rows;
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Integer getStart() {
         return start;

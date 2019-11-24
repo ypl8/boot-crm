@@ -3,6 +3,7 @@ package cn.kfqjtdqb.core.dao;
 import cn.kfqjtdqb.core.bean.AssertWater;
 import org.springframework.dao.DataAccessException;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface  AssertWaterDao {
@@ -13,4 +14,5 @@ public interface  AssertWaterDao {
     void deleteAssertWater(Long id);
     int addAssertWater(AssertWater assertWater)throws DataAccessException;
     void deleteAssertWaterByPropertyLeasingNum(String property_leasing_num)throws Exception;
+    BigDecimal getMaxWaterNum();
 }

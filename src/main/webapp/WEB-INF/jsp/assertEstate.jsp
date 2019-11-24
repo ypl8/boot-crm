@@ -88,7 +88,16 @@
                             </c:forEach>
                         </select>
                     </div>
-
+                    <div class="form-group">
+                        <label for="status">审核状态</label>
+                        <select class="form-control" id="status" placeholder="审核状态" name="status">
+                            <option value="">--请选择--</option>
+                            <c:forEach items="${checkType}" var="item">
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == status}"> selected</c:if>>${item.dict_item_name }</option>
+                            </c:forEach>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">查询</button>
                     <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ESTATE')">
                         <a href="#" class="btn btn-primary" data-toggle="modal"
@@ -121,9 +130,10 @@
                             <th>本次实收物业费（元)</th>
                             <th>收费时间</th>
                             <th>状态</th>
-                   <%--         <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT','ROLE_ESTATE')">--%>
-                                <th>操作</th>
-                          <%--  </security:authorize>--%>
+                            <th>审批状态</th>
+                            <%--         <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_CONTRACT','ROLE_ESTATE')">--%>
+                            <th>操作</th>
+                            <%--  </security:authorize>--%>
                         </tr>
                         </thead>
                         <tbody align="center">
@@ -144,17 +154,72 @@
                                     <td> 未缴清</td>
                                 </c:if>
 
+                                <c:if test="${'28' eq row.status}">
+                                    <td> 未提交</td>
+                                </c:if>
+                                <c:if test="${'29' eq row.status}">
+                                    <td> 审核中</td>
+                                </c:if>
+                                <c:if test="${'30' eq row.status}">
+                                    <td> 审核通过</td>
+                                </c:if>
+                                <c:if test="${'31' eq row.status}">
+                                    <td> 审核拒绝</td>
+                                </c:if>
+
                                 <td>
-                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ESTATE')">
-                                        <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
-                                           data-target="#EditEstateDialog" onclick="editEstate(${row.id})">修改</a>
 
-                                    <security:authorize access="hasAnyRole('ROLE_ADMIN')">
-                                        <a href="#" class="btn btn-danger btn-xs"
-                                           onclick="deleteEstate(${row.id})">删除</a>
 
+                                    <security:authorize access="hasAnyRole('ROLE_ESTATE')">
+                                        <c:if test="${row.status eq '28'}">
+                                            <a href="#" class="btn btn-success btn-xs"
+                                               onclick="submit(${row.id})">提交审核</a>
+                                        </c:if>
+                                        <c:if test="${row.status eq '28' || row.status eq  '31' }">
+                                            <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                               data-target="#EditEstateDialog" onclick="editEstate(${row.id})">修改</a>
+                                        </c:if>
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#showDialog"
+                                           onclick="comments(${row.id})">查看审核记录</a>
                                     </security:authorize>
+
+                                    <!--  资产审核员 -->
+                                    <security:authorize access="hasAnyRole('ROLE_ESTATECHECK')">
+                                        <c:if test="${row.status eq '29'}">
+                                            <a href="#" class="btn btn-success btn-xs" data-target="#commentDialog"
+                                               data-toggle="modal"
+                                               onclick="editComment(${row.id})">审核</a>
+                                        </c:if>
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#showDialog"
+                                           onclick="comments(${row.id})">查看审核记录</a>
                                     </security:authorize>
+
+
+
+                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                            <a href="#" class="btn btn-danger btn-xs"
+                                               onclick="deleteEstate(${row.id})">删除</a>
+
+                                            <c:if test="${row.status eq '29'}">
+                                                <a href="#" class="btn btn-success btn-xs" data-target="#commentDialog"
+                                                   data-toggle="modal"
+                                                   onclick="editComment(${row.id})">审核</a>
+                                            </c:if>
+
+                                            <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                               data-target="#showDialog"
+                                               onclick="comments(${row.id})">查看审核记录</a>
+
+                                            <a href="#" class="btn btn-primary btn-xs" data-toggle="modal"
+                                               data-target="#EditEstateDialog" onclick="editEstate(${row.id})">修改</a>
+                                        </security:authorize>
+
+
+
+
+
                                         <%--<a href="#" class="btn btn-default btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
                                            onclick="showDeposit(${row.id})">查看</a>--%>
                                     <a href="${pageContext.request.contextPath}/totalEstate/list.action?property_leasing_num=${row.property_leasing_num}"
@@ -180,6 +245,51 @@
 
 
 </div>
+
+
+<!-- 审批对话框 -->
+<div class="modal fade" id="commentDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel5">审核信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit_comment_form">
+                    <input type="hidden" id="edit_comment_id" name="id"/>
+
+                    <div class="form-group">
+                        <label for="edit_comment_state" style="float:left;padding:7px 15px 0 27px;">是否通过</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_comment_state" placeholder="是否审核通过"
+                                    name="comment_state">
+                                <option value="30" selected>--审核通过--</option>
+                                <option value="31">--审核拒绝--</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_comment" class="col-sm-2 control-label">批注</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_comment" placeholder="批注"
+                                   name="comment">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="addComment()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- 租金修改对话框 -->
 <div class="modal fade" id="EditEstateDialog" tabindex="-1" role="dialog"
@@ -376,7 +486,57 @@
 </div>
 <!-- /#wrapper -->
 
+<!-- 显示对应批注信息的对话框 -->
+<div class="modal fade" id="showDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel3">显示审核信息</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">显示审核信息</div>
+                            <!-- /.panel-heading -->
+                            <table class="table table-bordered table-striped">
+                                <thead>
 
+                                <tr>
+                                    <th>序号</th>
+                                    <th>审批人</th>
+                                    <th>审批备注</th>
+                                    <th>审批时间</th>
+                                    <%--<th>租期开始时间</th>
+                                    <th>租期结束时间</th>--%>
+                                </tr>
+                                </thead>
+                                <tbody id="tbody" align="center">
+
+                                </tbody>
+                            </table>
+                            <%--<div class="col-md-12 text-right">
+                                <itcast:page url="${pageContext.request.contextPath }/case/list.action"/>
+                            </div>--%>
+                            <!-- /.panel-body -->
+                        </div>
+                        <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+            </div>
+
+        </div>
+        <%-- <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+             &lt;%&ndash;  <button type="button" class="btn btn-primary" onclick="addPropertyLeasing()">创建关系</button>&ndash;%&gt;
+         </div>--%>
+    </div>
+</div>
 <!-- jQuery -->
 <script src="<%=basePath%>js/jquery.min.js"></script>
 
@@ -475,6 +635,109 @@
         $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/downloadEstateInfolAll.action").submit();
         $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertEstate/list.action");
     }
+
+
+    function editComment(id) {
+
+        $("#edit_comment_id").val(id);
+        $("#edit_comment").val("");
+        $("#edit_comment_state").val("");
+    }
+
+    function addComment() {
+
+        $.post("<%=basePath%>assertEstate/changeState.action", $("#edit_comment_form").serialize(), function (data) {
+            if (data.code == 0) {
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                alert(data.msg);
+                window.location.reload();
+
+            }
+        });
+    }
+
+
+    function submit(id) {
+        if (confirm('确定要提交审核吗?')) {
+            $.ajax({
+                type: "get",
+                url: "<%=basePath%>assertEstate/submit.action",
+                data: {"id": id},
+                success: function (data) {
+                    if (data.code == 0) {
+                        alert(data.msg);
+                        window.location.reload();
+                    } else {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+
+    //显示批注
+    function comments(id) {
+        $.ajax({
+            type: "get",
+            url: "<%=basePath%>assertEstate/getComments.action",
+            data: {"id": id},
+            success: function (data) {
+                if (data.code == 0) {
+
+                    if (data.data.length == 0) {
+                        alert("没有批次信息");
+                        window.location.reload();
+                        return;
+                    }
+                    var $table = $("#tbody");
+                    $table.empty();
+                    var $tr;
+                    for (var i = 0; i < data.data.length; i++) {
+                        $tr = $("<tr>" +
+                            "<td>" + data.data[i].id + "</td>" +
+                            "<td>" + data.data[i].userId + "</td>" +
+                            "<td>" + data.data[i].fullMessage + "</td>" +
+                            "<td>" + getMyDate(data.data[i].time) + "</td>" +
+
+                            /* "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
+                            "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*/
+                            "</tr>");
+                        $table.append($tr);
+                    }
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function getMyDate(str) {
+        var oDate = new Date(str),
+            oYear = oDate.getFullYear(),
+            oMonth = oDate.getMonth() + 1,
+            oDay = oDate.getDate(),
+            oHour = oDate.getHours(),
+            oMin = oDate.getMinutes(),
+            oSen = oDate.getSeconds(),
+            oTime = oYear + '-' + addZero(oMonth) + '-' + addZero(oDay) + ' ' + addZero(oHour) + ':' +
+                addZero(oMin) + ':' + addZero(oSen);
+        return oTime;
+    }
+
+    //补零操作
+    function addZero(num) {
+        if (parseInt(num) < 10) {
+            num = '0' + num;
+        }
+        return num;
+    }
+
+
 </script>
 
 

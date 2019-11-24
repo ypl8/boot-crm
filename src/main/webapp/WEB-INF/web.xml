@@ -21,9 +21,9 @@
         <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
     </listener>
 
-   <!-- <listener>
+    <listener>
         <listener-class>cn.kfqjtdqb.core.service.impl.SendWsListener</listener-class>
-    </listener>-->
+    </listener>
 
     <error-page>
         <error-code>403</error-code>

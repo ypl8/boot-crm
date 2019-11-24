@@ -20,7 +20,7 @@ public class AssertEstateServiceImpl implements AssertEstateService {
     private AssertEstateDao AssertEstateDao;
 
     @Override
-    public Page<AssertEstate> selectAssertEstateList(Integer page, Integer rows, String property_leasing_num, String state) {
+    public Page<AssertEstate> selectAssertEstateList(Integer page, Integer rows, String property_leasing_num, String state,String status) {
         AssertEstate AssertEstate = new AssertEstate();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -31,6 +31,9 @@ public class AssertEstateServiceImpl implements AssertEstateService {
             AssertEstate.setState(state);
         }
 
+        if (StringUtils.isNotBlank(status)) {
+            AssertEstate.setStatus(status);
+        }
         //当前页
         AssertEstate.setStart((page - 1) * rows);
         //每页数
@@ -84,7 +87,7 @@ public class AssertEstateServiceImpl implements AssertEstateService {
     }
 
     @Override
-    public List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state) {
+    public List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state,String status) {
         AssertEstate assertEstate = new AssertEstate();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -93,6 +96,10 @@ public class AssertEstateServiceImpl implements AssertEstateService {
 
         if (StringUtils.isNotBlank(state)) {
             assertEstate.setState(state);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            assertEstate.setStatus(state);
         }
         return AssertEstateDao.selectAssertEstateList(assertEstate);
     }

@@ -11,11 +11,11 @@
 <body  style="background: #F9F9F9" >
 <div   >
 
-    <h1 style="text-align: center; margin-top: 5px">资产信息管理系统</h1>
+    <h1 style="text-align: center; margin-top: 5px">资产信息管理系统V1.0</h1>
     <%--<div class="logo"><a href="#"><img src="${pageContext.request.contextPath}/images/mainlogo.png" alt="资源管理系统"/></a>
     </div>--%>
 
-    <div class="curr" style="text-align: end;font-size: 8px; margin-top: -6px"><span>欢迎您，<security:authentication property="principal.username" />[ <a href="${pageContext.request.contextPath }/logout.action" target="_top">退出</a> ]</span></div>
+    <div class="curr" style="text-align: end;font-size: 12px; margin-top: -6px"><span>欢迎您，<security:authentication property="principal.username" />[ <a href="${pageContext.request.contextPath }/logout.action" target="_top">退出</a> ]</span></div>
 </div>
 </body>
 </html>

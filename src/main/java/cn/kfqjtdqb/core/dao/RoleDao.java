@@ -3,6 +3,7 @@ package cn.kfqjtdqb.core.dao;
 import cn.kfqjtdqb.core.bean.Permission;
 import cn.kfqjtdqb.core.bean.Role;
 
+import cn.kfqjtdqb.core.bean.UserInfo;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -37,6 +38,10 @@ public interface RoleDao {
 
     @Insert("insert into role_permission(roleId,permissionId) values(#{roleId},#{permissionId})")
     void addPermissionToRole(@Param("roleId") Long roleId, @Param("permissionId") Long permissionId);
+
+
+    @Select("select * from users where id  in (select userId from users_role where roleId=#{roleId})")
+    List<UserInfo> findUser(Long roleId);
    /* @Select("select * from role")
     List<Role> findAll() throws Exception;
 

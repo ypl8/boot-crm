@@ -24,7 +24,7 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     private PropertyLeasingDao propertyLeasingDao;
 
     @Override
-    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type) {
+    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type,String  status  ) {
         PropertyLeasing propertyLeasing = new PropertyLeasing();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -56,6 +56,10 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
 
         if (StringUtils.isNotBlank(property_leasing_type)) {
             propertyLeasing.setProperty_leasing_type(property_leasing_type);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            propertyLeasing.setStatus(status);
         }
         //当前页
         propertyLeasing.setStart((page - 1) * rows);
@@ -187,6 +191,7 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
         if (StringUtils.isNotBlank(community_name)) {
             propertyLeasing.setCommunity_name(community_name);
         }
+
 
         //当前页
         propertyLeasing.setStart((page - 1) * rows);

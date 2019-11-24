@@ -10,7 +10,9 @@ import java.util.List;
 
 public interface AssertInfolService {
     Page<AssertInfol> findAssertInfolList(Integer page, Integer rows,
-                                          String assert_num, String floor_state, String community_name, String property_leasing_num);
+                                          String assert_num, String floor_state,
+                                          String community_name, String property_leasing_num,
+                                          String status,String  assertType);
 
     public AssertInfol getAssertInfolById(Long id);
 

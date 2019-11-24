@@ -44,8 +44,8 @@
     </content>
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" scope="PROVIDED" name="Tomcat 7.0.81" level="application_server_libraries" />
     <orderEntry type="library" name="aopalliance-1.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Tomcat 8.5.20" level="application_server_libraries" />
     <orderEntry type="library" name="Maven: org.aspectj:aspectjweaver:1.6.8" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-aop:5.0.2.RELEASE" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:5.0.2.RELEASE" level="project" />
@@ -63,6 +63,7 @@
     <orderEntry type="library" name="Maven: com.fasterxml:classmate:1.3.3" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.logging:jboss-logging:3.3.1.Final" level="project" />
     <orderEntry type="library" name="Maven: org.hibernate:hibernate-validator:5.4.1.Final" level="project" />
+    <orderEntry type="library" name="Maven: org.hibernate.validator:hibernate-validator:6.0.13.Final" level="project" />
     <orderEntry type="library" name="Maven: javax.validation:validation-api:1.1.0.Final" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
@@ -113,5 +114,29 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="Maven: mysql:mysql-connector-java:5.1.6" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-engine:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-common-runtime-api:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-common-model-api:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-process-validation:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-email:1.5" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.mail:javax.mail:1.5.6" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" name="Maven: de.odysseus.juel:juel-api:2.2.7" level="project" />
+    <orderEntry type="library" name="Maven: de.odysseus.juel:juel-impl:2.2.7" level="project" />
+    <orderEntry type="library" name="Maven: de.odysseus.juel:juel-spi:2.2.7" level="project" />
+    <orderEntry type="library" name="Maven: org.assertj:assertj-core:3.9.1" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.9" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:jcl-over-slf4j:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-spring:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: javax.el:el-api:2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-bpmn-model:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-bpmn-converter:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-json-converter:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: math.geom2d:javaGeom:0.11.1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-bpmn-layout:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jgraph:jgraphx:v3.9.3" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti.cloud:activiti-cloud-services-api:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-process-runtime-api:7.0.0.Beta1" level="project" />
+    <orderEntry type="library" name="Maven: org.activiti:activiti-process-model-api:7.0.0.Beta1" level="project" />
   </component>
 </module>

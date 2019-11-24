@@ -103,6 +103,27 @@
                         </select>
                     </div>
 
+                    <div class="form-group">
+                        <label for="floor_state">资产类型</label>
+                        <select class="form-control" id="assertType" placeholder="资产类型" name="assertType">
+                            <option value="">--请选择--</option>
+                            <c:forEach items="${assertStateType}" var="item">
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == assertType}"> selected</c:if>>${item.dict_item_name }</option>
+                            </c:forEach>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">审核状态</label>
+                        <select class="form-control" id="status" placeholder="审核状态" name="status">
+                            <option value="">--请选择--</option>
+                            <c:forEach items="${checkType}" var="item">
+                                <option value="${item.dict_id}"<c:if
+                                        test="${item.dict_id == status}"> selected</c:if>>${item.dict_item_name }</option>
+                            </c:forEach>
+                        </select>
+                    </div>
                     <button type="submit" class="btn btn-primary">查询</button>
                     <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ASSERT')">
                         <a href="#" class="btn btn-warning" data-toggle="modal"
@@ -138,6 +159,8 @@
                             <th>电表编号</th>
                             <th>备注</th>
                             <th>房屋状态</th>
+                            <th>资产类型</th>
+                            <th>状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
@@ -154,6 +177,29 @@
                                 <td>${row.watermeter_num}</td>
                                 <td>${row.electricmeter_num}</td>
                                 <td>${row.remark}</td>
+
+                                <c:if test="${'32' eq row.assertType}">
+                                    <td> 店铺</td>
+                                </c:if>
+                                <c:if test="${'33' eq row.assertType}">
+                                    <td> 写字楼</td>
+                                </c:if>
+                                <c:if test="${'34' eq row.assertType}">
+                                    <td> 农贸市场</td>
+                                </c:if>
+                                <c:if test="${'35' eq row.assertType}">
+                                    <td> 厂房</td>
+                                </c:if>
+                                <c:if test="${'36' eq row.assertType}">
+                                    <td> 员工宿舍</td>
+                                </c:if>
+                                <c:if test="${'37' eq row.assertType}">
+                                    <td> 人才公寓</td>
+                                </c:if>
+                                <c:if test="${'38' eq row.assertType}">
+                                    <td> 公租房</td>
+                                </c:if>
+
                                 <c:if test="${'1' eq row.floor_state}">
                                     <td>已出租</td>
                                 </c:if>
@@ -164,14 +210,66 @@
                                     <td> 非法占用</td>
                                 </c:if>
 
+
+                                <c:if test="${'28' eq row.status}">
+                                    <td> 未提交</td>
+                                </c:if>
+                                <c:if test="${'29' eq row.status}">
+                                    <td> 审核中</td>
+                                </c:if>
+                                <c:if test="${'30' eq row.status}">
+                                    <td> 审核通过</td>
+                                </c:if>
+                                <c:if test="${'31' eq row.status}">
+                                    <td> 审核拒绝</td>
+                                </c:if>
                                 <td>
-                                    <security:authorize access="hasAnyRole('ROLE_ADMIN','ROLE_ASSERT')">
+
+                                    <!--   录入管理功能的实现  -->
+                                    <security:authorize access="hasAnyRole('ROLE_ASSERT')">
+                                        <c:if test="${row.status eq '28'}">
+                                            <a href="#" class="btn btn-success btn-xs"
+                                               onclick="assertSubmit(${row.id})">提交审核</a>
+                                        </c:if>
+
+                                        <c:if test="${row.status eq '28' || row.status eq  '31' }">
+                                            <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
+                                               data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
+                                        </c:if>
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#showLeasingDialog"
+                                           onclick="assertComments(${row.id})">查看审核记录</a>
+                                    </security:authorize>
+
+
+                                    <security:authorize access="hasAnyRole('ROLE_ADMIN')">
+                                        <%--   <c:if test="${row.status ne '29'}">--%>
+                                        <a href="#" class="btn btn-danger btn-xs"
+                                           onclick="deleteAssert(${row.id})">删除</a>
+                                        <%--</c:if>--%>
+                                        <c:if test="${row.status eq '29'}">
+                                            <a href="#" class="btn btn-success btn-xs"
+                                               data-target="#assertCommentDialog" data-toggle="modal"
+                                               onclick="editAssertComment(${row.id})">审核</a>
+                                        </c:if>
                                         <a href="#" class="btn btn-warning btn-xs" data-toggle="modal"
                                            data-target="#caseEditDialog" onclick="editAssert(${row.id})">修改</a>
-                                        <security:authorize access="hasAnyRole('ROLE_ADMIN')">
-                                            <a href="#" class="btn btn-danger btn-xs"
-                                               onclick="deleteAssert(${row.id})">删除</a>
-                                        </security:authorize>
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#showLeasingDialog"
+                                           onclick="assertComments(${row.id})">查看审核记录</a>
+                                    </security:authorize>
+
+
+                                    <!--  资产审核员 -->
+                                    <security:authorize access="hasAnyRole('ROLE_ASSERTCHECK')">
+                                        <c:if test="${row.status eq '29'}">
+                                            <a href="#" class="btn btn-success btn-xs"
+                                               data-target="#assertCommentDialog" data-toggle="modal"
+                                               onclick="editAssertComment(${row.id})">审核</a>
+                                        </c:if>
+                                        <a href="#" class="btn btn-success btn-xs" data-toggle="modal"
+                                           data-target="#showLeasingDialog"
+                                           onclick="assertComments(${row.id})">查看审核记录</a>
                                     </security:authorize>
                                         <%-- <a href="#" class="btn btn-primary btn-xs"     data-toggle="modal"  data-target="#showLeasingDialog"
                                             onclick="showAssert(${row.id})">查看</a>--%>
@@ -197,6 +295,51 @@
 
 
 </div>
+
+
+<!-- 审批对话框 -->
+<div class="modal fade" id="assertCommentDialog" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel5">审核信息</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit_assert_comment_form">
+                    <input type="hidden" id="edit_comment_id" name="id"/>
+
+                    <div class="form-group">
+                        <label for="edit_comment_state" style="float:left;padding:7px 15px 0 27px;">是否通过</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_comment_state" placeholder="是否审核通过"
+                                    name="comment_state">
+                                <option value="30" selected>--审核通过--</option>
+                                <option value="31">--审核拒绝--</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_comment" class="col-sm-2 control-label">批注</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="edit_comment" placeholder="批注"
+                                   name="comment">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="addComment()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- 客户编辑对话框 -->
 <div class="modal fade" id="caseEditDialog" tabindex="-1" role="dialog"
@@ -286,13 +429,27 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="edit_floor_state" style="float:left;padding:7px 15px 0 27px;">房屋状态</label>
+                        <label for="edit_floor_state" class="col-sm-2 control-label">房屋状态</label>
                         <div class="col-sm-10">
                             <select class="form-control" id="edit_floor_state" placeholder="房屋状态" name="floor_state">
                                 <option value="">--请选择--</option>
                                 <c:forEach items="${stateType}" var="item">
                                     <option value="${item.dict_id}"<c:if
-                                            test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                            test="${item.dict_id == floor_state}"> selected</c:if>>${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group">
+                        <label for="edit_assertType" class="col-sm-2 control-label">资产类型</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="edit_assertType" placeholder="资产类型" name="assertType">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${assertStateType}" var="item">
+                                    <option value="${item.dict_id}"<c:if
+                                            test="${item.dict_id == assertType}"> selected</c:if>>${item.dict_item_name }</option>
                                 </c:forEach>
                             </select>
                         </div>
@@ -401,13 +558,24 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="new_floor_state" style="float:left;padding:7px 15px 0 27px;">房屋状态</label>
+                        <label for="new_floor_state" class="col-sm-2 control-label">房屋状态</label>
                         <div class="col-sm-10">
                             <select class="form-control" id="new_floor_state" placeholder="房屋状态" name="floor_state">
                                 <option value="">--请选择--</option>
                                 <c:forEach items="${stateType}" var="item">
-                                    <option value="${item.dict_id}"<c:if
-                                            test="${item.dict_id == state}"> selected</c:if>>${item.dict_item_name }</option>
+                                    <option value="${item.dict_id}">${item.dict_item_name }</option>
+                                </c:forEach>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new_assertType" class="col-sm-2 control-label">资产类型</label>
+                        <div class="col-sm-10">
+                            <select class="form-control" id="new_assertType" placeholder="资产类型" name="assertType">
+                                <option value="">--请选择--</option>
+                                <c:forEach items="${assertStateType}" var="item">
+                                    <option value="${item.dict_id}">${item.dict_item_name }</option>
                                 </c:forEach>
                             </select>
                         </div>
@@ -432,26 +600,22 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="myModalLabel3">合同和资产绑定</h4>
+                <h4 class="modal-title" id="myModalLabel3">显示审核信息</h4>
             </div>
             <div class="modal-body">
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-default">
-                            <div class="panel-heading">客户信息列表</div>
+                            <div class="panel-heading">显示审核信息</div>
                             <!-- /.panel-heading -->
                             <table class="table table-bordered table-striped">
                                 <thead>
+
                                 <tr>
                                     <th>序号</th>
-                                    <th>租凭合同编号</th>
-                                    <th>承租人</th>
-                                    <th>月租</th>
-                                    <th>合同期(年)</th>
-                                    <th>月物业费</th>
-                                    <th>保证金（元）</th>
-                                    <th>水费</th>
-                                    <th>电费</th>
+                                    <th>审批人</th>
+                                    <th>审批备注</th>
+                                    <th>审批时间</th>
                                     <%--<th>租期开始时间</th>
                                     <th>租期结束时间</th>--%>
                                 </tr>
@@ -472,10 +636,10 @@
             </div>
 
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-            <%--  <button type="button" class="btn btn-primary" onclick="addPropertyLeasing()">创建关系</button>--%>
-        </div>
+        <%-- <div class="modal-footer">
+             <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+             &lt;%&ndash;  <button type="button" class="btn btn-primary" onclick="addPropertyLeasing()">创建关系</button>&ndash;%&gt;
+         </div>--%>
     </div>
 </div>
 <!-- jQuery -->
@@ -514,6 +678,7 @@
                 $("#edit_electricmeter_num").val(data.electricmeter_num);
                 $("#edit_remark").val(data.remark);
                 $("#edit_floor_state").val(data.floor_state);
+                $("#edit_assertType").val(data.assertType);
             }
         });
     }
@@ -535,6 +700,122 @@
         $("#mainForm").attr("action", "${pageContext.request.contextPath }/assertInfol/list.action");
     }
 
+    function editAssertComment(id) {
+
+        $("#edit_comment_id").val(id);
+        $("#edit_comment").val("");
+        $("#edit_comment_state").val("");
+    }
+
+    function addComment() {
+        /* $.ajax({
+             type: "get",
+             url: "
+        <%=basePath%>assertInfol/changeState.action",
+            data: {"id": id, "flag": flag},
+            success: function (data) {
+                if (data.code == 0) {
+                    alert(data.msg);
+                    window.location.reload();
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            }
+        });*/
+
+
+        $.post("<%=basePath%>assertInfol/changeState.action", $("#edit_assert_comment_form").serialize(), function (data) {
+            if (data.code == 0) {
+                alert(data.msg);
+                window.location.reload();
+            } else {
+                alert(data.msg);
+                window.location.reload();
+
+            }
+        });
+    }
+
+
+    function assertSubmit(id) {
+        if (confirm('确定要提交审核吗?')) {
+            $.ajax({
+                type: "get",
+                url: "<%=basePath%>assertInfol/assertSubmit.action",
+                data: {"id": id},
+                success: function (data) {
+                    if (data.code == 0) {
+                        alert(data.msg);
+                        window.location.reload();
+                    } else {
+                        alert(data.msg);
+                        window.location.reload();
+                    }
+                }
+            });
+        }
+    }
+
+
+    //显示批注
+    function assertComments(id) {
+        $.ajax({
+            type: "get",
+            url: "<%=basePath%>assertInfol/getComments.action",
+            data: {"id": id},
+            success: function (data) {
+                if (data.code == 0) {
+
+                    if (data.data.length == 0) {
+                        alert("没有批次信息");
+                        window.location.reload();
+                        return;
+                    }
+                    var $table = $("#tbody");
+                    $table.empty();
+                    var $tr;
+                    for (var i = 0; i < data.data.length; i++) {
+                        $tr = $("<tr>" +
+                            "<td>" + data.data[i].id + "</td>" +
+                            "<td>" + data.data[i].userId + "</td>" +
+                            "<td>" + data.data[i].fullMessage + "</td>" +
+                            "<td>" + getMyDate(data.data[i].time) + "</td>" +
+
+                            /* "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
+                            "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*/
+                            "</tr>");
+                        $table.append($tr);
+                    }
+                } else {
+                    alert(data.msg);
+                    window.location.reload();
+                }
+            }
+        });
+    }
+
+    function getMyDate(str) {
+        var oDate = new Date(str),
+            oYear = oDate.getFullYear(),
+            oMonth = oDate.getMonth() + 1,
+            oDay = oDate.getDate(),
+            oHour = oDate.getHours(),
+            oMin = oDate.getMinutes(),
+            oSen = oDate.getSeconds(),
+            oTime = oYear + '-' + addZero(oMonth) + '-' + addZero(oDay) + ' ' + addZero(oHour) + ':' +
+                addZero(oMin) + ':' + addZero(oSen);
+        return oTime;
+    }
+
+    //补零操作
+    function addZero(num) {
+        if (parseInt(num) < 10) {
+            num = '0' + num;
+        }
+        return num;
+    }
+
     function showAssert(id) {
         var flag = true;
         $.ajax({
@@ -549,25 +830,7 @@
                 } else {
                     flag = true;
                 }
-                /*var $table = $("#tbody");
-                $table.empty();
-                var $tr;
-                for (var i=0;i<data.propertyLeasings.length;i++){
-                $tr = $("<tr>"+
-                "<td>"+data.propertyLeasings[i].id+"</td>"+
-                "<td>"+data.propertyLeasings[i].property_leasing_num+"</td>"+
-                "<td>"+data.propertyLeasings[i].tenant+"</td>"+
-                "<td>"+data.propertyLeasings[i].monthly_rental+"</td>"+
-                "<td>"+data.propertyLeasings[i].rent_period+"</td>"+
-                "<td>"+data.propertyLeasings[i].estate_charge_month+"</td>"+
-                "<td>"+data.propertyLeasings[i].deposit+"</td>"+
-                "<td>"+data.propertyLeasings[i].water_rate+"</td>"+
-                "<td>"+data.propertyLeasings[i].power_rate+"</td>"+
-                /!* "<td>"+data.propertyLeasings[i].rent_start_time+"</td>"+
-                "<td>"+data.propertyLeasings[i].rent_end_time+"</td>"+*!/
-                "</tr>");
-                $table.append($tr);
-                }*/
+
 
             }
 

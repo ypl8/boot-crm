@@ -10,6 +10,9 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </sql>
 
@@ -22,7 +25,8 @@
         deposit,
         reality_deposit,
         state,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_deposit
         <include refid="selectAssertDepositListWhere"/>
@@ -86,7 +90,9 @@
             <if test="deadline!=null">
                 deadline=#{deadline},
             </if>
-
+            <if test="status!=null">
+                status=#{status},
+            </if>
         </set>
 
         <include refid="updateAssertDepositWhere"/>
@@ -115,7 +121,10 @@
                 state,
             </if>
             <if test="deadline!=null">
-                deadline
+                deadline,
+            </if>
+            <if test="status!=null">
+                status,
             </if>
 
         </trim>
@@ -143,7 +152,10 @@
                 #{state},
             </if>
             <if test="deadline!=null">
-                #{deadline}
+                #{deadline},
+            </if>
+            <if test="status!=null">
+                #{status},
             </if>
         </trim>
     </sql>

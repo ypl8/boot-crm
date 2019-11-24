@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface AssertEstateService {
-    Page<AssertEstate> selectAssertEstateList(Integer page, Integer rows, String property_leasing_num, String state);
+    Page<AssertEstate> selectAssertEstateList(Integer page, Integer rows, String property_leasing_num, String state,String staus);
 
     AssertEstate getAssertEstateById(Long id);
 
@@ -23,5 +23,5 @@ public interface AssertEstateService {
 
     void deleteAssertEstateByPropertyLeasingNum(String property_leasing_num);
 
-    List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state);
+    List<AssertEstate> selectAssertEstateList(String property_leasing_num, String state,String status);
 }

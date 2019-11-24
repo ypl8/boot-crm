@@ -10,6 +10,9 @@
             <if test="assert_num != null">
                 and assert_num like "%" #{assert_num}"%"
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </sql>
 
@@ -19,7 +22,8 @@
         property_leasing_num,
         assert_num,
         water_num,
-        electric_num
+        electric_num,
+        status
         FROM
         t_assert_leasing
         <include refid="selectAssertLeasingListWhere"/>
@@ -68,6 +72,10 @@
                 electric_num=#{electric_num},
             </if>
 
+            <if test="status!=null">
+                status=#{status},
+            </if>
+
         </set>
         where id=#{id};
 
@@ -84,13 +92,15 @@
             </if>
 
             <if test="water_num!=null">
-                water_num=#{water_num},
+                water_num,
             </if>
 
             <if test="electric_num!=null">
-                electric_num=#{electric_num}
+                electric_num,
             </if>
-
+            <if test="status!=null">
+                status,
+            </if>
         </trim>
     </sql>
 
@@ -108,9 +118,11 @@
             </if>
 
             <if test="electric_num!=null">
-                #{electric_num}
+                #{electric_num},
             </if>
-
+            <if test="status!=null">
+                #{status},
+            </if>
         </trim>
     </sql>
 

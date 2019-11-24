@@ -92,8 +92,7 @@
             </div>
         </div>
 
-
-    <div class="row">
+         <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">资产统计信息列表</div>
@@ -140,9 +139,6 @@
         </div>
     </div>
     <!-- /#page-wrapper -->
-
-
-
 
 
 </div>

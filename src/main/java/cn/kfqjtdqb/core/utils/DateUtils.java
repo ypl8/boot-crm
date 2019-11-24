@@ -1,8 +1,11 @@
 package cn.kfqjtdqb.core.utils;
 
+import org.assertj.core.util.DateUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class DateUtils {
 
@@ -30,6 +33,15 @@ public class DateUtils {
     public static String  getYearMonth(Date currentTime, int index) {
         Date date = getMonth(currentTime, index);
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMM");
+        return  simpleDateFormat.format(date);
+    }
+
+    public  static  String  getNextYear(Date date,int index){
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, index);// 把日期往后增加一年.整数往后推,负数往前移动
+        SimpleDateFormat simpleDateFormat=new SimpleDateFormat("yyyyMMdd");
+        date = calendar.getTime();
         return  simpleDateFormat.format(date);
     }
 

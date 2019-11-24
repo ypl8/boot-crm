@@ -10,6 +10,12 @@
             <if test="floor_state != null">
                 and floor_state = #{floor_state}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="assertType != null">
+                and assertType = #{assertType}
+            </if>
             <if test="community_name != null">
                 and community_name like "%" #{community_name}"%"
             </if>
@@ -31,7 +37,9 @@
         floor_state,
         watermeter_num,
         electricmeter_num,
-        remark
+        remark,
+        status,
+        assertType
         FROM
         t_assert_infol
         <include refid="selectAssertInfolListWhere"/>
@@ -50,6 +58,7 @@
     <select id="selectAssertInfolTotalList" parameterType="assertInfol" resultType="assertInfolTotal">
         select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
         count(floor_state='2' or null) as countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol
+        where  status=30
         group by community_name
         <include refid="selectAssertInfolTotalListHaving"/>
     </select>
@@ -59,7 +68,7 @@
         select count(*)
         from ( select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
         count(floor_state='2' or null) as
-        countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol group by community_name
+        countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol where  status=30 group by community_name
         <include refid="selectAssertInfolTotalListHaving"/>) bb;
     </select>
 
@@ -87,7 +96,7 @@
 
 
     <select id="findAllCommunityName" resultType="String">
-          select   community_name   from  t_assert_infol    group by     community_name;
+          select   community_name   from  t_assert_infol  where  status=30  group by     community_name;
     </select>
 
 
@@ -112,6 +121,8 @@
             <if test=" room_number != null">
                 and  room_number = #{ room_number}
             </if>
+                and  status=30
+
         </where>
     </sql>
 
@@ -126,7 +137,7 @@
 
     <select id="findAssertWithPropertyLeasing" parameterType="Long"
             resultMap="AssertWithPropertyLeasingResult">
-        select * from t_assert_infol WHERE id=#{id}
+        select * from t_assert_infol WHERE id=#{id} and status=30
     </select>
 
     <resultMap type="AssertInfol" id="AssertWithPropertyLeasingResult">
@@ -137,12 +148,12 @@
         <result property="building_num" column="building_num"/>
         <result property="room_number" column="room_number"/>
         <result property="floorage" column="floorage"/>
-
+        <result property="status" column="status"/>
         <result property="floor_state" column="floor_state"/>
         <result property="watermeter_num" column="watermeter_num"/>
         <result property="electricmeter_num" column="electricmeter_num"/>
         <result property="remark" column="remark"/>
-
+        <result property="assertType" column="assertType"/>
         <collection property="propertyLeasings" column="assert_num" ofType="PropertyLeasing"
                     select="cn.kfqjtdqb.core.dao.PropertyLeasingDao.findPropertyLeasingByNum">
         </collection>
@@ -194,6 +205,12 @@
             <if test="remark!=null">
                 remark=#{remark},
             </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
+            <if test="assertType!=null">
+                assertType=#{assertType},
+            </if>
         </set>
         <include refid="updateAssertInfolWhere"/>
     </update>
@@ -231,7 +248,12 @@
             <if test="remark!=null">
                 remark,
             </if>
-
+            <if test="status!=null">
+                status,
+            </if>
+            <if test="assertType!=null">
+                assertType,
+            </if>
         </trim>
     </sql>
 
@@ -269,10 +291,19 @@
             <if test="remark!=null">
                 #{remark},
             </if>
+
+            <if test="status!=null">
+                #{status},
+            </if>
+
+            <if test="assertType!=null">
+                #{assertType},
+            </if>
+
         </trim>
     </sql>
 
-    <insert id="addAssertInfol" parameterType="assertInfol">
+    <insert id="addAssertInfol" parameterType="assertInfol" useGeneratedKeys="true" keyProperty="id">
         insert into t_assert_infol(<include refid="key"></include>) values(<include refid="value"></include>)
     </insert>
 

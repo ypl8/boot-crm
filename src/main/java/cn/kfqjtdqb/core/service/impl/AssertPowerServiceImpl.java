@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service("assertPowerService")
@@ -20,7 +21,7 @@ public class AssertPowerServiceImpl implements AssertPowerService {
     private AssertPowerDao assertPowerDao;
 
     @Override
-    public Page<AssertPower> selectAssertPowerList(Integer page, Integer rows, String property_leasing_num, String assert_num) {
+    public Page<AssertPower> selectAssertPowerList(Integer page, Integer rows, String property_leasing_num, String assert_num,String status) {
         AssertPower AssertPower = new AssertPower();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -29,6 +30,10 @@ public class AssertPowerServiceImpl implements AssertPowerService {
 
         if (StringUtils.isNotBlank(assert_num)) {
             AssertPower.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            AssertPower.setStatus(status);
         }
         //当前页
         AssertPower.setStart((page - 1) * rows);
@@ -63,7 +68,7 @@ public class AssertPowerServiceImpl implements AssertPowerService {
     }
 
     @Override
-    public List<AssertPower> selectAssertPowerListByAssertNum(String property_leasing_num, String assert_num) {
+    public List<AssertPower> selectAssertPowerListByAssertNum(String property_leasing_num, String assert_num,String status) {
         AssertPower assertPower = new AssertPower();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -72,6 +77,11 @@ public class AssertPowerServiceImpl implements AssertPowerService {
 
         if (StringUtils.isNotBlank(assert_num)) {
             assertPower.setAssert_num(assert_num);
+        }
+
+
+        if (StringUtils.isNotBlank(status)) {
+            assertPower.setStatus(status);
         }
         List<AssertPower> assertPowers = assertPowerDao.selectAssertPowerList(assertPower);
         return assertPowers;
@@ -87,7 +97,10 @@ public class AssertPowerServiceImpl implements AssertPowerService {
         assertPowerDao.deleteAssertPowerByPropertyLeasingNum(property_leasing_num);
     }
 
-
+    @Override
+    public BigDecimal getMaxPowerNum() {
+        return assertPowerDao.getMaxPowerNum();
+    }
 
 
 }

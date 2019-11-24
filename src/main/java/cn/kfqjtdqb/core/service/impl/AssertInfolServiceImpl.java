@@ -26,7 +26,7 @@ public class AssertInfolServiceImpl implements AssertInfolService {
     private AssertInfolDao assertInfolDao;
 
     @Override
-    public Page<AssertInfol> findAssertInfolList(Integer page, Integer rows, String assert_num, String floor_state, String community_name, String property_leasing_num) {
+    public Page<AssertInfol> findAssertInfolList(Integer page, Integer rows, String assert_num, String floor_state, String community_name, String property_leasing_num,String status,String  assertType) {
 
         AssertInfol assertInfol = new AssertInfol();
         //判断客户名称(公司名称)
@@ -45,7 +45,12 @@ public class AssertInfolServiceImpl implements AssertInfolService {
         if (StringUtils.isNotBlank(property_leasing_num)) {
             assertInfol.setProperty_leasing_num(property_leasing_num);
         }
-
+        if (StringUtils.isNotBlank(status)) {
+            assertInfol.setStatus(status);
+        }
+        if (StringUtils.isNotBlank(assertType)) {
+            assertInfol.setAssertType(assertType);
+        }
         //当前页
         assertInfol.setStart((page - 1) * rows);
         //每页数

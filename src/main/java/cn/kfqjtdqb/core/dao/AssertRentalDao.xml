@@ -10,6 +10,9 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </sql>
 
@@ -23,7 +26,8 @@
         reality_rental,
         state,
         rent_recivied,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_rental
         <include refid="selectAssertRentalListWhere"/>
@@ -49,7 +53,7 @@
 	</select>
 
     <select id="getAssertRentalCountByLeasingNum" parameterType="String" resultType="java.math.BigDecimal" >
-		select sum(reality_rental) from t_assert_rental   where property_leasing_num= #{property_leasing_num}
+		select sum(reality_rental) from t_assert_rental   where property_leasing_num= #{property_leasing_num}  and  status=30;
 	</select>
 
     <sql id="updateAssertRentalWhere">
@@ -95,7 +99,9 @@
                 deadline=#{deadline},
             </if>
 
-
+            <if test="status!=null">
+                status=#{status},
+            </if>
         </set>
 
         where id=#{id};
@@ -130,6 +136,9 @@
             <if test="deadline!=null">
                 deadline,
             </if>
+            <if test="status!=null">
+               status,
+            </if>
         </trim>
     </sql>
 
@@ -161,6 +170,10 @@
             <if test="deadline!=null">
                #{deadline},
             </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+
         </trim>
     </sql>
 

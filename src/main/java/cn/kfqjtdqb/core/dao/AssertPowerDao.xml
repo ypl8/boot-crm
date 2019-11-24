@@ -8,7 +8,10 @@
                 property_leasing_num like "%" #{property_leasing_num}"%"
             </if>
             <if test="assert_num != null">
-              and  assert_num like "%" #{assert_num}"%"
+                and assert_num like "%" #{assert_num}"%"
+            </if>
+            <if test="status != null">
+                and status = #{status}
             </if>
         </where>
     </sql>
@@ -20,10 +23,12 @@
         assert_num,
         power_num,
         powermeter_num,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_power
         <include refid="selectAssertPowerListWhere"/>
+        order by power_num  desc
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>
@@ -31,13 +36,18 @@
 
     <select id="selectAssertPowerListCount" parameterType="assertPower" resultType="int">
         select count(*)
-        from t_assert_Power
+        from t_assert_power
         <include refid="selectAssertPowerListWhere"/>
     </select>
 
     <select id="getAssertPowerById" parameterType="long" resultType="assertPower">
-		select * from t_assert_Power where id= #{id}
+		select * from t_assert_power where id= #{id}
 	</select>
+
+
+    <select id="getMaxPowerNum"  resultType="BigDecimal">
+        select max(power_num) as maxPower from  t_assert_Power where  status=30
+    </select>
 
 
     <!--<select id="getAssertPowerByLeasingNum" parameterType="String" resultType="AssertPower">
@@ -78,6 +88,9 @@
             <if test="deadline!=null">
                 deadline=#{deadline},
             </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
 
 
         </set>
@@ -104,6 +117,9 @@
             <if test="deadline!=null">
                 deadline,
             </if>
+            <if test="status!=null">
+                status,
+            </if>
 
         </trim>
     </sql>
@@ -126,7 +142,9 @@
             <if test="deadline!=null">
                 #{deadline},
             </if>
-
+            <if test="status!=null">
+               #{status},
+            </if>
         </trim>
     </sql>
 

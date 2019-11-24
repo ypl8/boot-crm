@@ -8,10 +8,13 @@
                 property_leasing_num like "%" #{property_leasing_num}"%"
             </if>
             <if test="assert_num != null">
-               and  assert_num like "%" #{assert_num}"%"
+                and assert_num like "%" #{assert_num}"%"
             </if>
             <if test="state != null">
                 and state = #{state}
+            </if>
+            <if test="status != null">
+                and status = #{status}
             </if>
         </where>
     </sql>
@@ -29,7 +32,8 @@
         state,
         powermeter_num,
         power_rent_recivied,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_power_rent
         <include refid="selectAssertPowerRentListWhere"/>
@@ -49,14 +53,14 @@
 	</select>
 
 
-
     <select id="getAssertPowerRentByLeasingNum" parameterType="String" resultType="assertPowerRent">
 		select * from t_assert_power_rent where property_leasing_num= #{property_leasing_num}
 	</select>
 
-    <select id="getAssertPowerRentCountByLeasingNum" parameterType="assertPowerRent" resultType="java.math.BigDecimal" >
-		select sum(reality_power_rent) from t_assert_power_rent  <include refid="selectAssertPowerRentListWhere"/>
-	</select>
+    <select id="getAssertPowerRentCountByLeasingNum" parameterType="assertPowerRent" resultType="java.math.BigDecimal">
+        select sum(reality_power_rent) from t_assert_power_rent
+        <include refid="selectAssertPowerRentListWhere"/>
+    </select>
 
     <sql id="updateAssertPowerRentWhere">
         <where>
@@ -113,7 +117,9 @@
             <if test="deadline!=null">
                 deadline=#{deadline},
             </if>
-
+            <if test="status!=null">
+                status=#{status},
+            </if>
 
         </set>
 
@@ -162,6 +168,9 @@
             <if test="deadline!=null">
                 deadline,
             </if>
+            <if test="status!=null">
+                status,
+            </if>
         </trim>
     </sql>
 
@@ -182,7 +191,7 @@
                 #{rent_end_time},
             </if>
             <if test="power_num!=null">
-              #{power_num},
+                #{power_num},
             </if>
 
             <if test="power_rent!=null">
@@ -198,7 +207,7 @@
             </if>
 
             <if test="power_rent_recivied!=null">
-              #{power_rent_recivied},
+                #{power_rent_recivied},
             </if>
             <if test="powermeter_num!=null">
                 #{powermeter_num},
@@ -207,7 +216,9 @@
             <if test="deadline!=null">
                 #{deadline},
             </if>
-
+            <if test="status!=null">
+                #{status},
+            </if>
         </trim>
     </sql>
 

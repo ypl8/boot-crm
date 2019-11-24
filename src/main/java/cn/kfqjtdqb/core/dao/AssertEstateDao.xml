@@ -10,6 +10,9 @@
             <if test="state != null">
                 and state = #{state}
             </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
         </where>
     </sql>
 
@@ -23,7 +26,8 @@
         reality_estate,
         state,
         estate_recivied,
-        deadline
+        deadline,
+        status
         FROM
         t_assert_estate
         <include refid="selectAssertEstateListWhere"/>
@@ -92,6 +96,9 @@
             <if test="deadline!=null">
                 deadline=#{deadline},
             </if>
+            <if test="status!=null">
+                status=#{status},
+            </if>
 
         </set>
 
@@ -128,6 +135,10 @@
                 deadline,
             </if>
 
+            <if test="status!=null">
+                status,
+            </if>
+
         </trim>
     </sql>
 
@@ -159,6 +170,10 @@
             <if test="deadline!=null">
                 #{deadline},
             </if>
+            <if test="status!=null">
+                #{status},
+            </if>
+
         </trim>
     </sql>
 

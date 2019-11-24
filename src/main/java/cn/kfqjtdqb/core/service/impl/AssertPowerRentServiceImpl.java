@@ -20,7 +20,7 @@ public class AssertPowerRentServiceImpl implements AssertPowerRentService {
     private AssertPowerRentDao assertPowerRentDao;
 
     @Override
-    public Page<AssertPowerRent> selectAssertPowerRentList(Integer page, Integer rows, String property_leasing_num, String assert_num,String state) {
+    public Page<AssertPowerRent> selectAssertPowerRentList(Integer page, Integer rows, String property_leasing_num, String assert_num,String state,String status) {
         AssertPowerRent AssertPowerRent = new AssertPowerRent();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -32,6 +32,10 @@ public class AssertPowerRentServiceImpl implements AssertPowerRentService {
         }
         if (StringUtils.isNotBlank(assert_num)) {
             AssertPowerRent.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            AssertPowerRent.setStatus(status);
         }
 
         //当前页
@@ -87,7 +91,7 @@ public class AssertPowerRentServiceImpl implements AssertPowerRentService {
     }
 
     @Override
-    public List<AssertPowerRent> selectAssertPowerRentList(String property_leasing_num, String assert_num, String state) {
+    public List<AssertPowerRent> selectAssertPowerRentList(String property_leasing_num, String assert_num, String state,String status) {
         AssertPowerRent AssertPowerRent = new AssertPowerRent();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -99,6 +103,10 @@ public class AssertPowerRentServiceImpl implements AssertPowerRentService {
         }
         if (StringUtils.isNotBlank(assert_num)) {
             AssertPowerRent.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            AssertPowerRent.setStatus(status);
         }
         List<AssertPowerRent> AssertPowerRents = assertPowerRentDao.selectAssertPowerRentList(AssertPowerRent);
         return AssertPowerRents;

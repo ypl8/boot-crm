@@ -7,7 +7,7 @@ import cn.kfqjtdqb.core.bean.AssertInfol;
 import java.util.List;
 
 public interface AssertDepositService {
-    Page<AssertDeposit> findAssertDepositList(Integer page, Integer rows, String property_leasing_num, String state);
+    Page<AssertDeposit> findAssertDepositList(Integer page, Integer rows, String property_leasing_num, String state,String status);
 
     AssertDeposit getAssertDepositById(Long id);
 

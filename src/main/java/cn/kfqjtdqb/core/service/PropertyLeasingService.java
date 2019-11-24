@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface PropertyLeasingService {
 
-    Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type);
+    Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type,String status);
 
     PropertyLeasing getPropertyLeasingById(Long id);
 

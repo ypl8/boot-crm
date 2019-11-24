@@ -1,5 +1,6 @@
 package cn.kfqjtdqb.core.service.impl;
 
+import cn.kfqjtdqb.common.utils.ConstUtils;
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.Role;
 import cn.kfqjtdqb.core.bean.UserInfo;
@@ -89,7 +90,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         UserInfo userInfo = new UserInfo();
         userInfo.setUserName(userName);
         userInfo.setPassword(password);
-        userInfo.setStatus("23");
+        userInfo.setStatus(ConstUtils.USERSTATESUCCESS);
         userInfo = userInfoDao.findUserByUserName(userInfo);
         return userInfo;
     }

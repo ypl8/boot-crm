@@ -20,12 +20,25 @@ public class AssertPower implements Serializable {
     private BigDecimal power_num;
     @NotNull
     private String powermeter_num;
+
+    private String status;
+
+
     @NotNull
     @DateTimeFormat(pattern="yyyyMMdd")
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date deadline;
     private Integer start;
     private Integer rows;
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Integer getStart() {
         return start;

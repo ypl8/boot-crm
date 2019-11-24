@@ -21,7 +21,7 @@
     	<script type="text/javascript">
 		function gotoUrl(url){
 		if(url!=null&&""!=url){
-		window.location.href="${pageContext.request.contextPath}/"+"${url}";
+		window.location.href="${pageContext.request.contextPath}"+"${url}";
 		}else{
 		window.history.back();
 		}

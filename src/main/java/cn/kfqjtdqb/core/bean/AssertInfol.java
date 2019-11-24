@@ -1,6 +1,8 @@
 package cn.kfqjtdqb.core.bean;
 
 
+import org.hibernate.validator.constraints.NotBlank;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -16,31 +18,39 @@ public class AssertInfol implements Serializable {
     @NotNull
     @Size(min = 0, max = 64)
     private String assert_num;
-    @NotNull
+    @NotBlank
     private String card_num;
-    @NotNull
+    @NotBlank
     private String community_name;
-    @NotNull
+    @NotBlank
     private String building_num;
-    @NotNull
+    @NotBlank
     private String room_number;
     @NotNull
     @Min(0)
     private Double floorage;
-    @NotNull
+    @NotBlank
     private String floor_state;
-    @NotNull
+    @NotBlank
     private String watermeter_num;
-    @NotNull
+    @NotBlank
     private String electricmeter_num;
-
+    @NotBlank
+    private  String  assertType;
     private String  property_leasing_num;
-
+    private String  status;
     private String remark;
     private Integer start;
     private Integer rows;
     private List<PropertyLeasing> propertyLeasings;
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public String getProperty_leasing_num() {
         return property_leasing_num;
@@ -163,6 +173,14 @@ public class AssertInfol implements Serializable {
         this.propertyLeasings = propertyLeasings;
     }
 
+
+    public String getAssertType() {
+        return assertType;
+    }
+
+    public void setAssertType(String assertType) {
+        this.assertType = assertType;
+    }
 
     @Override
     public String toString() {

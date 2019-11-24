@@ -26,6 +26,18 @@ public class RentalVo implements Serializable {
     private String  day;
     private  String  state;
 
+    @DateTimeFormat(pattern="yyyyMMdd")
+    @JsonFormat(pattern = "yyyyMMdd", timezone="GMT+8")
+    private Date deadline;
+
+
+    public Date getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(Date deadline) {
+        this.deadline = deadline;
+    }
 
     public String getState() {
         return state;

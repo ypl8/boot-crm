@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service("assertWaterService")
@@ -19,7 +20,7 @@ public class AssertWaterServiceImpl implements AssertWaterService {
     private AssertWaterDao assertWaterDao;
 
     @Override
-    public Page<AssertWater> selectAssertWaterList(Integer page, Integer rows, String property_leasing_num, String assert_num) {
+    public Page<AssertWater> selectAssertWaterList(Integer page, Integer rows, String property_leasing_num, String assert_num,String status) {
         AssertWater AssertWater = new AssertWater();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -28,6 +29,9 @@ public class AssertWaterServiceImpl implements AssertWaterService {
 
         if (StringUtils.isNotBlank(assert_num)) {
             AssertWater.setAssert_num(assert_num);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            AssertWater.setStatus(status);
         }
         //当前页
         AssertWater.setStart((page - 1) * rows);
@@ -61,8 +65,10 @@ public class AssertWaterServiceImpl implements AssertWaterService {
         assertWaterDao.deleteAssertWater(id);
     }
 
+
+
     @Override
-    public List<AssertWater> selectAssertWaterListByAssertNum(String property_leasing_num, String assert_num) {
+    public List<AssertWater> selectAssertWaterListByAssertNum(String property_leasing_num, String assert_num, String status) {
         AssertWater assertWater = new AssertWater();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -72,6 +78,11 @@ public class AssertWaterServiceImpl implements AssertWaterService {
         if (StringUtils.isNotBlank(assert_num)) {
             assertWater.setAssert_num(assert_num);
         }
+
+        if (StringUtils.isNotBlank(status)) {
+            assertWater.setStatus(status);
+        }
+
         List<AssertWater> assertWaters = assertWaterDao.selectAssertWaterList(assertWater);
 
         return assertWaters;
@@ -85,6 +96,11 @@ public class AssertWaterServiceImpl implements AssertWaterService {
     @Override
     public void deleteAssertWaterByPropertyLeasingNum(String property_leasing_num) throws Exception {
         assertWaterDao.deleteAssertWaterByPropertyLeasingNum(property_leasing_num);
+    }
+
+    @Override
+    public BigDecimal getMaxWaterNum() {
+        return assertWaterDao.getMaxWaterNum();
     }
 
 

@@ -38,14 +38,14 @@
             <input name="userName" id="userName" type="text" value="用户名" onfocus="this.value=''"
                    onblur="if(this.value==''){this.value='用户名'}">
             <span id="password_text"
-                  onclick="this.style.display='none';document.getElementById('password').style.display='block';document.getElementById('password').focus().select();">密码</span>
+                  onclick="this.style.display='none';document.getElementById('password').style.display='block';">密码</span>
             <input name="password" type="password" id="password" style="display:none;"
                    onblur="if(this.value==''){document.getElementById('password_text').style.display='block';this.style.display='none'};"/>
             <input value="登录" style="width:100%;" type="submit">
             <span>${msg}</span>
         </form>
     </div>
-    <div class="copyright" style="margin-bottom: 100px">赣州市建控投资股份有限公司 版权所有©2019-2021 </div>
+    <div class="copyright" style="margin-bottom: 100px">赣州市建控投资股份有限公司版权所有©2019-2021 </div>
 </div>
 </body>
 </html>

@@ -7,7 +7,7 @@ import org.springframework.dao.DataAccessException;
 import java.util.List;
 
 public interface AssertLeasingService {
-    Page<AssertLeasing> selectAssertLeasingList(Integer page, Integer rows, String property_leasing_num, String assert_num);
+    Page<AssertLeasing> selectAssertLeasingList(Integer page, Integer rows, String property_leasing_num, String assert_num,String status);
 
     AssertLeasing getAssertLeasingById(Long id);
 

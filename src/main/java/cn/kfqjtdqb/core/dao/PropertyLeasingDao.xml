@@ -41,10 +41,13 @@
                 and property_leasing_type = #{property_leasing_type}
             </if>
 
+            <if test="status != null">
+                and status = #{status}
+            </if>
+
             <if test="powerState != null">
                 and powerState = #{powerState}
             </if>
-
 
 
             <if test="assert_num != null and property_leasing_num == null  ">
@@ -60,7 +63,7 @@
         monthly_rental,rent_free_period,rent_period,collect_rent_way,collect_rent_time,estate_charge_standard,
         estate_charge_month,deposit,deposit_time,water_rate,power_rate,collect_rate_way,collect_rate_way,
         rent_start_time,rent_end_time,property_leasing_state,remark,total_rent,community_name,depositState,rentalState,estateState,
-        waterState,powerState,property_leasing_type
+        waterState,powerState,property_leasing_type,status,idCard,phoneNumber
         FROM
         t_property_leasing
         <include refid="selectPropertyLeasingListWhere"/>
@@ -98,7 +101,7 @@
         <result property="power_rate" column="power_rate"/>
         <result property="collect_rate_way" column="collect_rate_way"/>
         <result property="rent_start_time" column="rent_start_time"/>
-
+        <result property="status" column="status"/>
         <result property="rent_start_time" column="rent_start_time"/>
         <result property="rent_end_time" column="rent_end_time"/>
         <result property="property_leasing_state" column="property_leasing_state"/>
@@ -108,6 +111,8 @@
         <result property="estateState" column="estateState"/>
         <result property="waterState" column="waterState"/>
         <result property="powerState" column="powerState"/>
+        <result property="idCard" column="idCard"/>
+        <result property="phoneNumber" column="phoneNumber"/>
         <result property="property_leasing_type" column="property_leasing_type"/>
         <collection property="assertInfols" column="property_leasing_num" ofType="AssertInfol"
                     select="cn.kfqjtdqb.core.dao.AssertInfolDao.findAssertInfolByNum">
@@ -309,9 +314,17 @@
             <if test="building_num!=null">
                 building_num=#{building_num},
             </if>
-
+            <if test="status != null">
+                status = #{status},
+            </if>
             <if test="property_leasing_type!=null">
-                property_leasing_type=#{property_leasing_type}
+                property_leasing_type=#{property_leasing_type},
+            </if>
+            <if test="idCard != null">
+                idCard = #{idCard},
+            </if>
+            <if test="phoneNumber!=null">
+                phoneNumber=#{phoneNumber},
             </if>
 
 
@@ -449,7 +462,16 @@
             <if test="property_leasing_type!=null">
                 property_leasing_type,
             </if>
+            <if test="status != null">
+                status ,
+            </if>
 
+            <if test="idCard!=null">
+                idCard,
+            </if>
+            <if test="phoneNumber != null">
+                phoneNumber ,
+            </if>
         </trim>
     </sql>
 
@@ -592,7 +614,17 @@
                 #{building_num},
             </if>
             <if test="property_leasing_type!=null">
-              #{property_leasing_type}
+              #{property_leasing_type},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+
+            <if test="idCard!=null">
+                #{idCard},
+            </if>
+            <if test="phoneNumber != null">
+                #{phoneNumber},
             </if>
         </trim>
     </sql>

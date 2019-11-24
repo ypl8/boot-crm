@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface AssertRentalService {
-    Page<AssertRental> selectAssertRentalList(Integer page, Integer rows, String property_leasing_num, String  state);
+    Page<AssertRental> selectAssertRentalList(Integer page, Integer rows, String property_leasing_num, String  state,String status);
     AssertRental getAssertRentalById(Long id);
     void updateAssertRental(AssertRental assertRental);
     void deleteAssertRental(Long id);
@@ -16,5 +16,5 @@ public interface AssertRentalService {
     List<AssertRental>  getAssertRentalByLeasingNum(String property_leasing_num);
     BigDecimal getAssertRentalCountByLeasingNum(String property_leasing_num);   //统计已经提交的钱
     void deleteAssertRentalByPropertyLeasingNum(String property_leasing_num);
-    List<AssertRental> selectAssertRentalAllList(String property_leasing_num, String state);
+    List<AssertRental> selectAssertRentalAllList(String property_leasing_num, String state,String status);
 }

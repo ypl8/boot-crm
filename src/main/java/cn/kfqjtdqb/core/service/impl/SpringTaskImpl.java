@@ -9,6 +9,7 @@ import cn.kfqjtdqb.core.dao.AssertRentalDao;
 import cn.kfqjtdqb.core.dao.PropertyLeasingDao;
 import cn.kfqjtdqb.core.utils.DateUtils;
 import cn.kfqjtdqb.core.utils.RentUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import java.util.List;
 @Service
 public class SpringTaskImpl {
 
+    private final static Logger logger = Logger.getLogger(SendWsListener.class);
     @Autowired
     private PropertyLeasingDao propertyLeasingDao;
 
@@ -33,12 +35,14 @@ public class SpringTaskImpl {
 
     @Scheduled(cron = "0 0/1 0/1 1/1 1/1 ? ")
     public void task() {
+        logger.info("updateState");
         propertyLeasingDao.updateState();
     }
 
 
     @Scheduled(cron = "0 0 1 1 * ?")
     public void task2() {
+        logger.info("updateContractState");
         updateState();
     }
 

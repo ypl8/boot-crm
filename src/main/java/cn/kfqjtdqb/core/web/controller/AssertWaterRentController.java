@@ -4,17 +4,17 @@ import cn.kfqjtdqb.common.utils.ConstUtils;
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.common.utils.StringUtils;
 import cn.kfqjtdqb.core.bean.*;
+import cn.kfqjtdqb.core.service.*;
 import cn.kfqjtdqb.core.service.AssertWaterRentService;
-import cn.kfqjtdqb.core.service.AssertWaterRentService;
-import cn.kfqjtdqb.core.service.PropertyLeasingService;
-import cn.kfqjtdqb.core.service.SystemService;
-import cn.kfqjtdqb.core.utils.CSVUtils;
-import cn.kfqjtdqb.core.utils.DateUtils;
-import cn.kfqjtdqb.core.utils.ErrorUtils;
-import cn.kfqjtdqb.core.utils.RentUtils;
+import cn.kfqjtdqb.core.utils.*;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -42,9 +42,20 @@ public class AssertWaterRentController {
     @Autowired
     private PropertyLeasingService propertyLeasingService;
 
+    @Autowired
+    private ActivitiService activitiService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+    @Autowired
+    private RuntimeService runtimeService;
+
+    private String processDefinitionKey = "assertWaterRental";
+
     @Value("${water.state.type}")
     private String STATE_TYPE;
-
+    @Value("${check.state.type}")
+    private String CHECK_STATE_TYPE;
 
     @RequestMapping(value = "/assertWaterRent")
     public String showAssertWaterRent() {
@@ -54,12 +65,15 @@ public class AssertWaterRentController {
     // 客户列表
     @RequestMapping(value = "/assertWaterRent/list")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                       String property_leasing_num, String state, String assert_num, Model model) {
+                       String property_leasing_num, String state, String assert_num, Model model,String status) {
 
-        Page<AssertWaterRent> AssertWaterRentList = AssertWaterRentService.selectAssertWaterRentList(page, rows, property_leasing_num, assert_num, state);
+        Page<AssertWaterRent> AssertWaterRentList = AssertWaterRentService.selectAssertWaterRentList(page, rows, property_leasing_num, assert_num, state,status);
         model.addAttribute("page", AssertWaterRentList);
         List<BaseDict> stateType = systemService.findBaseDictListByType(STATE_TYPE);
         model.addAttribute("stateType", stateType);
+        List<BaseDict> checkType = systemService.findBaseDictListByType(CHECK_STATE_TYPE);
+        model.addAttribute("checkType", checkType);
+        model.addAttribute("status", status);
         //参数回显
         model.addAttribute("state", state);
         model.addAttribute("assert_num", assert_num);
@@ -99,6 +113,7 @@ public class AssertWaterRentController {
                 assertWaterRent.setState(ConstUtils.WATERSTATEFAIL);
                 propertyLeasing.setWaterState(ConstUtils.WATERSTATEFAIL);
             }
+            assertWaterRent.setStatus(ConstUtils.CheckUNCOMINT);
             AssertWaterRentService.updateAssertWaterRent(assertWaterRent);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);   //存在问题
         } catch (DataAccessException e) {
@@ -118,6 +133,102 @@ public class AssertWaterRentController {
         AssertWaterRentService.deleteAssertWaterRent(id);
         return "OK";
     }
+
+
+    @RequestMapping("/assertWaterRent/changeState")
+    @ResponseBody
+    public ResultCode changeState(Long id, String comment_state , @RequestParam(defaultValue = "") String comment) {
+        String status = comment_state;
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+
+            // String processDefinitionKey = "assert";  //第一个版本
+
+
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+
+           /* AssertWaterRent assertWaterRent = AssertWaterRentService.getAssertWaterRentById(id);
+            assertWaterRent.setStatus(status);
+            AssertWaterRentService.updateAssertWaterRent(assertWaterRent);*/
+
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), status, pi.getId(), comment);
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setMsg(e.getMessage());
+            resultCode.setCode(-1);
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("操作成功");
+
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertWaterRent/submit")
+    @ResponseBody
+    public ResultCode submit(Long id) {
+
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+            activitiService.startProcesser(id, processDefinitionKey, userInfo.getId());  //开启流程
+            AssertWaterRent assertWaterRent = AssertWaterRentService.getAssertWaterRentById(id);
+            assertWaterRent.setStatus(ConstUtils.CheckING);  //表示的是已经提交状态
+            AssertWaterRentService.updateAssertWaterRent(assertWaterRent);
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), pi.getId(), "水费申请");
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("提交成功");
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertWaterRent/getComments")
+    @ResponseBody
+    public ResultCode getComment(Long id) {
+
+        ResultCode resultCode = new ResultCode();
+
+        List<Comment> data = null;
+        try {
+            data = activitiService.getProcessComments(id,processDefinitionKey);
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setData(data);
+        resultCode.setMsg("查询成功");
+
+        return resultCode;
+    }
+
 
 
     /**
@@ -146,6 +257,7 @@ public class AssertWaterRentController {
                 assertWaterRent.setState(ConstUtils.WATERSTATEFAIL);
                 propertyLeasing.setWaterState(ConstUtils.WATERSTATEFAIL);
             }
+            assertWaterRent.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);   //存在问题
             int rows = AssertWaterRentService.createAssertWaterRent(assertWaterRent);
             if (rows > 0) {
@@ -216,9 +328,9 @@ public class AssertWaterRentController {
 
     @RequestMapping("/assertWaterRent/downloadWaterRent")
     public void downloadWaterRent(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
-            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String state , @RequestParam  String property_leasing_num,@RequestParam String assert_num) {
+            page, @RequestParam(defaultValue = "10") Integer rows, @RequestParam   String state , @RequestParam  String property_leasing_num,@RequestParam String assert_num,String status) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        Page<AssertWaterRent> assertWaterRentPage = AssertWaterRentService.selectAssertWaterRentList(page, rows,property_leasing_num,assert_num,state);
+        Page<AssertWaterRent> assertWaterRentPage = AssertWaterRentService.selectAssertWaterRentList(page, rows,property_leasing_num,assert_num,state,status);
         //定义csv文件名称
         String csvFileName = "水费信息表";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
@@ -246,9 +358,9 @@ public class AssertWaterRentController {
 
 
     @RequestMapping("/assertWaterRent/downloadWaterRentAll")
-    public void downloadWaterRentAll(HttpServletResponse response, @RequestParam   String state , @RequestParam  String property_leasing_num, @RequestParam String assert_num) {
+    public void downloadWaterRentAll(HttpServletResponse response, @RequestParam   String state , @RequestParam  String property_leasing_num, @RequestParam String assert_num,String status) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        List<AssertWaterRent> assertWaterRents = AssertWaterRentService.selectAssertWaterRentList(property_leasing_num,assert_num,state);
+        List<AssertWaterRent> assertWaterRents = AssertWaterRentService.selectAssertWaterRentList(property_leasing_num,assert_num,state,status);
         //定义csv文件名称
         String csvFileName = "水费信息表";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");

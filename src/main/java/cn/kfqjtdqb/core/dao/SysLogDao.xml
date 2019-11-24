@@ -15,20 +15,20 @@
 		</where>
 	</sql>
 
-	<select id="selectSysLogList" parameterType="sysLog" resultType="sysLog">
+	<select id="selectSysLogList" parameterType="syslog" resultType="syslog">
 		SELECT
 		   *
 		FROM
-		sysLog
+		syslog
 		<include refid="selectSysLogWhere"/>
 		<if test="start !=null and rows != null">
 			limit #{start},#{rows}
 		</if>
 	</select>
 
-	<select id="selectSysLogListCount" parameterType="sysLog" resultType="int">
+	<select id="selectSysLogListCount" parameterType="syslog" resultType="int">
 		select count(*)
-		from sysLog
+		from syslog
 		<include refid="selectSysLogWhere"/>
 	</select>
 
@@ -76,8 +76,8 @@
 	</sql>
 
 
-	<insert id="addSysLog" parameterType="sysLog">
-		insert into sysLog(<include refid="key"></include>) values(<include refid="value"></include>)
+	<insert id="addSysLog" parameterType="syslog">
+		insert into syslog(<include refid="key"></include>) values(<include refid="value"></include>)
 	</insert>
 
 

@@ -2,6 +2,7 @@ package cn.kfqjtdqb.core.bean;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.Min;
@@ -17,16 +18,16 @@ import java.util.List;
 public class PropertyLeasing implements Serializable {
 
     private Long id;
-    @NotNull
+    @NotBlank
     private String property_leasing_num;
-    @NotNull
+    @NotBlank
     private String tenant;
 
-    @NotNull
+    @NotBlank
     private String building_num;
-    @NotNull
+    @NotBlank
     private String rentalLocation;
-    @NotNull
+    @NotBlank
     private String community_name;
     @NotNull
     @Min(0)
@@ -35,17 +36,17 @@ public class PropertyLeasing implements Serializable {
     @DateTimeFormat(pattern = "yyyyMMdd")
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date sign_in_time;
-    @NotNull
+    @NotBlank
     private String rent_charge_standard;
-    @NotNull
+    @NotBlank
     private String monthly_rental;
-    @NotNull
+    @NotBlank
     private Integer rent_free_period;
-    @NotNull
+    @NotBlank
     private Integer rent_period;
-    @NotNull
+    @NotBlank
     private String collect_rent_way;
-    @NotNull
+    @NotBlank
     private String collect_rent_time;
     @NotNull
     @Min(0)
@@ -76,9 +77,14 @@ public class PropertyLeasing implements Serializable {
     @DateTimeFormat(pattern = "yyyyMMdd")
     @JsonFormat(pattern = "yyyyMMdd", timezone = "GMT+8")
     private Date rent_end_time;
-    @NotNull
+    @NotBlank
     private String property_leasing_state; // 合同的状态
-    @NotNull
+
+    @NotBlank
+    private  String  idCard;
+    @NotBlank
+    private  String  phoneNumber;
+
     private String remark;
     private String property_leasing_type;
     private String depositState;
@@ -86,13 +92,15 @@ public class PropertyLeasing implements Serializable {
     private String estateState;
     private String waterState;
     private String powerState;
-    @Min(0)
+
+
+
     private Double total_rent;  //总共租金
     private List<AssertInfol> assertInfols;  //对应的资源列表
     private Integer start;
     private Integer rows;
-
     private String assert_num;
+    private  String  status;
 
     public String getAssert_num() {
         return assert_num;
@@ -392,6 +400,31 @@ public class PropertyLeasing implements Serializable {
 
     public void setPower_rate(BigDecimal power_rate) {
         this.power_rate = power_rate;
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getIdCard() {
+        return idCard;
+    }
+
+    public void setIdCard(String idCard) {
+        this.idCard = idCard;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
     @Override

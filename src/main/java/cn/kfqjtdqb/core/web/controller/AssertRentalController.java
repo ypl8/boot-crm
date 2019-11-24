@@ -4,13 +4,15 @@ import cn.kfqjtdqb.common.utils.ConstUtils;
 import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.service.*;
-import cn.kfqjtdqb.core.utils.BigDecimalUtils;
-import cn.kfqjtdqb.core.utils.CSVUtils;
-import cn.kfqjtdqb.core.utils.ErrorUtils;
-import cn.kfqjtdqb.core.utils.RentUtils;
+import cn.kfqjtdqb.core.utils.*;
+import org.activiti.engine.RuntimeService;
+import org.activiti.engine.runtime.ProcessInstance;
+import org.activiti.engine.task.Comment;
+import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -40,9 +42,23 @@ public class AssertRentalController {
 
     @Autowired
     private TotalRentalService totalRentalService;
+
+
+    @Autowired
+    private ActivitiService activitiService;
+
+    @Autowired
+    private UserInfoService userInfoService;
+    @Autowired
+    private RuntimeService runtimeService;
+
+
+    private String processDefinitionKey = "rental";
     @Value("${rental.state.type}")
     private String STATE_TYPE;
 
+    @Value("${check.state.type}")
+    private String CHECK_STATE_TYPE;
 
     @RequestMapping(value = "/assertRental")
     public String showAssertRental() {
@@ -52,16 +68,19 @@ public class AssertRentalController {
     // 客户列表
     @RequestMapping(value = "/assertRental/list")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                       String property_leasing_num, String state, Model model) {
+                       String property_leasing_num, String state, Model model,String status) {
 
-        Page<AssertRental> assertRentalList = assertRentalService.selectAssertRentalList(page, rows, property_leasing_num, state);
+        Page<AssertRental> assertRentalList = assertRentalService.selectAssertRentalList(page, rows, property_leasing_num, state,status);
         model.addAttribute("page", assertRentalList);
         List<BaseDict> stateType = systemService.findBaseDictListByType(STATE_TYPE);
         model.addAttribute("stateType", stateType);
-        model.addAttribute("state", state);
+        List<BaseDict> checkType = systemService.findBaseDictListByType(CHECK_STATE_TYPE);
+        model.addAttribute("checkType", checkType);
 
         //参数回显
         model.addAttribute("property_leasing_num", property_leasing_num);
+        model.addAttribute("state", state);
+        model.addAttribute("status", status);
         return "assertRental";
     }
 
@@ -83,6 +102,8 @@ public class AssertRentalController {
                 results.add(totalRentals.get(i));
             }
         }*/
+
+        rentalVo.setDeadline(assertRental.getDeadline());
         rentalVo.setState(assertRental.getState());
         rentalVo.setTotalRentals(totalRentals);
         rentalVo.setRent_start_time(assertRental.getRent_start_time());
@@ -115,6 +136,7 @@ public class AssertRentalController {
                 assertRental.setState(ConstUtils.RENTALSTATEFAIL);
                 propertyLeasing.setRentalState(ConstUtils.RENTALSTATEFAIL);
             }
+            assertRental.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             assertRentalService.updateAssertRental(assertRental);
             TotalRental totalRental = new TotalRental();
@@ -163,17 +185,18 @@ public class AssertRentalController {
                 assertRental.setState(ConstUtils.RENTALSTATEFAIL);
                 propertyLeasing.setRentalState(ConstUtils.RENTALSTATEFAIL);
             }
+            assertRental.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = assertRentalService.createAssertRental(assertRental);
             if (rows > 0) {
-                TotalRental totalRental = new TotalRental();
+               /* TotalRental totalRental = new TotalRental();
                 totalRental.setProperty_leasing_num(property_leasing_num);
                 totalRental.setId(Long.parseLong(assertRental.getYear_months()));
-                totalRental.setReality_rental(assertRental.getReality_rental());
+                *//*      totalRental.setReality_rental(assertRental.getReality_rental());*//*
                 totalRental.setDeadline(assertRental.getDeadline());
                 TotalRental totalRental1 = totalRentalService.getTotalRentalById(Long.parseLong(assertRental.getYear_months()));
                 totalRental.setReality_rental(totalRental1.getReality_rental().add(assertRental.getReality_rental()));
-                totalRentalService.updateTotalRental(totalRental);
+                totalRentalService.updateTotalRental(totalRental);*/
                 resultCode.setCode(0);
                 resultCode.setMsg("租金创建成功");
                 return resultCode;
@@ -211,11 +234,12 @@ public class AssertRentalController {
                 assertRental.setState(ConstUtils.RENTALSTATEFAIL);
                 propertyLeasing.setRentalState(ConstUtils.RENTALSTATEFAIL);
             }
+            assertRental.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = assertRentalService.createAssertRental(assertRental);
 
             if (rows > 0) {
-                BigDecimal realityRental = assertRental.getReality_rental();
+               /* BigDecimal realityRental = assertRental.getReality_rental();
                 List<TotalRental> totalRentals = totalRentalService.getTotalRentalByLeasingNum(property_leasing_num);
 
                 for (int i = 0; i < totalRentals.size(); i++) {
@@ -234,7 +258,7 @@ public class AssertRentalController {
                         }
                     }
 
-                }
+                }*/
                /* TotalRental totalRental = new TotalRental();
                 totalRental.setProperty_leasing_num(property_leasing_num);
                 totalRental.setId(Long.parseLong(assertRental.getYear_months()));
@@ -253,6 +277,132 @@ public class AssertRentalController {
             resultCode.setMsg(e.getMessage());
             return resultCode;
         }
+    }
+
+
+    @RequestMapping("/assertRental/changeState")
+    @ResponseBody
+    public ResultCode changeState(Long id, String comment_state, @RequestParam(defaultValue = "") String comment) {
+        String status = comment_state;
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+
+            // String processDefinitionKey = "assert";  //第一个版本
+
+            AssertRental assertRental = assertRentalService.getAssertRentalById(id);
+
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+
+         /*   AssertRental assertRental = assertRentalService.getAssertRentalById(id);
+            assertRental.setStatus(status);
+            assertRentalService.updateAssertRental(assertRental);*/
+
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), status, pi.getId(), comment);
+                    if(ConstUtils.CheckPASS.equals(status)){
+                       /* TotalRental totalRental = new TotalRental();
+                        totalRental.setProperty_leasing_num(assertRental.getProperty_leasing_num());
+                        totalRental.setId(Long.parseLong(assertRental.getYear_months()));
+                        *//*      totalRental.setReality_rental(assertRental.getReality_rental());*//*
+                        totalRental.setDeadline(assertRental.getDeadline());
+                        TotalRental totalRental1 = totalRentalService.getTotalRentalById(Long.parseLong(assertRental.getYear_months()));
+                        totalRental.setReality_rental(totalRental1.getReality_rental().add(assertRental.getReality_rental()));
+                        totalRentalService.updateTotalRental(totalRental);*/
+                        BigDecimal realityRental = assertRental.getReality_rental();
+                        List<TotalRental> totalRentals = totalRentalService.getTotalRentalByLeasingNum(assertRental.getProperty_leasing_num());
+
+                        for (int i = 0; i < totalRentals.size(); i++) {
+                            if (totalRentals.get(i).getRental().compareTo(totalRentals.get(i).getReality_rental()) > 0) {  //表示的是应该收的租金 大于租金。
+                                BigDecimal different = totalRentals.get(i).getRental().subtract(totalRentals.get(i).getReality_rental());  //表示的应该收的金额减去本次收的金额  就是当前月份应该收的金额
+                                if (realityRental.compareTo(different) <= 0) {
+                                    totalRentals.get(i).setDeadline(assertRental.getDeadline());
+                                    totalRentals.get(i).setReality_rental(totalRentals.get(i).getReality_rental().add(realityRental));
+                                    totalRentalService.updateTotalRental(totalRentals.get(i));
+                                    break;
+                                } else {
+                                    totalRentals.get(i).setDeadline(assertRental.getDeadline());
+                                    totalRentals.get(i).setReality_rental(totalRentals.get(i).getRental());
+                                    totalRentalService.updateTotalRental(totalRentals.get(i));
+                                    realityRental = realityRental.subtract(different);
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setMsg(e.getMessage());
+            resultCode.setCode(-1);
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("操作成功");
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertRental/submit")
+    @ResponseBody
+    public ResultCode submit(Long id) {
+
+        ResultCode resultCode = new ResultCode();
+        try {
+            UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+            UserInfo userInfo = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+            activitiService.startProcesser(id, processDefinitionKey, userInfo.getId());  //开启流程
+            AssertRental assertRental = assertRentalService.getAssertRentalById(id);
+            assertRental.setStatus(ConstUtils.CheckING);
+            assertRentalService.updateAssertRental(assertRental);
+            List<Task> tasks = activitiService.findTaskByUserId(userInfo.getId().toString(), processDefinitionKey);
+            for (Task task : tasks) {
+                //2  通过任务对象获取流程实例
+                ProcessInstance pi = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
+                //3 通过流程实例获取“业务键”
+                String businessKey = pi.getBusinessKey();
+                if (businessKey != null && id.toString().equals(businessKey)) {
+                    activitiService.completeTask(userInfo.getId().toString(), task.getId(), pi.getId(), "租金申请");
+                }
+            }
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setMsg("提交成功");
+        return resultCode;
+    }
+
+
+    @RequestMapping("/assertRental/getComments")
+    @ResponseBody
+    public ResultCode getComment(Long id) {
+
+        ResultCode resultCode = new ResultCode();
+
+        List<Comment> data = null;
+        try {
+            data = activitiService.getProcessComments(id, processDefinitionKey);
+        } catch (Exception e) {
+            resultCode.setCode(-1);
+            resultCode.setMsg(e.getMessage());
+            return resultCode;
+        }
+        resultCode.setCode(0);
+        resultCode.setData(data);
+        resultCode.setMsg("查询成功");
+
+        return resultCode;
     }
 
 
@@ -286,9 +436,9 @@ public class AssertRentalController {
     @RequestMapping("/assertRental/downloadAssertRental")
     public void downloadAssertRental(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
             page, @RequestParam(defaultValue = "10") Integer rows,
-                                     String property_leasing_num, String state) {
+                                     String property_leasing_num, String state,String status) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        Page<AssertRental> assertRentalList = assertRentalService.selectAssertRentalList(page, rows, property_leasing_num, state);
+        Page<AssertRental> assertRentalList = assertRentalService.selectAssertRentalList(page, rows, property_leasing_num, state,status);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         //定义csv文件名称
         String csvFileName = "租金收入信息表";
@@ -317,9 +467,9 @@ public class AssertRentalController {
     @RequestMapping("/assertRental/downloadAssertRentalAll")
     public void downloadAssertRentalAll(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer
             page, @RequestParam(defaultValue = "10") Integer rows,
-                                        String property_leasing_num, String state) {
+                                        String property_leasing_num, String state,String status) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        List<AssertRental> assertRentalList = assertRentalService.selectAssertRentalAllList(property_leasing_num, state);
+        List<AssertRental> assertRentalList = assertRentalService.selectAssertRentalAllList(property_leasing_num, state,status);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         //定义csv文件名称
         String csvFileName = "租金收入信息表";

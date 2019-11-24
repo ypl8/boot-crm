@@ -20,7 +20,7 @@ public class AssertWaterRentServiceImpl implements AssertWaterRentService {
     private AssertWaterRentDao assertWaterRentDao;
 
     @Override
-    public Page<AssertWaterRent> selectAssertWaterRentList(Integer page, Integer rows, String property_leasing_num, String assert_num,String state) {
+    public Page<AssertWaterRent> selectAssertWaterRentList(Integer page, Integer rows, String property_leasing_num, String assert_num,String state,String status) {
         AssertWaterRent AssertWaterRent = new AssertWaterRent();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -32,6 +32,9 @@ public class AssertWaterRentServiceImpl implements AssertWaterRentService {
         }
         if (StringUtils.isNotBlank(assert_num)) {
             AssertWaterRent.setAssert_num(assert_num);
+        }
+        if (StringUtils.isNotBlank(status)) {
+            AssertWaterRent.setStatus(status);
         }
 
         //当前页
@@ -87,7 +90,7 @@ public class AssertWaterRentServiceImpl implements AssertWaterRentService {
     }
 
     @Override
-    public List<AssertWaterRent> selectAssertWaterRentList(String property_leasing_num, String assert_num, String state) {
+    public List<AssertWaterRent> selectAssertWaterRentList(String property_leasing_num, String assert_num, String state,String status) {
         AssertWaterRent AssertWaterRent = new AssertWaterRent();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -97,6 +100,10 @@ public class AssertWaterRentServiceImpl implements AssertWaterRentService {
         if (StringUtils.isNotBlank(state)) {
             AssertWaterRent.setState(state);
         }
+        if (StringUtils.isNotBlank(status)) {
+            AssertWaterRent.setStatus(status);
+        }
+
         if (StringUtils.isNotBlank(assert_num)) {
             AssertWaterRent.setAssert_num(assert_num);
         }

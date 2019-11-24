@@ -4,12 +4,14 @@ import cn.kfqjtdqb.common.utils.Page;
 import cn.kfqjtdqb.core.bean.*;
 import cn.kfqjtdqb.core.service.SystemService;
 import cn.kfqjtdqb.core.service.UserInfoService;
+import cn.kfqjtdqb.core.utils.DgbSecurityUserHelper;
 import cn.kfqjtdqb.core.utils.ErrorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,6 +36,9 @@ public class UserInfoController {
 
     @Autowired
     private SystemService systemService;
+
+
+    /*  private IdentityService identityService;*/
 
     @Value("${userInfo.state.type}")
     private String STATE_TYPE;
@@ -66,7 +71,7 @@ public class UserInfoController {
         return "login";
     }
   /*  @RolesAllowed({"ADMIN"})*/
-   /*@Secured("ROLE_ADMIN")*/
+    /*@Secured("ROLE_ADMIN")*/
     /*
     @RequestMapping(value = "/userInfo/login",method = RequestMethod.POST)
     public String login(String userName, String password, Model model ,HttpSession session){
@@ -114,12 +119,17 @@ public class UserInfoController {
 
     @RequestMapping("/userInfo/updatePassword")
     @ResponseBody
-    public ResultCode updatePassword( UserInfo userInfo, Errors errors) {
+    public ResultCode updatePassword(UserInfo userInfo, Errors errors) {
         ResultCode resultCode = new ResultCode();
         if (errors.hasErrors()) {
             return ErrorUtils.getRsult(errors);
         }
         try {
+            if (userInfo.getId() == null) {
+                UserDetails userDetails = (UserDetails) DgbSecurityUserHelper.getCurrentPrincipal();
+                UserInfo our = userInfoService.findUser(userDetails.getUsername(), userDetails.getPassword());
+                userInfo.setId(our.getId());
+            }
             userInfoService.updateUserInfo(userInfo);
         } catch (DataAccessException e) {
             resultCode.setCode(-1);
@@ -144,7 +154,7 @@ public class UserInfoController {
      */
     @RequestMapping("/userInfo/create")
     @ResponseBody
-/*    @PreAuthorize("hasRole('ROLE_ADMIN')")*/
+    /*    @PreAuthorize("hasRole('ROLE_ADMIN')")*/
 
 
     public ResultCode createUserInfo(@Valid UserInfo userInfo, Errors errors) {
@@ -155,6 +165,8 @@ public class UserInfoController {
         try {
             int rows = userInfoService.createUserInfo(userInfo);
             if (rows > 0) {
+
+
                 resultCode.setCode(0);
                 resultCode.setMsg("用户信息创建成功");
                 return resultCode;
@@ -178,9 +190,9 @@ public class UserInfoController {
         List<Role> roleList = userInfoService.findOtherRole(id);
 
         ResultCode resultCode = new ResultCode();
-        Map map=new HashMap<String,Object>();
-        map.put("user",user);
-        map.put("roleList",roleList);
+        Map map = new HashMap<String, Object>();
+        map.put("user", user);
+        map.put("roleList", roleList);
         resultCode.setData(map);
         resultCode.setCode(0);
         return resultCode;
@@ -190,10 +202,10 @@ public class UserInfoController {
     @RequestMapping("/userInfo/addRoleToUser.action")
     @ResponseBody
     public ResultCode addRoleToUser(Long userId, Long roleId) {
-        ResultCode  resultCode=new ResultCode();
+        ResultCode resultCode = new ResultCode();
         try {
-            userInfoService.addRoleToUser(userId,roleId);
-        }catch (Exception e){
+            userInfoService.addRoleToUser(userId, roleId);
+        } catch (Exception e) {
             resultCode.setCode(-1);
             resultCode.setMsg(e.getMessage());
             return resultCode;
