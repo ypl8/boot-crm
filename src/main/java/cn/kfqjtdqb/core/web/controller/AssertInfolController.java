@@ -68,6 +68,7 @@ public class AssertInfolController {
     public final Log logger = LogFactory.getLog(LogAop.class);
 
 
+   // public static final String csv_assertInfol_upload_path = "D://java";
     public static final String csv_assertInfol_upload_path = "/home/csv/assertInfol";
     private static final String POINT_SUCCESS_URL = "/assertInfol/list.action";
     @Value("${floor.state.type}")
@@ -266,7 +267,7 @@ public class AssertInfolController {
 
         try {
             int rows = assertInfolService.createAssertInfol(assertInfol);
-            if (rows > 0) {
+            if (rows > 0||rows==-2147482646) {
                 /* taskService.complete(list.get(0).getId());*/
                 //  activitiService.startProcesser(assertInfol.getId());
 
@@ -401,6 +402,7 @@ public class AssertInfolController {
             File file = new File(url, fileName);
             uploadFile.transferTo(file);
             ArrayList<String[]> dateList = CSVUtils.csvReader(file);
+            List<AssertInfol> assertInfols=new ArrayList<AssertInfol>();
             //根据制定贷款线索csv文件表头含义，将字段逐个保存到实体中并保存到数据库
             for (int i = 0; i < dateList.size(); i++) {
                 String[] content = dateList.get(i);
@@ -414,10 +416,12 @@ public class AssertInfolController {
                 assertInfol.setFloor_state(content[7]);
                 assertInfol.setWatermeter_num(content[8]);
                 assertInfol.setElectricmeter_num(content[9]);
-                assertInfol.setRemark(content[10]);
+                assertInfol.setAssertType(content[10]);
+                assertInfol.setRemark(content[11]);
                 assertInfol.setStatus(ConstUtils.CheckUNCOMINT);
-                assertInfolService.createAssertInfol(assertInfol);
+                assertInfols.add(assertInfol);
             }
+            assertInfolService.createAssertInfolAll(assertInfols);
             String successMsg = "资产信息csv文件导入成功";
             mv.addObject("msg", successMsg);
             mv.addObject("url", POINT_SUCCESS_URL);
@@ -443,9 +447,9 @@ public class AssertInfolController {
         //定义csv文件名称
         String csvFileName = "资产信息表";
         //定义csv表头
-        String colNames = "序号,资产编号,产证编号,小区名称,栋号,房号/店面号,建筑面积,房屋状态,水表号,电表号,备注";
+        String colNames = "序号,资产编号,产证编号,小区名称,栋号,房号/店面号,建筑面积,房屋状态,水表号,电表号,资产类型,备注";
         //定义表头对应字段的key
-        String mapKey = "id,assert_num,card_num,community_name,building_num,room_number,floorage,floor_state,watermeter_num,electricmeter_num,remark";
+        String mapKey = "id,assert_num,card_num,community_name,building_num,room_number,floorage,floor_state,watermeter_num,electricmeter_num,assertType,remark";
         //遍历保存查询数据集到dataList中
         for (AssertInfol assertInfol : assertInfolList.getRows()) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -459,6 +463,7 @@ public class AssertInfolController {
             map.put("floor_state", assertInfol.getFloor_state());
             map.put("watermeter_num", assertInfol.getWatermeter_num());
             map.put("electricmeter_num", assertInfol.getElectricmeter_num());
+            map.put("assertType", assertInfol.getAssertType());
             map.put("remark", assertInfol.getRemark());
             dataList.add(map);
         }
@@ -482,9 +487,9 @@ public class AssertInfolController {
         //定义csv文件名称
         String csvFileName = "资产信息表";
         //定义csv表头
-        String colNames = "序号,资产编号,产证编号,小区名称,栋号,房号/店面号,建筑面积,房屋状态,水表号,电表号,备注";
+        String colNames = "序号,资产编号,产证编号,小区名称,栋号,房号/店面号,建筑面积,房屋状态,水表号,电表号,资产类型,备注";
         //定义表头对应字段的key
-        String mapKey = "id,assert_num,card_num,community_name,building_num,room_number,floorage,floor_state,watermeter_num,electricmeter_num,remark";
+        String mapKey = "id,assert_num,card_num,community_name,building_num,room_number,floorage,floor_state,watermeter_num,electricmeter_num,assertType,remark";
         //遍历保存查询数据集到dataList中
         for (AssertInfol assertInfol : assertInfolList) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -498,6 +503,7 @@ public class AssertInfolController {
             map.put("floor_state", assertInfol.getFloor_state());
             map.put("watermeter_num", assertInfol.getWatermeter_num());
             map.put("electricmeter_num", assertInfol.getElectricmeter_num());
+            map.put("assertType", assertInfol.getAssertType());
             map.put("remark", assertInfol.getRemark());
             dataList.add(map);
         }

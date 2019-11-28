@@ -154,7 +154,7 @@ public class AssertPowerController {
         }
         try {
             int rows = assertPowerService.createAssertPower(assertPower);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 PropertyLeasing propertyLeasing = new PropertyLeasing();
                 propertyLeasing.setProperty_leasing_num(assertPower.getProperty_leasing_num());
                 if (isAssertPower(assertPower.getProperty_leasing_num(), assertPower.getAssert_num())) {

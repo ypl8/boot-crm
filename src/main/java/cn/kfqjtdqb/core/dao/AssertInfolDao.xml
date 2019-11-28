@@ -20,7 +20,8 @@
                 and community_name like "%" #{community_name}"%"
             </if>
             <if test="property_leasing_num != null and assert_num == null">
-                and  assert_num  in (select  assert_num  from  t_assert_leasing where property_leasing_num=#{property_leasing_num})
+                and assert_num in (select assert_num from t_assert_leasing where
+                property_leasing_num=#{property_leasing_num})
             </if>
         </where>
     </sql>
@@ -43,7 +44,7 @@
         FROM
         t_assert_infol
         <include refid="selectAssertInfolListWhere"/>
-        order  by community_name ,building_num , room_number
+        order by community_name ,building_num , room_number
         <if test="start !=null and rows != null">
             limit #{start},#{rows}
         </if>
@@ -58,7 +59,7 @@
     <select id="selectAssertInfolTotalList" parameterType="assertInfol" resultType="assertInfolTotal">
         select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
         count(floor_state='2' or null) as countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol
-        where  status=30
+        where status=30
         group by community_name
         <include refid="selectAssertInfolTotalListHaving"/>
     </select>
@@ -68,7 +69,8 @@
         select count(*)
         from ( select community_name ,count(*) as countSum,count(floor_state='1' or null ) as countRented ,
         count(floor_state='2' or null) as
-        countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol where  status=30 group by community_name
+        countUnrent ,count(floor_state='3' or null) as countOccupy from t_assert_infol where status=30 group by
+        community_name
         <include refid="selectAssertInfolTotalListHaving"/>) bb;
     </select>
 
@@ -101,17 +103,19 @@
 
 
     <select id="findAllBuildNum" resultType="String" parameterType="assertInfol">
-        select  building_num   from    t_assert_infol <include refid="selectAssertInfolListWhereByState"/> group by  building_num;
+        select building_num from t_assert_infol
+        <include refid="selectAssertInfolListWhereByState"/>
+        group by building_num;
     </select>
 
 
     <sql id="selectAssertInfolListWhereByState">
         <where>
             <if test="community_name != null">
-               community_name = #{community_name}
+                community_name = #{community_name}
             </if>
             <if test="building_num != null">
-                and  building_num = #{building_num}
+                and building_num = #{building_num}
             </if>
 
             <if test="floor_state != null">
@@ -119,20 +123,24 @@
             </if>
 
             <if test=" room_number != null">
-                and  room_number = #{ room_number}
+                and room_number = #{ room_number}
             </if>
-                and  status=30
+            and status=30
 
         </where>
     </sql>
 
     <select id="findAllRoomNum" resultType="String" parameterType="assertInfol">
-          select  room_number  from  t_assert_infol  <include refid="selectAssertInfolListWhereByState"/> group by  room_number;
+        select room_number from t_assert_infol
+        <include refid="selectAssertInfolListWhereByState"/>
+        group by room_number;
     </select>
 
 
     <select id="findAssertInfolListByCommunityName" resultType="assertInfol" parameterType="assertInfol">
-          select  *  from  t_assert_infol  <include refid="selectAssertInfolListWhereByState"/>  group by  room_number;
+        select * from t_assert_infol
+        <include refid="selectAssertInfolListWhereByState"/>
+        group by room_number;
     </select>
 
     <select id="findAssertWithPropertyLeasing" parameterType="Long"
@@ -303,9 +311,14 @@
         </trim>
     </sql>
 
+
+
     <insert id="addAssertInfol" parameterType="assertInfol" useGeneratedKeys="true" keyProperty="id">
         insert into t_assert_infol(<include refid="key"></include>) values(<include refid="value"></include>)
     </insert>
+
+
+
 
     <delete id="deleteAssertInfol" parameterType="long">
 		delete from t_assert_infol where id=#{id}

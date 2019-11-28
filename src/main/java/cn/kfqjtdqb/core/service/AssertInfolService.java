@@ -22,6 +22,7 @@ public interface AssertInfolService {
 
     int createAssertInfol(AssertInfol assertInfol);
 
+    int createAssertInfolAll(List<AssertInfol> assertInfols);
     //查找空闲状态的资产信息
     List<AssertInfol> findAssertInfolIdleStateList();
 

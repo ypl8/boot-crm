@@ -8,6 +8,7 @@ import cn.kfqjtdqb.core.service.PropertyLeasingService;
 import cn.kfqjtdqb.core.utils.DateUtils;
 import cn.kfqjtdqb.core.utils.RentUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,8 +24,11 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     @Autowired
     private PropertyLeasingDao propertyLeasingDao;
 
+    @Autowired
+    private SqlSession sqlSession;
+
     @Override
-    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name,String  assert_num,String  property_leasing_type,String  status  ) {
+    public Page<PropertyLeasing> findPropertyLeasingList(Integer page, Integer rows, String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name, String assert_num, String property_leasing_type, String status) {
         PropertyLeasing propertyLeasing = new PropertyLeasing();
 
         if (StringUtils.isNotBlank(property_leasing_num)) {
@@ -96,9 +100,8 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
 
     @Override
     public int addPropertyLeasing(PropertyLeasing propertyLeasing) {
-        int row = propertyLeasingDao.addPropertyLeasing(propertyLeasing);
         //创建合同之前进行操作
-        return row;
+        return propertyLeasingDao.addPropertyLeasing(propertyLeasing);
     }
 
     @Override
@@ -112,8 +115,8 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
     }
 
     @Override
-    public void deleteAssertLeasingByAssertNumAndPropertyLeasingNum(String property_leasing_num,String  assert_num) throws Exception {
-        AssertLeasing assertLeasing=new AssertLeasing();
+    public void deleteAssertLeasingByAssertNumAndPropertyLeasingNum(String property_leasing_num, String assert_num) throws Exception {
+        AssertLeasing assertLeasing = new AssertLeasing();
         if (StringUtils.isNotBlank(property_leasing_num)) {
             assertLeasing.setProperty_leasing_num(property_leasing_num);
         }
@@ -208,6 +211,57 @@ public class PropertyLeasingServiceImpl implements PropertyLeasingService {
         result.setSize(rows);
         result.setTotal(count);
         return result;
+
+    }
+
+    @Override
+    public void addPropertyLeasingAll(List<PropertyLeasing> propertyLeasings) {
+        for (PropertyLeasing propertyLeasing : propertyLeasings) {
+            propertyLeasingDao.addPropertyLeasing(propertyLeasing);
+        }
+    }
+
+    @Override
+    public List<PropertyLeasing> findPropertyLeasingList(String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name, String assert_num, String property_leasing_type, String status) {
+        PropertyLeasing propertyLeasing = new PropertyLeasing();
+
+        if (StringUtils.isNotBlank(property_leasing_num)) {
+            propertyLeasing.setProperty_leasing_num(property_leasing_num);
+        }
+
+        if (StringUtils.isNotBlank(collect_rent_way)) {
+            propertyLeasing.setCollect_rent_way(collect_rent_way);
+        }
+
+        if (StringUtils.isNotBlank(collect_rate_way)) {
+            propertyLeasing.setCollect_rate_way(collect_rate_way);
+        }
+
+        if (StringUtils.isNotBlank(collect_rate_way)) {
+            propertyLeasing.setCollect_rate_way(collect_rate_way);
+        }
+
+        if (StringUtils.isNotBlank(property_leasing_state)) {
+            propertyLeasing.setProperty_leasing_state(property_leasing_state);
+        }
+
+        if (StringUtils.isNotBlank(community_name)) {
+            propertyLeasing.setCommunity_name(community_name);
+        }
+        if (StringUtils.isNotBlank(assert_num)) {
+            propertyLeasing.setAssert_num(assert_num);
+        }
+
+        if (StringUtils.isNotBlank(property_leasing_type)) {
+            propertyLeasing.setProperty_leasing_type(property_leasing_type);
+        }
+
+        if (StringUtils.isNotBlank(status)) {
+            propertyLeasing.setStatus(status);
+        }
+
+
+        return propertyLeasingDao.selectPropertyLeasingList(propertyLeasing);
 
     }
 

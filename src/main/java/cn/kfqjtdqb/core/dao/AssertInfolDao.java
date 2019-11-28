@@ -18,7 +18,7 @@ public interface AssertInfolDao {
 
     void deleteAssertInfol(Long id);
 
-    int addAssertInfol(AssertInfol assertInfol)throws DataAccessException;
+    Integer addAssertInfol(AssertInfol assertInfol)throws DataAccessException;
 
     //查看资产信息对应的合同
     AssertInfol findAssertWithPropertyLeasing(Long id);
@@ -43,4 +43,8 @@ public interface AssertInfolDao {
 
     //查看对应的资产 通过 小区名称  栋号   位置
     AssertInfol findAssertInfolListByCommunityName(AssertInfol assertInfol);
+
+
+    //批量插入数据
+    int addAssertInfolAll(List<AssertInfol> assertInfols);
 }

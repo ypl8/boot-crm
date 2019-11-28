@@ -85,7 +85,7 @@ public class CaseController {
         caser.setCase_endtime( StringUtils.convert(case_endtime));
         //执行Service,返回的是受影响的行数
         int rows = caseService.createCase(caser);
-        if (rows > 0) {
+        if (rows==-2147482646||rows > 0) {
             return "OK";
         } else {
             return "FALSE";

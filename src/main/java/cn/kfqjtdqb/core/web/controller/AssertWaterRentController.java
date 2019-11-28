@@ -260,7 +260,7 @@ public class AssertWaterRentController {
             assertWaterRent.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);   //存在问题
             int rows = AssertWaterRentService.createAssertWaterRent(assertWaterRent);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("电信息创建成功");
                 return resultCode;

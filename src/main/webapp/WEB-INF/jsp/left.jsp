@@ -28,8 +28,8 @@
     <!--框架高度设置-->
 </head>
 
-<body>
-<div id="left_ctn">
+<body >
+<div id="left_ctn" >
     <ul class="sidenav">
 
         <li class="now">

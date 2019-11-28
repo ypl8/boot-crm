@@ -164,7 +164,7 @@ public class UserInfoController {
         }
         try {
             int rows = userInfoService.createUserInfo(userInfo);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
 
 
                 resultCode.setCode(0);

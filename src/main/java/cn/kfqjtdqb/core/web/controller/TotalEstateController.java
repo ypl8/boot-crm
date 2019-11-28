@@ -137,7 +137,7 @@ public class TotalEstateController {
 
         try {
             int rows = totalEstateService.createTotalEstate(totalEstate);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("每个月物业费信息创建成功");
                 return resultCode;

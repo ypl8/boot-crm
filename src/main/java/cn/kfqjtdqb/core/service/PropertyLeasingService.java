@@ -44,4 +44,8 @@ public interface PropertyLeasingService {
     CountEmpty findEmptyPropertyLeasingCount();
 
     Page<PropertyLeasing> findPropertyLeasingByStateList(Integer page, Integer rows, String depositState, String rentalState, String estateState, String waterState, String powerState, String community_name);
+
+    void addPropertyLeasingAll(List<PropertyLeasing> propertyLeasings)throws DataAccessException;
+
+    List<PropertyLeasing> findPropertyLeasingList(String property_leasing_num, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name, String assert_num, String property_leasing_type, String status);
 }

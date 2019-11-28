@@ -207,6 +207,9 @@
                     </security:authorize>
                     <a href="#" class="btn btn-success"
                        onclick="downloadPropertyLeasing()">导出</a>
+                    <a href="#" class="btn btn-success"
+                       onclick="downloadPropertyLeasingAll()">导出全部</a>
+
                 </form>
             </div>
         </div>
@@ -3932,6 +3935,12 @@
     //导出
     function downloadPropertyLeasing() {
         $("#mainForm").attr("action", "${pageContext.request.contextPath }/propertyLeasing/downloadPropertyLeasing.action").submit();
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/propertyLeasing/list.action");
+    }
+
+    //导出
+    function downloadPropertyLeasingAll() {
+        $("#mainForm").attr("action", "${pageContext.request.contextPath }/propertyLeasing/downloadPropertyLeasingAll.action").submit();
         $("#mainForm").attr("action", "${pageContext.request.contextPath }/propertyLeasing/list.action");
     }
 

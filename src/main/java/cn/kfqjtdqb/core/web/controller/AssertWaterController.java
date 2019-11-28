@@ -154,7 +154,7 @@ public class AssertWaterController {
         try {
             assertWater.setStatus(ConstUtils.CheckUNCOMINT);
             int rows = assertWaterService.createAssertWater(assertWater);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 PropertyLeasing propertyLeasing = new PropertyLeasing();
                 propertyLeasing.setProperty_leasing_num(assertWater.getProperty_leasing_num());
                 if (isAssertWater(assertWater.getProperty_leasing_num(), assertWater.getAssert_num())) {

@@ -188,7 +188,7 @@ public class AssertRentalController {
             assertRental.setStatus(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = assertRentalService.createAssertRental(assertRental);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                /* TotalRental totalRental = new TotalRental();
                 totalRental.setProperty_leasing_num(property_leasing_num);
                 totalRental.setId(Long.parseLong(assertRental.getYear_months()));
@@ -238,7 +238,7 @@ public class AssertRentalController {
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = assertRentalService.createAssertRental(assertRental);
 
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                /* BigDecimal realityRental = assertRental.getReality_rental();
                 List<TotalRental> totalRentals = totalRentalService.getTotalRentalByLeasingNum(property_leasing_num);
 

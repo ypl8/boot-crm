@@ -10,6 +10,7 @@
         <frame src="${pageContext.request.contextPath}/left.action" noresize name="menu" scrolling="yes">
         <frame src="${pageContext.request.contextPath}/propertyLeasing/queryList.action" class="frame_r" noresize name="main" scrolling="yes">
     </frameset>
+    <frame src="${pageContext.request.contextPath}/end.action" name="end" scrolling="no">
 </frameset>
 <noframes>
     <body>您的浏览器不支持框架！</body>

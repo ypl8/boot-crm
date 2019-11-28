@@ -153,7 +153,7 @@ public class AssertDepositController {
             assertDeposit.setState(ConstUtils.CheckUNCOMINT);
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = assertDepositService.createAssertDeposit(assertDeposit);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("押金创建成功");
                 return resultCode;

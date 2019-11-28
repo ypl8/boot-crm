@@ -43,14 +43,21 @@
 		<property name="maxWait" value="30000" />
 	</bean>
 
+
+
 	<!-- 配置 Mybatis的工厂 -->
-	<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+	<bean  id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
 		<!-- 数据源 -->
 		<property name="dataSource" ref="dataSource" />
 		<!-- 配置Mybatis的核心 配置文件所在位置 -->
 		<property name="configLocation" value="classpath:SqlMapConfig.xml" />
 		<!-- 配置pojo别名 -->
 		<property name="typeAliasesPackage" value="cn.kfqjtdqb.core.bean"></property>
+	</bean>
+
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+		<constructor-arg name="executorType" value="BATCH"></constructor-arg>
 	</bean>
 
 	<!-- 配置 1：原始Dao开发 接口实现类 Mapper.xml 三个 2：接口开发 接口 不写实现类 Mapper.xml 二个 （UserDao、ProductDao 

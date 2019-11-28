@@ -9,6 +9,8 @@ import cn.kfqjtdqb.core.dao.AssertInfolDao;
 import cn.kfqjtdqb.core.service.AssertInfolService;
 import cn.kfqjtdqb.core.utils.BigDecimalUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,9 @@ public class AssertInfolServiceImpl implements AssertInfolService {
     // 定义dao属性
     @Autowired
     private AssertInfolDao assertInfolDao;
+
+    @Autowired
+    private SqlSession sqlSession;
 
     @Override
     public Page<AssertInfol> findAssertInfolList(Integer page, Integer rows, String assert_num, String floor_state, String community_name, String property_leasing_num,String status,String  assertType) {
@@ -87,6 +92,18 @@ public class AssertInfolServiceImpl implements AssertInfolService {
     @Override
     public int createAssertInfol(AssertInfol assertInfol) throws DataAccessException {
         return assertInfolDao.addAssertInfol(assertInfol);
+    }
+
+    @Override
+    public int createAssertInfolAll(List<AssertInfol> assertInfols) {
+        try{
+            for (AssertInfol assertInfol:assertInfols) {
+                assertInfolDao.addAssertInfol(assertInfol);
+            }
+        }catch (Exception e){
+             return 0;
+        }
+        return 1;
     }
 
     @Override

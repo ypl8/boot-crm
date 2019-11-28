@@ -40,9 +40,11 @@ public class PropertyLeasing implements Serializable {
     private String rent_charge_standard;
     @NotBlank
     private String monthly_rental;
-    @NotBlank
+    @NotNull
+    @Min(0)
     private Integer rent_free_period;
-    @NotBlank
+    @NotNull
+    @Min(0)
     private Integer rent_period;
     @NotBlank
     private String collect_rent_way;
@@ -67,7 +69,7 @@ public class PropertyLeasing implements Serializable {
     @NotNull
     @Min(0)
     private BigDecimal power_rate;
-    @NotNull
+    @NotBlank
     private String collect_rate_way;
     @NotNull
     @DateTimeFormat(pattern = "yyyyMMdd")

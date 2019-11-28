@@ -138,7 +138,7 @@ public class TotalRentalController {
 
         try {
             int rows = totalRentalService.createTotalRental(totalRental);
-            if (rows > 0) {
+            if (rows > 0||rows==-2147482646) {
                 resultCode.setCode(0);
                 resultCode.setMsg("每个月租金信息创建成功");
                 return resultCode;

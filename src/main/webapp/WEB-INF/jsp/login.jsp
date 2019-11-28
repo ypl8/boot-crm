@@ -8,7 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
-    <title>后台管理</title>
+    <title>赣州建控集团资产信息管理系统V1.0</title>
     <link href="${pageContext.request.contextPath}/css/login.css" rel="stylesheet" type="text/css"/>
     <script>
         // 判断是登录账号和密码是否为空
@@ -32,7 +32,7 @@
         <div class="login_logo"><a href="#"><img src="${pageContext.request.contextPath}/images/login_logo.png"/></a>
         </div>
         <div class="login_name">
-            <p>资产信息管理系统</p>
+            <p>赣州建控集团资产信息管理系统V1.0</p>
         </div>
         <form method="post" action="${pageContext.request.contextPath}/userInfo/login.action" onsubmit="return check()">
             <input name="userName" id="userName" type="text" value="用户名" onfocus="this.value=''"
@@ -45,7 +45,7 @@
             <span>${msg}</span>
         </form>
     </div>
-    <div class="copyright" style="margin-bottom: 100px">赣州市建控投资股份有限公司版权所有©2019-2021 </div>
+    <div class="copyright" style="margin-bottom: 100px">Copyright&copy;2019赣州喜子软件科技有限公司All Rights Reserved.</div>
 </div>
 </body>
 </html>

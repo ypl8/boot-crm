@@ -269,7 +269,7 @@ public class AssertPowerRentController {
             assertPowerRent.setStatus(ConstUtils.CheckUNCOMINT);  //表示的是已经提交状态
             propertyLeasingService.updatePropertyLeasing(propertyLeasing);
             int rows = AssertPowerRentService.createAssertPowerRent(assertPowerRent);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("电费信息创建成功");
                 return resultCode;

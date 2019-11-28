@@ -81,4 +81,9 @@ public class UserController {
         return "index";
     }
 
+    @RequestMapping(value = "/end.action",method = RequestMethod.GET)
+    public String  end(){
+        return "end";
+    }
+
 }

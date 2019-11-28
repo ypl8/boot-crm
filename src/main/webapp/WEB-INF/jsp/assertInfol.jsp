@@ -209,7 +209,9 @@
                                 <c:if test="${'3' eq row.floor_state}">
                                     <td> 非法占用</td>
                                 </c:if>
-
+                                <c:if test="${'25' eq row.floor_state}">
+                                    <td> 借用</td>
+                                </c:if>
 
                                 <c:if test="${'28' eq row.status}">
                                     <td> 未提交</td>

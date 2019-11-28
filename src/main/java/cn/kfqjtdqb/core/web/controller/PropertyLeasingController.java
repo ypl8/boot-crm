@@ -105,6 +105,7 @@ public class PropertyLeasingController {
     @Value("${check.state.type}")
     private String CHECK_STATE_TYPE;
 
+    //  public static final String csv_propertyLeasing_upload_path = "D://java";
     public static final String csv_propertyLeasing_upload_path = "/home/csv/assertInfol";
     private static final String POINT_SUCCESS_URL = "/propertyLeasing/list.action";
     @Autowired
@@ -118,7 +119,7 @@ public class PropertyLeasingController {
     // 客户列表
     @RequestMapping(value = "/propertyLeasing/list")
     public String list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                       String property_leasing_num, Model model, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name, String assert_num, String property_leasing_type,String status) {
+                       String property_leasing_num, Model model, String collect_rent_way, String collect_rate_way, String property_leasing_state, String community_name, String assert_num, String property_leasing_type, String status) {
       /* if(community_name!=null){
            try {
                community_name = new String(community_name.getBytes("ISO8859-1"), "utf-8");
@@ -128,7 +129,7 @@ public class PropertyLeasingController {
        }*/
 
         List<String> communityNameList = assertInfolService.findAllCommunityName();
-        Page<PropertyLeasing> assertInfolList = propertyLeasingService.findPropertyLeasingList(page, rows, property_leasing_num, collect_rent_way, collect_rate_way, property_leasing_state, community_name, assert_num, property_leasing_type,status);
+        Page<PropertyLeasing> assertInfolList = propertyLeasingService.findPropertyLeasingList(page, rows, property_leasing_num, collect_rent_way, collect_rate_way, property_leasing_state, community_name, assert_num, property_leasing_type, status);
         model.addAttribute("page", assertInfolList);
         List<BaseDict> depositstateType = systemService.findBaseDictListByType(STATE_DEPOSIT_TYPE);
         List<BaseDict> rentalstateType = systemService.findBaseDictListByType(STATE_RENTAL_TYPE);
@@ -175,12 +176,12 @@ public class PropertyLeasingController {
         if (months.length == 1) {
             model.addAttribute("monthRental", months[0]);
         } else {
-            String  str="";
+            String str = "";
 
             for (int i = 0; i < months.length; i++) {
-                 str+= DateUtils.getNextYear(propertyLeasing.getRent_start_time(),i)+"到"+DateUtils.getNextYear(propertyLeasing.getRent_end_time(), i-months.length+1)+"月租"+months[i]+";\r\n";
+                str += DateUtils.getNextYear(propertyLeasing.getRent_start_time(), i) + "到" + DateUtils.getNextYear(propertyLeasing.getRent_end_time(), i - months.length + 1) + "月租" + months[i] + ";\r\n";
             }
-            model.addAttribute("monthRental",str);
+            model.addAttribute("monthRental", str);
         }
 
         model.addAttribute("propertyLeasing", propertyLeasing);
@@ -397,7 +398,7 @@ public class PropertyLeasingController {
                 if (businessKey != null && id.toString().equals(businessKey)) {
                     activitiService.completeTask(userInfo.getId().toString(), task.getId(), status, pi.getId(), comment);
                     PropertyLeasing propertyLeasing = propertyLeasingService.getPropertyLeasingById(id);
-                    if(ConstUtils.CheckPASS.equals(propertyLeasing.getStatus())){  //表示的是审核通过的时候
+                    if (ConstUtils.CheckPASS.equals(propertyLeasing.getStatus())) {  //表示的是审核通过的时候
                         Integer month = propertyLeasing.getRent_period();
                         Date startDate = propertyLeasing.getRent_start_time();  //租金开始时间
                         //进行保证金
@@ -854,7 +855,7 @@ public class PropertyLeasingController {
 
             propertyLeasing.setStatus(ConstUtils.CheckUNCOMINT);
             int rows = propertyLeasingService.addPropertyLeasing(propertyLeasing);
-            if (rows > 0) {
+            if (rows > 0||rows==-2147482646) {
                 Integer month = propertyLeasing.getRent_period();
                 Date startDate = propertyLeasing.getRent_start_time();
                 try {
@@ -1006,6 +1007,8 @@ public class PropertyLeasingController {
             File file = new File(url, fileName);
             uploadFile.transferTo(file);
             ArrayList<String[]> dateList = CSVUtils.csvReader(file);
+
+            List<PropertyLeasing> propertyLeasings = new ArrayList<>();
             //根据制定贷款线索csv文件表头含义，将字段逐个保存到实体中并保存到数据库
             for (int i = 0; i < dateList.size(); i++) {
                 String[] content = dateList.get(i);
@@ -1015,24 +1018,26 @@ public class PropertyLeasingController {
                 propertyLeasing.setBuilding_num(content[3]);
                 propertyLeasing.setRentalLocation(content[4]);
                 propertyLeasing.setTenant(content[5]);
-                propertyLeasing.setRental_area(new BigDecimal(content[6]));
-                propertyLeasing.setRent_charge_standard(content[7]);
-                propertyLeasing.setMonthly_rental(content[8]);
-                propertyLeasing.setSign_in_time(StringUtils.convert(content[9]));
-                propertyLeasing.setRent_free_period(Integer.parseInt(content[10]));
-                propertyLeasing.setRent_period(Integer.parseInt(content[11]));
-                propertyLeasing.setCollect_rent_way(content[12]);
-                propertyLeasing.setCollect_rent_time(content[13]);
-                propertyLeasing.setEstate_charge_standard(new BigDecimal(content[14]));
-                propertyLeasing.setEstate_charge_month(new BigDecimal(content[15]));
-                propertyLeasing.setDeposit(new BigDecimal(content[16]));
-                propertyLeasing.setDeposit_time(StringUtils.convert(content[17]));
-                propertyLeasing.setWater_rate(new BigDecimal(content[18]));
-                propertyLeasing.setPower_rate(new BigDecimal(content[19]));
-                propertyLeasing.setCollect_rate_way(content[20]);
-                propertyLeasing.setRent_start_time(StringUtils.convert(content[21]));
-                propertyLeasing.setRent_end_time(StringUtils.convert(content[22]));
-                propertyLeasing.setRemark(content[23]);
+                propertyLeasing.setIdCard(content[6]);
+                propertyLeasing.setPhoneNumber(content[7]);
+                propertyLeasing.setRental_area(new BigDecimal(content[8]));
+                propertyLeasing.setRent_charge_standard(content[9]);
+                propertyLeasing.setMonthly_rental(content[10]);
+                propertyLeasing.setSign_in_time(StringUtils.convert(content[11]));
+                propertyLeasing.setRent_free_period(Integer.parseInt(content[12]));
+                propertyLeasing.setRent_period(Integer.parseInt(content[13]));
+                propertyLeasing.setCollect_rent_way(content[14]);
+                propertyLeasing.setCollect_rent_time(content[15]);
+                propertyLeasing.setEstate_charge_standard(new BigDecimal(content[16]));
+                propertyLeasing.setEstate_charge_month(new BigDecimal(content[17]));
+                propertyLeasing.setDeposit(new BigDecimal(content[18]));
+                propertyLeasing.setDeposit_time(StringUtils.convert(content[19]));
+                propertyLeasing.setWater_rate(new BigDecimal(content[20]));
+                propertyLeasing.setPower_rate(new BigDecimal(content[21]));
+                propertyLeasing.setCollect_rate_way(content[22]);
+                propertyLeasing.setRent_start_time(StringUtils.convert(content[23]));
+                propertyLeasing.setRent_end_time(StringUtils.convert(content[24]));
+                propertyLeasing.setRemark(content[25]);
                 propertyLeasing.setStatus(ConstUtils.CheckUNCOMINT);
                 //租金的判断
                 BigDecimal rent_recivied = assertRentalService.getAssertRentalCountByLeasingNum(propertyLeasing.getProperty_leasing_num());
@@ -1088,11 +1093,13 @@ public class PropertyLeasingController {
                     mv.setViewName("error");
                     return mv;
                 }
-                int rows = propertyLeasingService.addPropertyLeasing(propertyLeasing);
-                if (rows > 0) {
+
+                propertyLeasings.add(propertyLeasing);
+                /*int rows = propertyLeasingService.addPropertyLeasing(propertyLeasing);*/
+                /* if (rows > 0) {*/
 
 
-                    for (int j = 0; j < list.size(); j++) {
+                   /* for (int j = 0; j < list.size(); j++) {
                         AssertLeasing assertLeasing = new AssertLeasing();
                         assertLeasing.setAssert_num(list.get(j).getAssert_num());
                         assertLeasing.setProperty_leasing_num(propertyLeasing.getProperty_leasing_num());
@@ -1105,7 +1112,7 @@ public class PropertyLeasingController {
                         }
                         propertyLeasingService.addAssertLeasing(assertLeasing);
                         assertInfolService.updateAssertInfol(assertInfol);
-                    }
+                    }*/
 
                     /*Integer month = propertyLeasing.getRent_period();
                     Date startDate = propertyLeasing.getRent_start_time();
@@ -1145,8 +1152,49 @@ public class PropertyLeasingController {
                         ;  //表示的是应该收的租金
                         totalEstateService.createTotalEstate(totalEstate);
                     }*/
+                /*}*/
+            }
+            try {
+                propertyLeasingService.addPropertyLeasingAll(propertyLeasings);
+            }catch (Exception e){
+                e.printStackTrace();
+                String errorMsg = "资产信息csv导入失败,原因:" + e.getMessage();
+                mv.addObject("msg", errorMsg);
+                mv.setViewName("error");
+
+            }
+            //批量插入
+
+            for (PropertyLeasing propertyLeasing : propertyLeasings) {
+
+                String community_name = propertyLeasing.getCommunity_name();
+                String building_num = propertyLeasing.getBuilding_num();
+                String location = propertyLeasing.getRentalLocation();
+                String[] locations = location.split(";");
+                List<AssertInfol> list = new ArrayList<>();
+                for (int j = 0; j < locations.length; j++) {
+                    AssertInfol assertInfol = assertInfolService.findAssertInfolListByCommunityName(community_name, building_num, locations[j]);
+                    if (assertInfol != null) {
+                        list.add(assertInfol);
+                    }
+                }
+                for (int j = 0; j < list.size(); j++) {
+                    AssertLeasing assertLeasing = new AssertLeasing();
+                    assertLeasing.setAssert_num(list.get(j).getAssert_num());
+                    assertLeasing.setProperty_leasing_num(propertyLeasing.getProperty_leasing_num());
+                    AssertInfol assertInfol = new AssertInfol();
+                    assertInfol.setAssert_num(list.get(j).getAssert_num());
+                    if (propertyLeasing.getProperty_leasing_state().equals("17")) {
+                        assertInfol.setFloor_state("2");  //表示的是已经被占用了的
+                    } else {
+                        assertInfol.setFloor_state("1");  //表示的是已经被占用了的
+                    }
+                    propertyLeasingService.addAssertLeasing(assertLeasing);
+                    assertInfolService.updateAssertInfol(assertInfol);
                 }
             }
+
+
             String successMsg = "资产信息csv文件导入成功";
             mv.addObject("msg", successMsg);
             mv.addObject("url", POINT_SUCCESS_URL);
@@ -1163,20 +1211,20 @@ public class PropertyLeasingController {
 
     @RequestMapping("/propertyLeasing/downloadPropertyLeasing")
     public void downloadAssertInfol(HttpServletResponse response, @RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "10") Integer rows,
-                                    @RequestParam String property_leasing_num, @RequestParam String collect_rent_way, @RequestParam String collect_rate_way, @RequestParam String property_leasing_state, @RequestParam String community_name, @RequestParam String assert_num, String property_leasing_type,String status) {
+                                    @RequestParam String property_leasing_num, @RequestParam String collect_rent_way, @RequestParam String collect_rate_way, @RequestParam String property_leasing_state, @RequestParam String community_name, @RequestParam String assert_num, String property_leasing_type, String status) {
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
-        Page<PropertyLeasing> propertyLeasingList = propertyLeasingService.findPropertyLeasingList(page, rows, property_leasing_num, collect_rent_way, collect_rate_way, property_leasing_state, community_name, assert_num, property_leasing_type,status);
+        Page<PropertyLeasing> propertyLeasingList = propertyLeasingService.findPropertyLeasingList(page, rows, property_leasing_num, collect_rent_way, collect_rate_way, property_leasing_state, community_name, assert_num, property_leasing_type, status);
 
         //定义csv文件名称
         String csvFileName = "合同信息表";
 
         //定义csv表头
-        String colNames = "序号,租赁合同编号,小区名称,栋号,承租位置,承租人,承租面积,租金收费标准（元/平米/月),月租（元）," +
+        String colNames = "序号,租赁合同编号,小区名称,栋号,承租位置,承租人,身份证,手机号,承租面积,租金收费标准（元/平米/月),月租（元）," +
                 "合同签订时间,免租期（月）,合同期（年）,租金缴纳方式,租金缴纳时间,物业收费标准（元/平米/月）,月物业费（元）," +
                 "保证金（元）,	保证金到账时间	,水费（元/吨）,电费（元/度）,	水电费收费方式,租赁实际起始时间,租赁实际结束时间,备注,状态,总租金";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         //定义表头对应字段的key
-        String mapKey = "id,property_leasing_num,community_name,building_num,rentalLocation,tenant,rental_area,rent_charge_standard,monthly_rental,sign_in_time,rent_free_period,rent_period,collect_rent_way,collect_rent_time,estate_charge_standard," +
+        String mapKey = "id,property_leasing_num,community_name,building_num,rentalLocation,tenant,idCard,phoneNumber,rental_area,rent_charge_standard,monthly_rental,sign_in_time,rent_free_period,rent_period,collect_rent_way,collect_rent_time,estate_charge_standard," +
                 "estate_charge_month,deposit,deposit_time,water_rate,power_rate,collect_rate_way,rent_start_time,rent_end_time,remark,property_leasing_state,total_rent";        //遍历保存查询数据集到dataList中
         for (PropertyLeasing propertyLeasing : propertyLeasingList.getRows()) {
             Map<String, Object> map = new HashMap<String, Object>();
@@ -1186,6 +1234,62 @@ public class PropertyLeasingController {
             map.put("building_num", propertyLeasing.getBuilding_num());
             map.put("rentalLocation", propertyLeasing.getRentalLocation());
             map.put("tenant", propertyLeasing.getTenant());
+            map.put("idCard", propertyLeasing.getIdCard());
+            map.put("phoneNumber", propertyLeasing.getPhoneNumber());
+            map.put("rental_area", propertyLeasing.getRental_area());
+            map.put("rent_charge_standard", propertyLeasing.getRent_charge_standard());
+            map.put("monthly_rental", propertyLeasing.getMonthly_rental());
+            map.put("sign_in_time", sdf.format(propertyLeasing.getSign_in_time()));
+            map.put("rent_free_period", propertyLeasing.getRent_free_period());
+            map.put("rent_period", propertyLeasing.getRent_period());
+            map.put("collect_rent_way", propertyLeasing.getCollect_rent_way());
+            map.put("collect_rent_time", propertyLeasing.getCollect_rent_time());
+            map.put("estate_charge_standard", propertyLeasing.getEstate_charge_standard());
+            map.put("estate_charge_month", propertyLeasing.getEstate_charge_month());
+            map.put("deposit", propertyLeasing.getDeposit());
+            map.put("deposit_time", sdf.format(propertyLeasing.getDeposit_time()));
+            map.put("water_rate", propertyLeasing.getWater_rate());
+            map.put("power_rate", propertyLeasing.getPower_rate());
+            map.put("collect_rate_way", propertyLeasing.getCollect_rate_way());
+            map.put("rent_start_time", sdf.format(propertyLeasing.getRent_start_time()));
+            map.put("rent_end_time", sdf.format(propertyLeasing.getRent_end_time()));
+            map.put("remark", propertyLeasing.getRemark());
+            map.put("property_leasing_state", propertyLeasing.getProperty_leasing_state());
+            map.put("total_rent", propertyLeasing.getTotal_rent());
+            dataList.add(map);
+        }
+
+        CSVUtils.csvWrite(csvFileName, dataList, colNames, mapKey, response);
+    }
+
+
+    @RequestMapping("/propertyLeasing/downloadPropertyLeasingAll")
+    public void downloadAssertInfolAll(HttpServletResponse response, Integer rows,
+                                    @RequestParam String property_leasing_num, @RequestParam String collect_rent_way, @RequestParam String collect_rate_way, @RequestParam String property_leasing_state, @RequestParam String community_name, @RequestParam String assert_num, String property_leasing_type, String status) {
+        List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+        List<PropertyLeasing> propertyLeasingList = propertyLeasingService.findPropertyLeasingList(property_leasing_num, collect_rent_way, collect_rate_way, property_leasing_state, community_name, assert_num, property_leasing_type, status);
+
+        //定义csv文件名称
+        String csvFileName = "合同信息表";
+
+        //定义csv表头
+        String colNames = "序号,租赁合同编号,小区名称,栋号,承租位置,承租人,身份证,手机号,承租面积,租金收费标准（元/平米/月),月租（元）," +
+                "合同签订时间,免租期（月）,合同期（年）,租金缴纳方式,租金缴纳时间,物业收费标准（元/平米/月）,月物业费（元）," +
+                "保证金（元）,	保证金到账时间	,水费（元/吨）,电费（元/度）,	水电费收费方式,租赁实际起始时间,租赁实际结束时间,备注,状态,总租金";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+        //定义表头对应字段的key
+        String mapKey = "id,property_leasing_num,community_name,building_num,rentalLocation,tenant,idCard,phoneNumber,rental_area,rent_charge_standard,monthly_rental,sign_in_time,rent_free_period,rent_period,collect_rent_way,collect_rent_time,estate_charge_standard," +
+                "estate_charge_month,deposit,deposit_time,water_rate,power_rate,collect_rate_way,rent_start_time,rent_end_time,remark,property_leasing_state,total_rent";        //遍历保存查询数据集到dataList中
+        for (PropertyLeasing propertyLeasing : propertyLeasingList) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", propertyLeasing.getId());
+            map.put("property_leasing_num", propertyLeasing.getProperty_leasing_num());
+            map.put("community_name", propertyLeasing.getCommunity_name());
+            map.put("building_num", propertyLeasing.getBuilding_num());
+            map.put("rentalLocation", propertyLeasing.getRentalLocation());
+            map.put("tenant", propertyLeasing.getTenant());
+            map.put("idCard", propertyLeasing.getIdCard());
+            map.put("phoneNumber", propertyLeasing.getPhoneNumber());
             map.put("rental_area", propertyLeasing.getRental_area());
             map.put("rent_charge_standard", propertyLeasing.getRent_charge_standard());
             map.put("monthly_rental", propertyLeasing.getMonthly_rental());

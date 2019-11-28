@@ -122,7 +122,7 @@ public class AssertLeasingController {
         try {
             assertLeasing.setStatus(ConstUtils.CheckUNCOMINT);
             int rows = assertLeasingService.createAssertLeasing(assertLeasing);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("资产合同信息创建成功");
                 return resultCode;

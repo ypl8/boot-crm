@@ -91,7 +91,7 @@ public class CustomerController {
 		customer.setCust_createtime(date);
 		//执行Service,返回的是受影响的行数
 		int rows = customerService.createCustomer(customer);
-		if (rows > 0) {
+		if (rows==-2147482646||rows > 0) {
 			return "OK";
 		} else {
 			return "FALSE";

@@ -91,7 +91,7 @@ public class PermissionController {
         }
         try {
             int rows = permissionService.createPermission(permission);
-            if (rows > 0) {
+            if (rows==-2147482646||rows > 0) {
                 resultCode.setCode(0);
                 resultCode.setMsg("权限信息创建成功");
                 return resultCode;
